@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Petal &amp; Page · Themed bullet journal</title>
+<meta name="description" content="A bullet journal that's already drawn. Ten ready-made spreads in hand-lettered themes: logs, habits, moods, budgets, books and travel. Free, no sign-up, works on your phone.">
+<meta property="og:title" content="Petal & Page">
+<meta property="og:description" content="Your bullet journal, already drawn. Ten spreads, four hand-lettered themes, free in your browser.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#F6F1E7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23EFE4D1' stroke='%232E2D29' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%238DA57A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Caveat+Brush&family=Figtree:wght@400;500;600;700&family=Gloock&family=Homemade+Apple&family=Amatic+SC:wght@700&family=Chewy&display=swap">
+<style>
+/* Layout: a stationery-shop window. Dot-grid paper ground, a live journal in a phone on the right of the hero,
+   then spreads, themes, free vs coming soon, privacy. Single light "paper" look on purpose. */
+:root{
+  --paper:#F6F1E7; --sheet:#FFFCF6; --dot:#DCD4C3; --ink:#26241F; --muted:#6F6A5E; --rule:#E2DACA;
+  --sage:#8DA57A; --sage-deep:#5F7A4E; --marigold:#E0A42A; --sky:#5B9FD6; --blush:#E3C4BA;
+  --display:"Gloock", Georgia, "Times New Roman", serif;
+  --hand:"Caveat", "Segoe Print", cursive;
+  --ui:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto} *{animation:none!important; transition:none!important}}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:var(--ui); font-size:17px; line-height:1.55;
+  background-image:radial-gradient(var(--dot) 1.1px, transparent 1.4px); background-size:22px 22px}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2.5px solid var(--sky); outline-offset:3px; border-radius:6px}
+.wrap{max-width:1120px; margin-inline:auto; padding-inline:clamp(16px,4vw,32px)}
+
+/* nav */
+.nav{position:sticky; top:env(safe-area-inset-top,0px); z-index:10; background:color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--rule)}
+.nav .wrap{display:flex; align-items:center; gap:20px; padding-block:12px}
+.brand{display:flex; align-items:center; gap:9px; font-family:var(--hand); font-weight:700; font-size:28px; line-height:1; text-decoration:none; white-space:nowrap}
+.mark{width:24px; height:24px; border-radius:50%; border:2px solid var(--ink); background:radial-gradient(circle, var(--sage) 0 4px, #EFE4D1 4.5px)}
+.links{display:flex; gap:22px; margin-left:auto; font-size:15px; font-weight:500}
+.links a{text-decoration:none; color:var(--muted)}
+.links a:hover{color:var(--ink)}
+.btn{display:inline-flex; align-items:center; gap:8px; font:600 16px/1 var(--ui); text-decoration:none; border:2px solid var(--ink); border-radius:12px 14px 11px 15px; padding-block:13px; padding-inline:20px; background:var(--ink); color:var(--sheet); box-shadow:3px 3px 0 var(--sage); transition:transform .15s, box-shadow .15s}
+.btn:hover{transform:translate(-1px,-1px); box-shadow:5px 5px 0 var(--sage)}
+.btn.ghost{background:transparent; color:var(--ink); box-shadow:none}
+.btn.ghost:hover{background:var(--sheet)}
+.btn.small{padding-block:9px; padding-inline:14px; font-size:14px; box-shadow:2px 2px 0 var(--sage)}
+.btn{white-space:nowrap}
+@media (max-width:760px){.links{display:none} .nav .btn{margin-left:auto}}
+@media (max-width:420px){.brand{font-size:24px} .mark{width:20px;height:20px}}
+
+/* hero */
+.hero{overflow-x:clip}
+.hero .wrap{display:grid; grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr); gap:48px; align-items:center; padding-block:56px 72px}
+.eyebrow{font-family:var(--hand); font-size:27px; color:var(--sage-deep); transform:rotate(-2deg); display:inline-block; margin-bottom:6px}
+h1{font-family:var(--display); font-weight:400; font-size:clamp(44px,6.4vw,78px); line-height:1.02; letter-spacing:-.01em; margin:0 0 20px; text-wrap:balance}
+h1 .ul{background:linear-gradient(transparent 62%, color-mix(in srgb, var(--marigold) 55%, transparent) 62% 90%, transparent 90%); padding-inline:4px}
+.lede{font-size:19px; max-width:34em; color:#3D3A33; margin:0 0 28px}
+.ctas{display:flex; flex-wrap:wrap; gap:14px; align-items:center}
+.small-print{margin-top:18px; font-size:14px; color:var(--muted); display:flex; flex-wrap:wrap; gap:6px 18px}
+.small-print span::before{content:"✓ "; color:var(--sage-deep); font-weight:700}
+
+.stage{position:relative; justify-self:center; width:min(380px,100%)}
+.tape{position:absolute; z-index:2; width:118px; height:28px; opacity:.85; background:repeating-linear-gradient(135deg, var(--sage) 0 8px, #B6C6A6 8px 16px); clip-path:polygon(3% 0,97% 5%,100% 50%,96% 100%,2% 95%,0 50%)}
+.tape.t1{top:-10px; left:-24px; transform:rotate(-24deg)}
+.tape.t2{bottom:58px; right:-30px; transform:rotate(28deg); background:repeating-linear-gradient(135deg, var(--marigold) 0 8px, #F1CF85 8px 16px)}
+.phone{position:relative; border:2.5px solid var(--ink); border-radius:38px; background:var(--ink); padding:10px; box-shadow:10px 12px 0 var(--blush)}
+.phone iframe{display:block; width:100%; height:min(680px,78vh); min-height:520px; border:0; border-radius:29px; background:var(--sheet)}
+.try{display:flex; align-items:center; justify-content:center; gap:10px; margin-top:22px; flex-wrap:wrap}
+.try .note{font-family:var(--hand); font-size:22px; color:var(--muted)}
+.swatch{width:34px; height:34px; border-radius:50%; border:2px solid var(--ink); cursor:pointer; padding:0; transition:transform .15s}
+.swatch:hover{transform:scale(1.08)}
+.swatch[aria-pressed="true"]{box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--ink)}
+.callout{position:absolute; left:-150px; top:180px; width:140px; font-family:var(--hand); font-size:22px; line-height:1.1; color:var(--sage-deep); transform:rotate(-4deg); text-align:right}
+.callout svg{display:block; margin-left:auto; margin-top:4px}
+@media (max-width:1180px){.callout{display:none}}
+@media (max-width:900px){.hero .wrap{grid-template-columns:minmax(0,1fr); gap:40px; padding-block:36px 56px} .stage{width:min(360px,100%)}}
+
+/* sections */
+section.band{padding-block:72px}
+.kicker{font-family:var(--hand); font-size:26px; color:var(--sage-deep); margin:0}
+h2{font-family:var(--display); font-weight:400; font-size:clamp(34px,4.4vw,52px); line-height:1.08; margin:4px 0 14px; text-wrap:balance}
+.intro{max-width:40em; color:#3D3A33; margin:0 0 36px}
+
+/* spreads */
+.spreads{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px}
+@media (min-width:1000px){.spreads{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.card{background:var(--sheet); border:1.5px solid var(--ink); border-radius:12px 15px 11px 14px; padding:18px 18px 16px; display:grid; gap:6px; align-content:start}
+.card .ic{width:40px; height:40px; border-radius:10px; display:grid; place-items:center; background:#EFE4D1; border:1.5px solid var(--ink)}
+.card .ic svg{width:22px; height:22px; fill:none; stroke:var(--ink); stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+.card h3{margin:6px 0 0; font-size:17px; font-weight:700}
+.card p{margin:0; font-size:15px; color:var(--muted); line-height:1.45}
+.card .from{font-family:var(--hand); font-size:19px; color:var(--sage-deep); line-height:1.1}
+.linked{margin-top:28px; display:grid; grid-template-columns:auto minmax(0,1fr); gap:18px; align-items:center; background:#EFE4D1; border:1.5px dashed var(--ink); border-radius:14px; padding:18px 22px}
+.linked b{font-family:var(--display); font-weight:400; font-size:24px; display:block}
+.linked p{margin:2px 0 0; font-size:15.5px}
+.linked .big{font-family:var(--hand); font-size:46px; line-height:1; color:var(--sage-deep)}
+@media (max-width:560px){.linked{grid-template-columns:minmax(0,1fr)}}
+
+/* themes */
+.themes{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:18px}
+.theme{border:1.5px solid var(--ink); border-radius:14px; overflow:hidden; background:var(--sheet); display:grid; text-align:left; padding:0; cursor:pointer; font:inherit; color:inherit; transition:transform .15s}
+.theme:hover{transform:rotate(-.6deg) translateY(-2px)}
+.theme .pv{height:150px; padding:16px 16px 0; display:flex; flex-direction:column; justify-content:space-between; border-bottom:1.5px solid var(--ink); background-size:12px 12px}
+.theme .pv .t{font-size:30px; line-height:1}
+.theme .pv .row{display:flex; align-items:flex-end; gap:3px}
+.theme .pv .row i{display:block; width:15px; border:1.3px solid; border-bottom:0; border-radius:2px 2px 0 0}
+.theme .pv .row .dotc{margin-left:auto; width:16px; height:16px; border-radius:50%; margin-bottom:6px}
+.theme .pv .sh{height:8px; margin-inline:-16px}
+.theme .meta{padding:14px 16px 16px; display:grid; gap:2px}
+.theme .meta b{font-size:16px}
+.theme .meta span{font-size:14px; color:var(--muted)}
+.theme .meta em{font-style:normal; font-size:13px; font-weight:600; color:var(--sage-deep); margin-top:6px}
+
+/* free vs soon */
+.tiers{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px}
+.tier{background:var(--sheet); border:1.5px solid var(--ink); border-radius:16px 13px 15px 12px; padding:26px 26px 22px}
+.tier.soon{background:transparent; border-style:dashed}
+.tier h3{font-family:var(--display); font-weight:400; font-size:30px; margin:0}
+.tier .tag{display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:1.5px solid var(--ink); border-radius:999px; padding:3px 10px; margin-bottom:10px}
+.tier.free .tag{background:var(--sage); color:#fff; border-color:var(--sage-deep)}
+.tier ul{list-style:none; margin:14px 0 0; padding:0; display:grid; gap:10px}
+.tier li{display:grid; grid-template-columns:22px minmax(0,1fr); gap:8px; font-size:16px}
+.tier li::before{content:"•"; font-family:var(--hand); font-size:28px; line-height:.75; color:var(--sage-deep); text-align:center}
+.tier.soon li::before{content:"○"; font-size:20px; line-height:1.1; color:var(--muted)}
+@media (max-width:760px){.tiers{grid-template-columns:minmax(0,1fr)}}
+
+/* privacy + closing */
+.privacy{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:40px; align-items:center}
+.privacy .note-card{background:var(--sheet); border:1.5px solid var(--ink); border-radius:14px; padding:24px; box-shadow:6px 6px 0 #DCE6DF; transform:rotate(1.2deg)}
+.privacy .note-card p{margin:0 0 10px; font-family:var(--hand); font-size:24px; line-height:1.25}
+.privacy .note-card p:last-child{margin:0}
+@media (max-width:760px){.privacy{grid-template-columns:minmax(0,1fr)}}
+.closing{text-align:center; padding-block:80px 90px}
+.closing h2{margin-inline:auto; max-width:14em}
+.closing p{color:var(--muted); margin:0 auto 28px; max-width:30em}
+footer{border-top:1px solid var(--rule); background:var(--paper)}
+footer .wrap{display:flex; flex-wrap:wrap; gap:10px 24px; justify-content:space-between; padding-block:24px; font-size:14px; color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="./"><span class="mark" aria-hidden="true"></span>Petal &amp; Page</a>
+    <nav class="links" aria-label="Sections"><a href="#spreads">Spreads</a><a href="#themes">Themes</a><a href="#plans">Free &amp; Premium</a><a href="#privacy">Privacy</a></nav>
+    <a class="btn small" href="app/">Open my journal</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">no rulers, no smudges</span>
+        <h1>Your bullet journal, <span class="ul">already drawn.</span></h1>
+        <p class="lede">Ten ready-made spreads for planning, tracking and remembering, each in hand-lettered themes with washi tape and stickers. Open it and start writing.</p>
+        <div class="ctas">
+          <a class="btn" href="app/">Open my journal <span aria-hidden="true">→</span></a>
+          <a class="btn ghost" href="#spreads">See the spreads</a>
+        </div>
+        <div class="small-print"><span>Free</span><span>No sign-up</span><span>Works on your phone</span><span>Export to PDF and images</span></div>
+      </div>
+      <div class="stage">
+        <div class="callout" aria-hidden="true">it's live, tap around!<svg width="70" height="34" viewBox="0 0 70 34"><path d="M4 6 Q34 2 58 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M50 26 L60 26 L58 15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <span class="tape t1" aria-hidden="true"></span><span class="tape t2" aria-hidden="true"></span>
+        <div class="phone"><iframe id="demo" src="app/?demo&amp;spread=mood" title="Petal &amp; Page journal preview" loading="eager"></iframe></div>
+        <div class="try" role="group" aria-label="Preview a theme">
+          <span class="note">try a theme:</span>
+          <button class="swatch" data-theme="sage" aria-pressed="true" aria-label="Sage Library" style="background:linear-gradient(135deg,#FBFAF4 50%,#8DA57A 50%)"></button>
+          <button class="swatch" data-theme="marigold" aria-pressed="false" aria-label="Marigold Garden" style="background:linear-gradient(135deg,#FFFCF2 50%,#E0A42A 50%)"></button>
+          <button class="swatch" data-theme="ink" aria-pressed="false" aria-label="Ink and Graphite" style="background:linear-gradient(135deg,#FFFFFF 50%,#1C1C1C 50%)"></button>
+          <button class="swatch" data-theme="sky" aria-pressed="false" aria-label="Sky Postcard" style="background:linear-gradient(135deg,#FCF9F2 50%,#5B9FD6 50%)"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="spreads">
+    <div class="wrap">
+      <p class="kicker">the spreads</p>
+      <h2>Ten pages people actually draw, ready to fill in.</h2>
+      <p class="intro">Each spread follows a classic bullet journal layout. Pages grow as you write, so you never run out of room, and every spread can be renamed and given its own subtitle.</p>
+      <div class="spreads">
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9.5h18M3 15h18M9 4v17M15 4v17"/></svg></div><h3>Year at a glance</h3><p>Plans for every month, plus Year in pixels coloured from your moods.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.2"/><circle cx="4" cy="12" r="1.6"/><path d="M3 18h2"/></svg></div><h3>Monthly log</h3><p>One line a day, with bullets for tasks, events and notes.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12M15 9v12M8 2v4M16 2v4"/></svg></div><h3>Weekly spread</h3><p>Seven day boxes and a weekly focus, with habit dots in each day.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M4 9h16M8 2v4M16 2v4"/><circle cx="12" cy="15" r="2.4"/></svg></div><h3>Daily log</h3><p>To-dos, a schedule, mood, water, habits and three things you're grateful for.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div><h3>Habit tracker</h3><p>Tick off each day and watch your streaks build.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 14.5c1.2 1.4 2.5 2 4 2s2.8-.6 4-2"/><path d="M9 10v.1M15 10v.1" stroke-width="2.4"/></svg></div><h3>Mood tracker</h3><p>Tap a face each day for a hand-drawn chart of your month.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="13" rx="8" ry="6.5"/><path d="M8 7.5 7 4l3 2.3M16 7.5l1-3.5-3 2.3M10.5 7h3"/><circle cx="12" cy="14" r="2"/></svg></div><h3>Budget</h3><p>Bills, saving goals and a balance that adds itself up.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M8 3.5h8v3H8zM6.5 9c0-1.4 1-2.5 2.5-2.5h6c1.5 0 2.5 1.1 2.5 2.5v10c0 1.4-1 2.5-2.5 2.5H9c-1.5 0-2.5-1.1-2.5-2.5z"/><path d="M6.5 14.5h11M6.5 18h11"/></svg></div><h3>Savings trackers</h3><p>Colour in a jar, a house or coins as you save.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 20V6h3v14M7 20V4h3v16M11 20l2.5-13 3 .6-2.5 13"/><path d="M3 20h18"/></svg></div><h3>Bookshelf</h3><p>Shelve every book you read against a yearly goal.</p></article>
+        <article class="card"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="1"/><rect x="6.5" y="5.5" width="11" height="10"/><path d="m6.5 13 3.5-3.5 3 3 2-2 2.5 2.5"/></svg></div><h3>Travel list</h3><p>Pin places as polaroids and stamp them once you've been.</p></article>
+      </div>
+      <div class="linked">
+        <span class="big" aria-hidden="true">write once</span>
+        <div><b>See it everywhere.</b><p>A to-do on today's page shows up in your week and month. A mood you tap colours your chart and your Year in pixels. A habit ticked anywhere updates your streaks.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="themes">
+    <div class="wrap">
+      <p class="kicker">the themes</p>
+      <h2>One tap restyles every page.</h2>
+      <p class="intro">Paper, lettering, washi tape and stickers all change together. Pick a theme to see it in the journal above.</p>
+      <div class="themes">
+        <button class="theme" data-theme="sage"><div class="pv" style="background-color:#FBFAF4;background-image:radial-gradient(#D6D2C3 1px,transparent 1.3px);color:#2E2D29"><span class="t" style="font-family:'Homemade Apple',cursive;font-size:20px">May</span><div><div class="row"><i style="height:44px;background:#B7C6A1;border-color:#2E2D29"></i><i style="height:52px;background:#E7D1BA;border-color:#2E2D29"></i><i style="height:40px;background:#DAD6CA;border-color:#2E2D29"></i><i style="height:56px;background:#CBB99B;border-color:#2E2D29"></i><i style="height:46px;background:#9CAE88;border-color:#2E2D29"></i><span class="dotc" style="background:#8DA57A"></span></div><div class="sh" style="background:#33302C"></div></div></div><div class="meta"><b>Sage Library</b><span>Muted greens, parchment and candlelight</span><em>Preview this theme ↑</em></div></button>
+        <button class="theme" data-theme="marigold"><div class="pv" style="background-color:#FFFCF2;background-image:radial-gradient(#DDD6C2 1px,transparent 1.3px);color:#1E2A20"><span class="t" style="font-family:'Caveat Brush',cursive">May</span><div><div class="row"><i style="height:44px;background:#E9B83F;border-color:#1E2A20"></i><i style="height:52px;background:#F4E4B6;border-color:#1E2A20"></i><i style="height:40px;background:#2F5E3B;border-color:#1E2A20"></i><i style="height:56px;background:#DDAAA2;border-color:#1E2A20"></i><i style="height:46px;background:#A8C4D8;border-color:#1E2A20"></i><span class="dotc" style="background:#E0A42A"></span></div><div class="sh" style="background:#2C3B2E"></div></div></div><div class="meta"><b>Marigold Garden</b><span>Mustard blooms and deep leaf green</span><em>Preview this theme ↑</em></div></button>
+        <button class="theme" data-theme="ink"><div class="pv" style="background-color:#FFFFFF;background-image:radial-gradient(#CFCFCF 1px,transparent 1.3px);color:#1C1C1C"><span class="t" style="font-family:'Amatic SC',cursive;font-weight:700;font-size:36px">MAY</span><div><div class="row"><i style="height:44px;background:#F4F4F4;border-color:#1C1C1C"></i><i style="height:52px;background:#DADADA;border-color:#1C1C1C"></i><i style="height:40px;background:#C4C4C4;border-color:#1C1C1C"></i><i style="height:56px;background:#E8E8E8;border-color:#1C1C1C"></i><i style="height:46px;background:#B3B3B3;border-color:#1C1C1C"></i><span class="dotc" style="background:#4A4A4A"></span></div><div class="sh" style="background:#1C1C1C"></div></div></div><div class="meta"><b>Ink &amp; Graphite</b><span>Black fineliner on bright white</span><em>Preview this theme ↑</em></div></button>
+        <button class="theme" data-theme="sky"><div class="pv" style="background-color:#FCF9F2;background-image:radial-gradient(#D4D8DC 1px,transparent 1.3px);color:#1F2E3D"><span class="t" style="font-family:'Chewy',cursive">May</span><div><div class="row"><i style="height:44px;background:#9CC8E8;border-color:#1F2E3D"></i><i style="height:52px;background:#B9DDB1;border-color:#1F2E3D"></i><i style="height:40px;background:#F3D59E;border-color:#1F2E3D"></i><i style="height:56px;background:#EAB9B1;border-color:#1F2E3D"></i><i style="height:46px;background:#D5DEEA;border-color:#1F2E3D"></i><span class="dotc" style="background:#5B9FD6"></span></div><div class="sh" style="background:#2A3A4A"></div></div></div><div class="meta"><b>Sky Postcard</b><span>Bubble letters, clouds and travel blues</span><em>Preview this theme ↑</em></div></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="plans">
+    <div class="wrap">
+      <p class="kicker">free &amp; premium</p>
+      <h2>Free to journal. Premium is on its way.</h2>
+      <p class="intro">Everything you need to keep a journal is free. Premium will add ways to make it look and work exactly how you like.</p>
+      <div class="tiers">
+        <div class="tier free"><span class="tag">Free</span><h3>Everything to get started</h3>
+          <ul><li>All ten spreads, linked together</li><li>Four hand-lettered themes</li><li>Rename spreads and add subtitles</li><li>Export any spread as a share image or A5 PDF pages</li><li>Back up and restore your journal any time</li></ul></div>
+        <div class="tier soon"><span class="tag">Coming soon</span><h3>Premium</h3>
+          <ul><li>Premium themes, starting with Lavender Dusk</li><li>Resize any box or text field to design your own layouts</li><li>Whole-journal PDF, square post and story-size images</li><li>Exports without the Petal &amp; Page mark</li><li>Your own AI-designed wallpaper</li><li>Spread packs for wellness, home and memories</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="band" id="privacy">
+    <div class="wrap privacy">
+      <div>
+        <p class="kicker">your journal, your device</p>
+        <h2>Nothing you write leaves your browser.</h2>
+        <p class="intro" style="margin-bottom:0">There's no account and no server storing your entries. Your journal is saved in this browser on this device. Because of that, clearing your browser data or switching devices starts a fresh journal, so use <b>Export → Back up journal</b> now and then, and <b>Restore from backup</b> to bring it anywhere.</p>
+      </div>
+      <div class="note-card" aria-hidden="true">
+        <p>• back up on the 1st of each month</p>
+        <p>× clear browser data without a backup</p>
+        <p>○ phone + laptop sync, coming with the app</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="closing">
+    <div class="wrap">
+      <h2>Your next page is already drawn.</h2>
+      <p>Open Petal &amp; Page, pick a theme and write your first line. It takes about ten seconds.</p>
+      <a class="btn" href="app/">Open my journal <span aria-hidden="true">→</span></a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap"><span>© 2026 Petal &amp; Page</span><span>A themed bullet journal for your browser. Mobile app coming soon.</span></div>
+</footer>
+
+<script>
+(function(){
+  const frame=document.getElementById("demo");
+  const sw=[...document.querySelectorAll(".swatch")];
+  function preview(theme, scroll){
+    sw.forEach(b=>b.setAttribute("aria-pressed", String(b.dataset.theme===theme)));
+    try{ frame.contentWindow.postMessage({theme}, location.origin) }catch(e){}
+    if(scroll) frame.scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"center"});
+  }
+  sw.forEach(b=>b.addEventListener("click",()=>preview(b.dataset.theme,false)));
+  document.querySelectorAll(".theme").forEach(b=>b.addEventListener("click",()=>preview(b.dataset.theme,true)));
+})();
+</script>
+</body>
+</html>
