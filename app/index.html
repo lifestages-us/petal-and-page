@@ -341,6 +341,10 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
 .demo .pro-bar{display:none}
+.clear-btn{margin-left:auto; border:1px solid var(--rule); background:var(--paper); color:var(--muted); font-family:var(--ui); font-size:12px; font-weight:600; border-radius:999px; padding-block:4px; padding-inline:12px}
+.clear-btn:hover{color:var(--ink); border-color:var(--ink)}
+.clear-btn.armed{background:#C0584C; border-color:#C0584C; color:#fff}
+.toast .undo{margin-left:10px; border:0; background:transparent; color:inherit; font:inherit; font-weight:700; text-decoration:underline; padding:0}
 /* ---------- export ---------- */
 .xi{width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; margin-left:4px}
 #exportBtn{padding-inline:8px 12px}
@@ -586,6 +590,8 @@ function migrate(s){
   if(!s.weekly) s.weekly={};
   if(!s.week) s.week=mondayOf(now);
   if(!s.day) s.day=iso(now);
+  if(!s.titles) s.titles={};
+  if(!s.titles.year && s.sample!==false) s.titles.year={note:"Play around to get a feel for the tracker! Go to the next page to start your own journey."};
   if(!s.yearView) s.yearView="plans";
   const smp = s.sample!==false, Y=now.getFullYear();
   if(!s.future){ s.future={};
@@ -785,11 +791,42 @@ function applyFields(){
   }));
   paper.querySelectorAll("textarea.hand-input").forEach(grow);
 }
+/* ---- Clear page: wipes what this spread shows for the period on screen (two taps, with Undo) ---- */
+function clearLabel(sp){
+  const {y,m}=parts();
+  if(sp==="log"||sp==="habits"||sp==="mood"||sp==="budget") return MONTHS[m-1]+" "+y;
+  if(sp==="week") return "the week of "+weekLabel();
+  if(sp==="day") return dayLabel();
+  if(sp==="year") return state.yearView==="pixels"?"the "+state.year+" moods":"the "+state.year+" plans";
+  return "this page";
+}
+function clearBtn(sp){ const armed=ui.clearArmed===sp;
+  return `<button class="clear-btn${armed?" armed":""}" data-act="clearpage" aria-label="${armed?"Tap again to clear "+esc(clearLabel(sp)):"Clear this page"}">${armed?"Tap again to clear "+esc(clearLabel(sp)):"Clear page"}</button>`; }
+function clearPage(sp){
+  const snap=JSON.stringify(state);
+  const dayKeys=(start,n)=>{const out=[]; for(let i=0;i<n;i++){const d=fromIso(start); d.setDate(d.getDate()+i); out.push({mk:ym(d.getFullYear(),d.getMonth()+1), d:d.getDate(), iso:iso(d)})} return out};
+  const wipeDay=k=>{ if(state.log[k.mk]) delete state.log[k.mk][k.d]; const H=state.habitLog[k.mk]; if(H) for(const h in H) H[h]=H[h].filter(x=>x!==k.d); };
+  if(sp==="log"){ state.log[state.month]={} }
+  if(sp==="week"){ dayKeys(state.week,7).forEach(wipeDay); delete state.weekly[state.week] }
+  if(sp==="day"){ const k=dayKeys(state.day,1)[0]; wipeDay(k); delete state.daily[state.day]; if(state.mood[k.mk]) delete state.mood[k.mk][k.d] }
+  if(sp==="habits"){ state.habitLog[state.month]={} }
+  if(sp==="mood"){ state.mood[state.month]={} }
+  if(sp==="budget"){ state.budget[state.month]={income:"",checkStart:"",checkEnd:"",saveStart:"",saveEnd:"",
+      bills:["Rent","Gas / electric","Internet","Phone","Groceries","Credit card"].map(n=>({due:"",paid:false,name:n,budget:"",actual:""})),
+      goals:["Emergency fund","Big trip"].map(n=>({name:n,budget:"",actual:""}))} }
+  if(sp==="year"){ for(let m=1;m<=12;m++){ const k=ym(state.year,m); if(state.yearView==="pixels") delete state.mood[k]; else delete state.future[k] } }
+  if(sp==="books"){ state.books.list=[]; ui.selBook=null }
+  if(sp==="travel"){ state.travel=[] }
+  if(sp==="savings"){ state.savings=[] }
+  ui.lastClear=snap; save(); render();
+  const t=$("#toast"); t.innerHTML="Page cleared. <button class='undo' id='undoClear'>Undo</button>"; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>{t.hidden=true; ui.lastClear=null},6000);
+  const u=$("#undoClear"); if(u) u.onclick=()=>{ if(!ui.lastClear) return; state=JSON.parse(ui.lastClear); ui.lastClear=null; save(); render(); toast("Page restored") };
+}
 function proBar(sp){
   const custom=(state.layout&&state.layout[sp]&&Object.keys(state.layout[sp]).length)||(state.fields&&state.fields[sp]&&Object.keys(state.fields[sp]).length);
   return state.creator
-    ? `<div class="pro-bar"><span class="pro-chip on"><span class="b">Premium</span>Resizable boxes</span><span>Drag a box's corner to resize it. Hover or tap into any text field to resize that kind of field.</span>${custom?`<button class="pen-btn" style="font-family:var(--ui);font-size:12px" data-act="resetlayout" data-spread="${sp}">Reset sizes</button>`:""}</div>`
-    : `<div class="pro-bar"><button class="pro-chip" data-act="prolocked"><span class="b">Premium</span>🔒 Resize boxes${PUBLIC?" · coming soon":""}</button></div>`;
+    ? `<div class="pro-bar"><span class="pro-chip on"><span class="b">Premium</span>Resizable boxes</span><span>Drag a box's corner to resize it. Hover or tap into any text field to resize that kind of field.</span>${custom?`<button class="pen-btn" style="font-family:var(--ui);font-size:12px" data-act="resetlayout" data-spread="${sp}">Reset sizes</button>`:""}${clearBtn(sp)}</div>`
+    : `<div class="pro-bar"><button class="pro-chip" data-act="prolocked"><span class="b">Premium</span>🔒 Resize boxes${PUBLIC?" · coming soon":""}</button>${clearBtn(sp)}</div>`;
 }
 function weekLabel(){
   const a=fromIso(state.week), b=new Date(a); b.setDate(a.getDate()+6);
@@ -1208,6 +1245,10 @@ paper.addEventListener("click",e=>{
   }
   if(act==="prolocked"){toast(premiumMsg("Resizing boxes and text")); return}
   if(act==="resetlayout"){if(state.layout) delete state.layout[d.spread]; if(state.fields) delete state.fields[d.spread]; save(); render(); toast("Sizes reset for this spread"); return}
+  if(act==="clearpage"){ const sp=state.spread;
+    if(ui.clearArmed===sp){ clearTimeout(ui.clearT); ui.clearArmed=null; clearPage(sp) }
+    else { ui.clearArmed=sp; render(); clearTimeout(ui.clearT); ui.clearT=setTimeout(()=>{ if(ui.clearArmed===sp){ ui.clearArmed=null; render() } },4000) }
+    return }
   if(act==="gospread"){state.spread=d.s; save(); render(true); scrollTo({top:0,behavior:"smooth"}); return}
   if(act==="gopixels"){state.spread="year"; state.yearView="pixels"; state.year=+state.month.slice(0,4); save(); render(true); scrollTo({top:0,behavior:"smooth"}); return}
   if(act==="yview"){state.yearView=d.v; save(); render(); return}
@@ -1544,7 +1585,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked"]);
+const VIEW_ACTS = new Set(["gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
