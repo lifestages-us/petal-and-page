@@ -474,7 +474,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   <div class="themes" id="themes"></div>
   <div class="creator" id="creatorRow"><div class="txt"><b>Creator mode</b><span>Unlocks Premium tools for you as the app's creator, including resizable boxes and text fields and Premium exports. Other users would see these as paid features.</span></div><button class="switch" id="creatorSw" role="switch" aria-checked="false" aria-label="Creator mode"></button></div>
   <div class="sheet-foot">
-    <span class="ui-note" style="color:var(--chrome-muted)">Premium themes and AI-designed wallpapers are planned for the app.</span>
+    <span class="ui-note" style="color:var(--chrome-muted)">Premium themes and your own journal wallpapers are coming soon.</span>
     <button class="ghost" id="resetBtn">Clear all entries</button>
   </div>
 </section>
@@ -533,7 +533,7 @@ const THEMES = {
 };
 const LOCKED = [
   {id:"dusk", name:"Lavender Dusk", blurb:"Night paper with silver ink", badge:"Premium", paper:"#2B2638", ink:"#E9E3F5", spines:["#B8A6DA","#8E7CB8","#D9CFEF"], shelf:"#E9E3F5", font:"'Caveat', cursive"},
-  {id:"ai", name:"Your own wallpaper", blurb:"Describe a mood and get a custom page design", badge:"Coming soon", paper:"#F5EFE6", ink:"#3A3530", spines:["#E7B7A3","#A7C4B5","#E9D59A"], shelf:"#3A3530", font:"'Homemade Apple', cursive", ai:true},
+  {id:"ai", name:"Your own wallpaper", blurb:"Create your own journal wallpapers", badge:"Coming soon", paper:"#F5EFE6", ink:"#3A3530", spines:["#E7B7A3","#A7C4B5","#E9D59A"], shelf:"#3A3530", font:"'Homemade Apple', cursive", ai:true},
 ];
 
 /* =====================================================================
@@ -1190,7 +1190,7 @@ $("#themeBtn").onclick=openSheet; $("#closeSheet").onclick=closeSheet; $("#scrim
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden) closeSheet()});
 $("#themes").addEventListener("click",e=>{
   const c=e.target.closest("[data-theme-id]"); if(c){state.theme=c.dataset.themeId; save(); render(true); renderThemes(); toast(THEMES[state.theme].name+" applied"); return}
-  const l=e.target.closest("[data-locked]"); if(l) toast(l.dataset.locked==="ai"?"AI wallpapers are planned for the mobile app.":"Premium themes are planned for the mobile app.");
+  const l=e.target.closest("[data-locked]"); if(l) toast(l.dataset.locked==="ai"?"Creating your own journal wallpapers is coming soon.":"Premium themes are planned for the mobile app.");
 });
 $("#resetBtn").onclick=()=>{
   if(!ui.confirmReset){ui.confirmReset=true; renderThemes(); return}
