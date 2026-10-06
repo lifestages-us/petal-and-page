@@ -591,7 +591,16 @@ function migrate(s){
   if(!s.week) s.week=mondayOf(now);
   if(!s.day) s.day=iso(now);
   if(!s.titles) s.titles={};
-  if(!s.titles.year && s.sample!==false) s.titles.year={note:"Play around to get a feel for the tracker! Go to the next page to start your own journey."};
+  /* first-visit hint on every spread; spreads without a next page point to Clear page instead */
+  if(s.sample!==false && !s.hintsAdded){
+    ["year","log","week","day","habits","mood","budget","books","travel","savings"].forEach(sp=>{
+      const t=(s.titles[sp]=s.titles[sp]||{});
+      if(t.note===undefined) t.note = (sp==="travel"||sp==="savings")
+        ? "Play around to get a feel for the tracker! Clear the page to start your own journey."
+        : "Play around to get a feel for the tracker! Go to the next page to start your own journey.";
+    });
+    s.hintsAdded=true;
+  }
   if(!s.yearView) s.yearView="plans";
   const smp = s.sample!==false, Y=now.getFullYear();
   if(!s.future){ s.future={};
