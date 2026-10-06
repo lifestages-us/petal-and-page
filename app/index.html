@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Caveat:wght@400;600;700&family=Caveat+Brush&family=Chewy&family=Figtree:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Homemade+Apple&family=Patrick+Hand&display=swap">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
 <script>window.PETAL_PUBLIC = true;</script>
+
 </head>
 <body>
 <style>
@@ -361,6 +362,40 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .exporting .blk[data-box="add"], .exporting .seg, .exporting .svopts, .exporting .source .pen-btn, .exporting > p.ui-note, .exporting .key .ui-note,
 .exporting .brushes > .ui-note, .exporting .legend .ui-note, .exporting .tf-handle, .exporting .head .note:placeholder-shown{display:none!important}
 
+/* ---------- accounts ---------- */
+.guestbar{max-width:780px; margin-inline:auto; margin-bottom:14px; display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; background:var(--chrome); border:1px solid var(--line); border-radius:14px; padding-block:9px; padding-inline:14px 9px; font-size:13.5px}
+.guestbar .gtext{flex:1 1 200px; color:var(--chrome-muted)}
+.guestbar .gtext b{color:var(--chrome-ink)}
+.gdots{display:flex; gap:5px}
+.gdots i{width:10px; height:10px; border-radius:50%; border:1.5px solid var(--chrome-ink)}
+.gdots i.on{background:var(--accent); border-color:var(--accent)}
+.gsave{border:0; background:var(--chrome-ink); color:var(--desk); font-weight:600; border-radius:999px; padding-block:7px; padding-inline:14px}
+.guestbar.full{border-color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, var(--chrome))}
+.acct{position:relative; padding:4px!important}
+.acct .av{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:var(--accent); color:#fff; font-weight:700; font-size:13px; text-transform:uppercase}
+.acct .dot{position:absolute; right:1px; bottom:1px; width:9px; height:9px; border-radius:50%; border:2px solid var(--chrome); background:#6BAA6E}
+.acct .dot.pending{background:#E0A42A} .acct .dot.offline{background:#C0584C}
+.auth-body{display:grid; gap:12px; max-width:420px}
+.gbtn{display:flex; align-items:center; justify-content:center; gap:10px; border:1px solid var(--line); background:var(--chrome); color:var(--chrome-ink); border-radius:12px; padding-block:12px; font-weight:600; font-size:15px}
+.gbtn:hover{border-color:var(--chrome-ink)}
+.gbtn svg{width:18px; height:18px}
+.or{display:flex; align-items:center; gap:10px; color:var(--chrome-muted); font-size:12px}
+.or::before,.or::after{content:""; flex:1; height:1px; background:var(--line)}
+.auth-body input[type=email]{font:inherit; font-size:15px; padding-block:11px; padding-inline:12px; border:1px solid var(--line); border-radius:12px; background:var(--chip); color:var(--chrome-ink); width:100%}
+.ebtn{border:0; background:var(--chrome-ink); color:var(--desk); border-radius:12px; padding-block:12px; font-weight:600; font-size:15px}
+.ebtn[disabled],.gbtn[disabled]{opacity:.6; cursor:progress}
+.auth-err{color:#C0584C; font-size:13px; min-height:1em; margin:0}
+.auth-fine{font-size:12px; color:var(--chrome-muted); margin:0}
+.auth-fine a{color:inherit}
+.acct-row{display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line); border-radius:12px; background:var(--chip)}
+.acct-row .av{width:36px; height:36px; font-size:16px; border-radius:50%; display:grid; place-items:center; background:var(--accent); color:#fff; font-weight:700; text-transform:uppercase}
+.acct-row div{flex:1; min-width:0; display:grid}
+.acct-row b{overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.acct-row span{font-size:12.5px; color:var(--chrome-muted)}
+.choose{display:grid; gap:10px}
+.choose button{text-align:left; display:grid; gap:2px; border:1px solid var(--line); background:var(--chip); color:var(--chrome-ink); border-radius:12px; padding:12px 14px}
+.choose button b{font-size:14.5px} .choose button span{font-size:12.5px; color:var(--chrome-muted)}
+
 /* ---------- theme sheet ---------- */
 .scrim{position:fixed; inset:0; background:rgba(20,18,14,.4); z-index:40}
 .sheet{position:fixed; z-index:41; left:50%; bottom:0; transform:translateX(-50%); width:min(720px,100%); max-height:86vh; overflow:auto; background:var(--chrome); color:var(--chrome-ink);
@@ -416,11 +451,13 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
       <button id="next" aria-label="Next">›</button>
     </div>
     <button class="theme-btn" id="exportBtn" aria-haspopup="dialog" aria-label="Export"><svg class="xi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg><span class="tn">Export</span></button>
+    <button class="theme-btn acct" id="acctBtn" aria-haspopup="dialog" aria-label="Your account" hidden><span class="av" id="acctInitial">?</span><span class="dot" id="acctDot"></span></button>
     <button class="theme-btn" id="themeBtn" aria-haspopup="dialog"><span class="sw" id="themeSw"></span><span class="tn" id="themeName"></span></button>
   </header>
   <div class="layout">
     <nav class="rail" id="rail" aria-label="Spreads"></nav>
     <main class="desk">
+      <div class="guestbar" id="guestBar" hidden><span class="gtext" id="guestText"></span><span class="gdots" id="guestDots" aria-hidden="true"></span><button class="gsave" id="guestSave">Save my journal</button></div>
       <article class="paper" id="paper" aria-live="polite"></article>
       <p class="footnote">Entries save in this browser. Tap a theme to restyle every spread.</p>
     </main>
@@ -466,6 +503,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   <div class="xconfirm" id="xConfirm" hidden><span id="xConfirmText">Replace everything in this journal with the backup?</span><button class="ghost warn" id="xReplace">Replace journal</button><button class="ghost" id="xCancel">Keep current journal</button></div>
   <p class="xstatus" id="xStatus" aria-live="polite"></p>
 </section>
+<section class="sheet" id="authSheet" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden></section>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -567,7 +605,8 @@ function migrate(s){
   return s;
 }
 function load(){try{const s=localStorage.getItem(KEY); return s?JSON.parse(s):null}catch(e){return null}}
-function save(){try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){}}
+let afterSave=null; /* set by the accounts module to sync each change */
+function save(){try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} if(afterSave) afterSave()}
 let saveT; function saveSoon(){clearTimeout(saveT); saveT=setTimeout(save,250)}
 
 function seed(){
@@ -1495,6 +1534,154 @@ $("#xReplace").onclick=()=>{ if(!ui.pendingRestore) return; state=migrate(ui.pen
 $("#xCancel").onclick=()=>{ ui.pendingRestore=null; $("#xConfirm").hidden=true };
 
 let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearTimeout(rt); rt=setTimeout(()=>render(),150)});
+
+/* =====================================================================
+   ACCOUNTS (public site only, once Supabase keys are configured)
+   Guests write on up to 3 spreads; a free account (Google or email link)
+   saves the journal and syncs it across devices. Guest pages carry over.
+   ===================================================================== */
+const CFG = window.PETAL_CONFIG || {};
+const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
+const GUEST_LIMIT = 3;
+const VIEW_ACTS = new Set(["gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked"]);
+let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
+const isGuest=()=>AUTH_ON && !user;
+const touched=()=>(state.guest&&state.guest.touched)||[];
+const spreadName=id=>{const t=state.titles&&state.titles[id]&&state.titles[id].title; return t||SPREADS.find(x=>x.id===id).name};
+function guard(){
+  if(!isGuest()) return true;
+  const t=touched(); if(t.includes(state.spread)) return true;
+  if(t.length<GUEST_LIMIT){ state.guest={touched:[...t,state.spread]}; save(); syncGuestBar(); return true }
+  openAuth("limit"); return false;
+}
+function syncGuestBar(){
+  const bar=$("#guestBar"); if(!bar) return; bar.hidden=!isGuest(); if(bar.hidden) return;
+  const n=touched().length, full=n>=GUEST_LIMIT; bar.classList.toggle("full",full);
+  $("#guestText").innerHTML = full
+    ? `<b>Your guest journal is full.</b> Create a free account to keep writing; your pages come with you.`
+    : `<b>Journaling as a guest.</b> Write on up to ${GUEST_LIMIT} spreads, then save with a free account.`;
+  $("#guestDots").innerHTML=[0,1,2].map(i=>`<i class="${i<n?"on":""}"></i>`).join("");
+  $("#guestSave").textContent=full?"Create free account":"Save my journal";
+}
+function syncHeader(){
+  const b=$("#acctBtn"); if(!b) return; b.hidden=!(AUTH_ON&&user); if(b.hidden) return;
+  $("#acctInitial").textContent=((user.email||user.user_metadata&&user.user_metadata.full_name||"?")[0]||"?");
+  const d=$("#acctDot"); d.className="dot"+(syncStatus==="saved"?"":" "+syncStatus);
+  b.title=syncStatus==="saved"?"Saved to your account":syncStatus==="offline"?"Offline: changes will save when you reconnect":"Saving…";
+}
+const GOOGLE_G='<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>';
+function authForm(){ return `<div class="auth-body">
+  <button class="gbtn" id="aGoogle">${GOOGLE_G}Continue with Google</button>
+  <div class="or">or</div>
+  <form id="aEmailForm" class="auth-body" style="gap:10px" novalidate><label class="auth-fine" for="aEmail" style="font-size:13px;color:var(--chrome-ink)">Email</label>
+    <input type="email" id="aEmail" autocomplete="email" placeholder="you@example.com" required>
+    <button class="ebtn" id="aEmailBtn" type="submit">Email me a sign-in link</button></form>
+  <p class="auth-err" id="aErr" role="alert"></p>
+  <p class="auth-fine">No password needed. New here? This creates your free account. By continuing you agree to the <a href="../privacy.html" target="_blank" rel="noopener">privacy notice</a>.</p></div>`; }
+function openAuth(mode, extra){
+  if(!AUTH_ON) return; authMode=mode; const sh=$("#authSheet"); const n=touched().length;
+  const head=(t,l)=>`<div class="sheet-head"><div><h2 id="authTitle">${t}</h2><p class="lead">${l}</p></div><button class="close" id="aClose" aria-label="Close">×</button></div>`;
+  let html="";
+  if(mode==="limit") html=head("Keep your journal",`You've written on ${GUEST_LIMIT} spreads as a guest. Create a free account to keep going. Everything you've written comes with you.`)+authForm();
+  else if(mode==="save") html=head("Save your journal", n?`Keep the ${n===1?"page":"pages"} you've started safe and open your journal on any device. Free, no password.`:"Create a free account to save your journal and open it on any device. Free, no password.")+authForm();
+  else if(mode==="sent") html=head("Check your email",`We sent a sign-in link to <b>${esc(extra)}</b>. Open it on this device so your guest pages come with you.`)+`<div class="auth-body"><button class="ghost" id="aBack">Use a different email</button></div>`;
+  else if(mode==="choose") html=head("This account already has a journal","Which one would you like to keep?")+`<div class="choose">
+      <button id="aKeepRemote"><b>Open my saved journal</b><span>Last saved ${extra?new Date(extra).toLocaleString():"earlier"}. The guest pages on this device are set aside as a backup file first.</span></button>
+      <button id="aKeepLocal"><b>Replace it with this guest journal</b><span>Your account will hold what's on this device now.</span></button></div>`;
+  else if(mode==="account"){ const e=user&&(user.email||"Signed in"); const st=syncStatus==="saved"?"All changes saved to your account":syncStatus==="offline"?"Offline: changes will save when you reconnect":"Saving your latest changes…";
+    html=head("Your account","Your journal saves to your account automatically.")+`<div class="auth-body"><div class="acct-row"><span class="av">${esc((e||"?")[0])}</span><div><b>${esc(e)}</b><span>${st}</span></div></div>
+      <button class="ghost" id="aSignOut">Sign out</button><p class="auth-fine">Signing out clears this device. Your journal stays safe in your account.</p></div>`; }
+  sh.innerHTML=html; sh.hidden=false; $("#scrim").hidden=false;
+  const f=sh.querySelector("#aEmail")||sh.querySelector("button"); if(f) f.focus();
+}
+function closeAuth(){ $("#authSheet").hidden=true; if($("#sheet").hidden&&$("#xsheet").hidden) $("#scrim").hidden=true }
+const appUrl=()=>location.origin+location.pathname;
+async function signInGoogle(btn){ btn.disabled=true; const {error}=await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:appUrl()}}); if(error){ btn.disabled=false; $("#aErr").textContent="Google sign-in didn't start: "+error.message } }
+async function signInEmail(){
+  const inp=$("#aEmail"), btn=$("#aEmailBtn"), em=inp.value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){ $("#aErr").textContent="Enter an email address like you@example.com."; inp.focus(); return }
+  btn.disabled=true; btn.textContent="Sending…";
+  const {error}=await sb.auth.signInWithOtp({email:em, options:{emailRedirectTo:appUrl(), shouldCreateUser:true}});
+  if(error){ btn.disabled=false; btn.textContent="Email me a sign-in link"; $("#aErr").textContent=/rate|limit|many/i.test(error.message)?"Too many sign-in emails right now. Try again in a few minutes, or continue with Google.":"The link couldn't be sent: "+error.message; return }
+  openAuth("sent", em);
+}
+$("#authSheet").addEventListener("click",e=>{ const id=e.target.closest("button")&&e.target.closest("button").id;
+  if(id==="aClose") closeAuth(); if(id==="aGoogle") signInGoogle(e.target.closest("button")); if(id==="aBack") openAuth("save");
+  if(id==="aSignOut") signOut(); if(id==="aKeepRemote") keepRemote(); if(id==="aKeepLocal") keepLocal(); });
+$("#authSheet").addEventListener("submit",e=>{ e.preventDefault(); signInEmail() });
+$("#scrim").addEventListener("click",()=>{ if(!$("#authSheet").hidden&&authMode!=="choose") closeAuth() });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#authSheet").hidden&&authMode!=="choose") closeAuth() });
+$("#guestSave").onclick=()=>openAuth(touched().length>=GUEST_LIMIT?"limit":"save");
+$("#acctBtn").onclick=()=>openAuth("account");
+
+/* --- guest limit: checked before any change is made on a spread --- */
+if(AUTH_ON){
+  paper.addEventListener("beforeinput",e=>{ if(!guard()){ e.preventDefault(); if(e.target.blur) e.target.blur() } },true);
+  paper.addEventListener("keydown",e=>{ if((e.key==="Enter"||e.key==="Backspace")&&e.target.dataset&&e.target.dataset.in==="log"&&!guard()){ e.preventDefault(); e.stopImmediatePropagation() } },true);
+  paper.addEventListener("click",e=>{ const a=e.target.closest("[data-act]"); if(!a||VIEW_ACTS.has(a.dataset.act)) return; if(!guard()){ e.preventDefault(); e.stopImmediatePropagation() } },true);
+  paper.addEventListener("submit",e=>{ if(!guard()){ e.preventDefault(); e.stopImmediatePropagation() } },true);
+  paper.addEventListener("focusin",e=>{ if(e.target.tagName==="SELECT"&&!guard()) e.target.blur() },true);
+}
+
+/* --- sync: one row per account in the journals table --- */
+function setStatus(s){ syncStatus=s; syncHeader() }
+async function fetchRemote(){ const {data,error}=await sb.from("journals").select("data,updated_at").eq("user_id",user.id).maybeSingle(); if(error) throw error; return data }
+function pushSoon(ms){ clearTimeout(pushT); pushT=setTimeout(pushNow, ms==null?1200:ms) }
+async function pushNow(){
+  if(!user||pushing) return; pushing=true; setStatus(navigator.onLine===false?"offline":"pending");
+  const now=new Date().toISOString(); const snapshot=JSON.parse(JSON.stringify(state)); snapshot.pending=false; snapshot.syncedAt=now;
+  try{ const {error}=await sb.from("journals").upsert({user_id:user.id, data:snapshot, updated_at:now}); if(error) throw error;
+    state.pending=false; state.syncedAt=now; writeLocal(); setStatus("saved");
+  }catch(err){ setStatus(navigator.onLine===false?"offline":"pending"); setTimeout(()=>{ if(state.pending) pushSoon(0) }, 15000) }
+  finally{ pushing=false }
+}
+function writeLocal(){ try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} }
+function applyRemote(r){ const keep={spread:state.spread}; state=migrate(r.data||{}); state.creator=false; state.ownerId=user.id; state.syncedAt=r.updated_at; state.pending=false; state.guest={touched:[]}; if(keep.spread) state.spread=keep.spread; writeLocal(); render(true); syncGuestBar() }
+async function setUser(u){
+  user=u||null; syncHeader(); syncGuestBar();
+  if(!user){ afterSave=null; return }
+  afterSave=()=>{ if(!user) return; if(!state.pending){ state.pending=true; writeLocal() } setStatus(navigator.onLine===false?"offline":"pending"); pushSoon() };
+  if(!$("#authSheet").hidden&&authMode!=="account") closeAuth();
+  try{
+    if(state.ownerId===user.id){ // returning on this device
+      if(state.pending) return pushNow();
+      const r=await fetchRemote(); if(r&&(!state.syncedAt||r.updated_at>state.syncedAt)) applyRemote(r); setStatus("saved"); return;
+    }
+    const r=await fetchRemote();
+    if(!r){ state.ownerId=user.id; state.guest={touched:[]}; await pushNow(); toast("Saved! Your journal now lives in your account."); return }
+    if(touched().length){ pendingRemote=r; openAuth("choose", r.updated_at); return }
+    applyRemote(r); toast("Welcome back. Your journal is open.");
+  }catch(err){ setStatus("pending"); toast("Signed in, but your journal couldn't load yet. Check your connection and reload.") }
+}
+async function keepRemote(){
+  try{ await saveFile("petal-and-page-guest-pages-"+iso(new Date())+".json", JSON.stringify(state,null,1)) }catch(e){}
+  closeAuth(); applyRemote(pendingRemote); pendingRemote=null; toast("Your saved journal is open.");
+}
+async function keepLocal(){ closeAuth(); state.ownerId=user.id; state.guest={touched:[]}; pendingRemote=null; await pushNow(); toast("This journal is now saved to your account.") }
+async function signOut(){
+  const b=$("#aSignOut"); if(b){ b.disabled=true; b.textContent="Saving and signing out…" }
+  if(state.pending) await pushNow();
+  await sb.auth.signOut(); user=null; afterSave=null;
+  try{ localStorage.removeItem(KEY) }catch(e){}
+  state=migrate(seed()); state.creator=false; writeLocal(); closeAuth(); render(true); syncHeader(); syncGuestBar();
+  toast("Signed out. This device now shows a fresh guest journal.");
+}
+async function initAuth(){
+  sb=window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey, {auth:{persistSession:true, autoRefreshToken:true, detectSessionInUrl:true, flowType:"pkce"}});
+  syncGuestBar();
+  let session=null; try{ ({data:{session}}=await sb.auth.getSession()) }catch(e){}
+  if(/[?&](code|error|error_description)=/.test(location.search)||/access_token|error/.test(location.hash)){
+    const q=new URLSearchParams(location.search+"&"+location.hash.slice(1)); const msg=q.get("error_description");
+    history.replaceState(null,"",location.pathname); if(msg&&!session) toast("Sign-in didn't finish: "+msg);
+  }
+  await setUser(session&&session.user);
+  sb.auth.onAuthStateChange((ev,ses)=>{ const u=ses&&ses.user||null; if((u&&u.id)!==(user&&user.id)) setUser(u) });
+  addEventListener("online",()=>{ if(user&&state.pending) pushSoon(0) });
+  addEventListener("offline",()=>{ if(user) setStatus("offline") });
+  document.addEventListener("visibilitychange",async()=>{ if(document.visibilityState==="visible"&&user&&!state.pending&&!pushing){ try{ const r=await fetchRemote(); if(r&&r.updated_at>(state.syncedAt||"")) applyRemote(r) }catch(e){} } });
+  addEventListener("pagehide",()=>{ if(user&&state.pending) pushNow() });
+}
+if(AUTH_ON) initAuth();
 
 if(PUBLIC){ const cr=$("#creatorRow"); if(cr) cr.hidden=true;
   const br=document.querySelector(".brand"); if(br&&!DEMO){ br.setAttribute("role","link"); br.tabIndex=0; br.title="Petal & Page home"; br.style.cursor="pointer";
