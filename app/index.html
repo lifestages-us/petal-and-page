@@ -184,6 +184,13 @@ textarea.hand-input{display:block; resize:none; overflow:hidden; line-height:1.3
 .hmeta small{font-size:.62em; color:var(--muted); font-variant-numeric:tabular-nums; padding-left:2px}
 .mood-stats b.small{font-size:1.15em; line-height:1.4}
 .htable td.num{text-align:center; font-variant-numeric:tabular-nums; padding-inline:4px}
+.htable tr.sub td.hname{padding-left:22px}
+.htable tr.sub .hmeta .hand-input{font-size:.88em}
+.sub-arrow{position:absolute; margin-left:-16px; margin-top:2px; color:var(--muted); font-size:.85em}
+.hcell.agg{cursor:default}
+.hcell.agg:not(.on){background:var(--paper)}
+.addsub{border:0; background:transparent; padding:0; font:inherit; color:var(--accent); text-decoration:underline; cursor:pointer}
+.hpar{color:var(--muted)}
 .hswatch{flex:none; width:14px; height:14px; border-radius:50%; border:1.3px solid var(--ink); padding:0}
 .hcell{display:block; width:22px; height:22px; border:1.3px solid var(--ink); border-radius:5px; background:var(--paper); padding:0}
 .hcell:hover{background:var(--wash)}
@@ -582,10 +589,11 @@ let ui = {selBook:null, confirmReset:false};
 /* adds spreads introduced after a journal was first created */
 function migrate(s){
   if(!s.habits){
-    s.habits=[{id:"h1",name:"Drink 8 glasses of water",color:0},{id:"h2",name:"Read 20 minutes",color:1},{id:"h3",name:"Walk outside",color:4},{id:"h4",name:"No phone after 10pm",color:3},{id:"h5",name:"Journal",color:5}];
+    s.habits=[{id:"h1",name:"Drink 8 glasses of water",color:0},{id:"h2",name:"Read 20 minutes",color:1},{id:"h3",name:"Workout",color:4,subs:[{id:"h3a",name:"Run",color:1},{id:"h3b",name:"Yoga",color:4},{id:"h3c",name:"Walk",color:0}]},{id:"h4",name:"No phone after 10pm",color:3},{id:"h5",name:"Journal",color:5}];
     s.habitLog=s.habitLog||{};
     if(s.sample!==false){const L={}; const upto=now.getDate();
-      s.habits.forEach((h,hi)=>{L[h.id]=[]; for(let d=1; d<=upto; d++) if(hash(h.id+"x"+d)%10 < [8,6,5,4,7][hi]) L[h.id].push(d)});
+      s.habits.forEach((h,hi)=>{ if(h.subs){ h.subs.forEach((sb,si)=>{L[sb.id]=[]; for(let d=1; d<=upto; d++) if(hash(sb.id+"x"+d)%10 < [3,3,4][si]) L[sb.id].push(d)}); return }
+        L[h.id]=[]; for(let d=1; d<=upto; d++) if(hash(h.id+"x"+d)%10 < [8,6,5,4,7][hi]) L[h.id].push(d)});
       s.habitLog[thisMonth]=L}
   }
   if(!s.habitLog) s.habitLog={};
@@ -850,9 +858,9 @@ function weekLabel(){
 }
 function habitDots(mk,day){
   const t=T(); const L=state.habitLog[mk]||{};
-  if(!state.habits.length) return "";
-  return `<div class="hdots">${state.habits.map(h=>{const on=(L[h.id]||[]).includes(day);
-    return `<button class="hdot${on?" on":""}" style="--c:${t.spines[h.color%t.spines.length]}" data-act="habit" data-m="${mk}" data-h="${h.id}" data-day="${day}" aria-pressed="${on}" title="${esc(h.name)}" aria-label="${esc(h.name)}${on?", done":""}"></button>`}).join("")}</div>`;
+  const U=habitUnits(); if(!U.length) return "";
+  return `<div class="hdots">${U.map(h=>{const on=(L[h.id]||[]).includes(day), nm=(h.parent?h.parent+" · ":"")+h.name;
+    return `<button class="hdot${on?" on":""}" style="--c:${h.sub?hcs(h.color):hc(t,h.color)}" data-act="habit" data-m="${mk}" data-h="${h.id}" data-day="${day}" aria-pressed="${on}" title="${esc(nm)}" aria-label="${esc(nm)}${on?", done":""}"></button>`}).join("")}</div>`;
 }
 function renderWeek(){
   const t=T(); const start=fromIso(state.week); const todayIso=iso(now);
@@ -865,7 +873,7 @@ function renderWeek(){
       <div class="items">${itemRows(mk,d,DAYNAMES[wd]+" "+d,"Add a task or event")}</div>${habitDots(mk,d)}`, "wbox"+(wd===0||wd===6?" weekend":"")+(iso(dt)===todayIso?" today":""));
   }
   boxes+=blk("week","focus",2,`<header><span class="wdname">This week's focus</span></header><div class="items">${itemRows("focus",0,"Weekly focus","Top priorities")}</div>`,"wbox focus");
-  const legend=state.habits.length?`<div class="legend">${state.habits.map(h=>`<span><span class="hdot on" style="--c:${t.spines[h.color%t.spines.length]};display:inline-block;vertical-align:middle;margin-right:5px"></span>${esc(h.name)}</span>`).join("")}</div>`:"";
+  const U=habitUnits(); const legend=U.length?`<div class="legend">${U.map(h=>`<span><span class="hdot on" style="--c:${h.sub?hcs(h.color):hc(t,h.color)};display:inline-block;vertical-align:middle;margin-right:5px"></span>${h.parent?`<span class="ui-note">${esc(h.parent)} · </span>`:""}${esc(h.name)}</span>`).join("")}</div>`:"";
   return head("This week", weekLabel()+", "+start.getFullYear(), "week") +
     grid(boxes) + `${legend}
      <p class="ui-note" style="margin-top:12px">Entries here also appear in the monthly log. The dots are your habits: tap one to mark it done for that day.</p>`;
@@ -875,6 +883,16 @@ function renderWeek(){
    SPREAD: HABIT TRACKER — habits persist across months; checks are per month
    ===================================================================== */
 function streakOf(days,upto){let s=0; for(let d=upto; d>=1 && days.includes(d); d--) s++; return s}
+/* habits can have sub-habits (e.g. Workout → Run, Yoga). A main habit with subs is
+   "done" on any day one of its subs (or itself, from before it had subs) was ticked. */
+function findHabit(id){ for(const h of state.habits){ if(h.id===id) return {h,parent:null}; for(const sb of (h.subs||[])) if(sb.id===id) return {h:sb,parent:h} } return null }
+const hasSubs=h=>!!(h.subs&&h.subs.length);
+function mainDays(h,L){ const set=new Set(L[h.id]||[]); (h.subs||[]).forEach(sb=>(L[sb.id]||[]).forEach(d=>set.add(d))); return [...set].sort((a,b)=>a-b) }
+function habitUnits(){ const out=[]; state.habits.forEach(h=>{ if(hasSubs(h)) h.subs.forEach(sb=>out.push({id:sb.id, name:sb.name||"Sub-habit", parent:h.name, color:sb.color, sub:true})); else out.push({id:h.id, name:h.name, color:h.color}) }); return out }
+const hc=(t,i)=>t.spines[((i%t.spines.length)+t.spines.length)%t.spines.length];
+/* sub-habits get their own clearly different colours so they're easy to tell apart in every theme */
+const SUB_COLORS=["#8FB58A","#E8A08E","#8CB8DC","#EDC35E","#B39DDB","#7EC4B5","#F0A6C7","#C9A27E"];
+const hcs=i=>SUB_COLORS[((i%SUB_COLORS.length)+SUB_COLORS.length)%SUB_COLORS.length];
 function renderHabits(){
   const t=T(); const {y,m,days}=parts(); const L=state.habitLog[state.month]||{};
   const isNow=state.month===thisMonth, today=now.getDate();
@@ -882,20 +900,26 @@ function renderHabits(){
   let hd=`<th class="hname-h">Habit</th>`;
   for(let d=1; d<=days; d++){const wd=new Date(y,m-1,d).getDay(); hd+=`<th class="${wd===0||wd===6?"we":""}${isNow&&d===today?" td":""}"><span>${"SMTWTFS"[wd]}</span>${d}</th>`}
   hd+=`<th></th>`;
-  const rows=state.habits.map(h=>{
-    const done=L[h.id]||[]; const c=t.spines[h.color%t.spines.length];
-    let cells=""; for(let d=1; d<=days; d++){const on=done.includes(d);
-      cells+=`<td><button class="hcell${on?" on":""}${isNow&&d===today?" today":""}" style="--c:${c}" data-act="habit" data-h="${h.id}" data-day="${d}" aria-pressed="${on}" aria-label="${esc(h.name)}, ${MONTHS[m-1]} ${d}"></button></td>`}
-    return `<tr><td class="hname"><button class="hswatch" style="background:${c}" data-act="hcolor" data-h="${h.id}" aria-label="Change colour of ${esc(h.name)}"></button><div class="hmeta"><textarea rows="1" class="hand-input" data-in="habitname" data-h="${h.id}" aria-label="Habit name">${esc(h.name)}</textarea><small>${done.length} done · ${streakOf(done,upto)}-day streak</small></div></td>${cells}
-      <td><button class="x-btn" data-act="delhabit" data-h="${h.id}" aria-label="Remove ${esc(h.name)}">×</button></td></tr>`;
-  }).join("");
-  const best=state.habits.map(h=>[h,(L[h.id]||[]).length]).sort((a,b)=>b[1]-a[1])[0];
-  const total=state.habits.reduce((a,h)=>a+(L[h.id]||[]).length,0), possible=state.habits.length*upto;
+  const row=(h,parent)=>{
+    const subs=!parent&&hasSubs(h), done=subs?mainDays(h,L):(L[h.id]||[]), c=parent?hcs(h.color):hc(t,h.color);
+    let cells=""; for(let d=1; d<=days; d++){ const td=isNow&&d===today?" today":"";
+      if(subs){ const cols=[...(L[h.id]||[]).includes(d)?[c]:[], ...h.subs.filter(sb=>(L[sb.id]||[]).includes(d)).map(sb=>hcs(sb.color))];
+        const bg=cols.length?`background:linear-gradient(90deg,${cols.map((x,i)=>`${x} ${i/cols.length*100}% ${(i+1)/cols.length*100}%`).join(",")})`:"";
+        cells+=`<td><span class="hcell agg${cols.length?" on":""}${td}" style="${bg}" title="${esc(h.name)}, ${MONTHS[m-1]} ${d}: ${cols.length?"done":"not yet"}" role="img" aria-label="${esc(h.name)}, ${MONTHS[m-1]} ${d}${cols.length?", done":""}"></span></td>`; }
+      else { const on=done.includes(d); cells+=`<td><button class="hcell${on?" on":""}${td}" style="--c:${c}" data-act="habit" data-h="${h.id}" data-day="${d}" aria-pressed="${on}" aria-label="${esc(parent?parent.name+" · ":"")}${esc(h.name||"Sub-habit")}, ${MONTHS[m-1]} ${d}"></button></td>`; } }
+    const name=`<textarea rows="1" class="hand-input" data-in="habitname" data-h="${h.id}" placeholder="${parent?"Sub-habit, e.g. Yoga":"Habit"}" aria-label="${parent?"Sub-habit of "+esc(parent.name):"Habit name"}">${esc(h.name)}</textarea>`;
+    const meta=`<small>${done.length} done · ${streakOf(done,upto)}-day streak${parent?"":` · <button class="addsub" data-act="addsub" data-h="${h.id}">+ sub-habit</button>`}</small>`;
+    return `<tr class="${parent?"sub":"main"}${subs?" has-subs":""}"><td class="hname">${parent?`<span class="sub-arrow" aria-hidden="true">↳</span>`:""}<button class="hswatch" style="background:${c}" data-act="hcolor" data-h="${h.id}" aria-label="Change colour of ${esc(h.name||"sub-habit")}"></button><div class="hmeta">${name}${meta}</div></td>${cells}
+      <td><button class="x-btn" data-act="delhabit" data-h="${h.id}" aria-label="Remove ${esc(h.name||"sub-habit")}">×</button></td></tr>`;
+  };
+  const rows=state.habits.map(h=>row(h,null)+(h.subs||[]).map(sb=>row(sb,h)).join("")).join("");
+  const best=state.habits.map(h=>[h,mainDays(h,L).length]).sort((a,b)=>b[1]-a[1])[0];
+  const total=state.habits.reduce((a,h)=>a+mainDays(h,L).length,0), possible=state.habits.length*upto;
   return head("Habit tracker", MONTHS[m-1]+" "+y, "habits") +
     grid(blk("habits","stats",4,`<div class="mood-stats"><div><b>${possible?Math.round(total/possible*100):0}%</b><span>of habit days done${isNow?" so far":""}</span></div><div style="min-width:0"><b class="small">${best&&best[1]?esc(best[0].name):"–"}</b><span>most consistent</span></div></div>`) +
       blk("habits","grid",4,`<div class="tbl-wrap"><table class="htable"><thead><tr>${hd}</tr></thead><tbody>${rows}</tbody></table></div>
      <form class="add-row" id="addHabit"><input class="hand-input" id="newHabit" placeholder="Add a habit…" aria-label="New habit"><button class="pen-btn solid" type="submit">Add habit</button></form>`)) +
-     `<p class="ui-note" style="margin-top:12px">Tap a square to mark the habit done that day. Tap the colour dot to change a habit's colour. Your habit list carries into every month.</p>`;
+     `<p class="ui-note" style="margin-top:12px">Tap a square to mark the habit done that day. Add sub-habits (like Run or Yoga under Workout) and the main row fills in with their colours. Tap a colour dot to change it. Your habit list carries into every month.</p>`;
 }
 
 /* =====================================================================
@@ -1102,8 +1126,8 @@ function renderDay(){
   const glass=(on)=>`<svg viewBox="0 0 24 30" aria-hidden="true"><path d="M4 3h16l-2 24H6z" fill="${on?t.wash:"none"}" stroke="${t.ink}" stroke-width="1.6" stroke-linejoin="round"/>${on?`<path d="M5.2 11h13.6L17.4 26H6.6z" fill="${t.water||t.accent}" opacity=".85"/>`:""}</svg>`;
   const water=[...Array(8).keys()].map(i=>`<button class="glass" data-act="water" data-n="${i+1}" aria-label="${i+1} glass${i?"es":""}" aria-pressed="${i<D.water}">${glass(i<D.water)}</button>`).join("");
   const L=state.habitLog[mk]||{};
-  const habits=state.habits.length?state.habits.map(h=>{const on=(L[h.id]||[]).includes(d); const c=t.spines[h.color%t.spines.length];
-    return `<button class="hchip${on?" on":""}" style="--c:${c}" data-act="habit" data-m="${mk}" data-h="${h.id}" data-day="${d}" aria-pressed="${on}"><span class="hdot${on?" on":""}" style="--c:${c}"></span>${esc(h.name)}</button>`}).join(""):`<span class="ui-note">Add habits on the habit tracker.</span>`;
+  const habits=state.habits.length?habitUnits().map(h=>{const on=(L[h.id]||[]).includes(d); const c=h.sub?hcs(h.color):hc(t,h.color);
+    return `<button class="hchip${on?" on":""}" style="--c:${c}" data-act="habit" data-m="${mk}" data-h="${h.id}" data-day="${d}" aria-pressed="${on}"><span class="hdot${on?" on":""}" style="--c:${c}"></span>${h.parent?`<span class="hpar">${esc(h.parent)} ·</span> `:""}${esc(h.name)}</button>`}).join(""):`<span class="ui-note">Add habits on the habit tracker.</span>`;
   const grat=[0,1,2].map(i=>`<div class="item"><span class="bullet" aria-hidden="true">♡</span><textarea rows="1" class="hand-input" data-in="grat" data-i="${i}" placeholder="${i===0?"Something good today":"…"}" aria-label="Gratitude ${i+1}">${esc(D.grat[i]||"")}</textarea></div>`).join("");
   const isToday=state.day===iso(now);
   return head(isToday?"Today":DAYNAMES[dt.getDay()], MONTHS[dt.getMonth()]+" "+d+", "+dt.getFullYear(), "day") + grid(
@@ -1278,7 +1302,11 @@ paper.addEventListener("click",e=>{
   if(act==="delsv"&&sv){state.savings=state.savings.filter(x=>x!==sv); save(); render(); toast("Removed "+(sv.name||"tracker")); return}
   if(act==="habit"){const mk=d.m||state.month; const L=(state.habitLog[mk]=state.habitLog[mk]||{}); const arr=(L[d.h]=L[d.h]||[]); const day=+d.day;
     const k=arr.indexOf(day); if(k>=0) arr.splice(k,1); else arr.push(day); save(); render(); return}
-  if(act==="hcolor"){const h=state.habits.find(x=>x.id===d.h); if(h){h.color=(h.color+1)%6; save(); render()} return}
+  if(act==="hcolor"){const f=findHabit(d.h); if(f){f.h.color=(f.h.color+1)%(f.parent?SUB_COLORS.length:6); save(); render()} return}
+  if(act==="addsub"){const f=findHabit(d.h); if(f&&!f.parent){ const h=f.h; h.subs=h.subs||[]; const used=h.subs.map(x=>x.color);
+      const id="s"+Date.now(); h.subs.push({id,name:"",color:[1,2,3,4,0,5,6,7].find(c=>!used.includes(c))??h.subs.length%SUB_COLORS.length}); save(); render();
+      const el=paper.querySelector(`[data-in="habitname"][data-h="${id}"]`); if(el) el.focus() } return}
+  if(act==="delhabit"&&findHabit(d.h)&&findHabit(d.h).parent){const f=findHabit(d.h); f.parent.subs=f.parent.subs.filter(x=>x.id!==d.h); save(); render(); toast("Removed "+(f.h.name||"sub-habit")); return}
   if(act==="delhabit"){const h=state.habits.find(x=>x.id===d.h); state.habits=state.habits.filter(x=>x.id!==d.h); save(); render(); if(h) toast("Removed "+(h.name||"habit")); return}
   if(act==="mood"){const M=(state.mood[state.month]=state.mood[state.month]||{}); const v=+d.v; if(M[d.day]===v) delete M[d.day]; else M[d.day]=v; save(); render(); return}
   if(act==="paid"){const b=getBudget(); b.bills[d.i].paid=!b.bills[d.i].paid; save(); render(); return}
@@ -1305,7 +1333,7 @@ paper.addEventListener("input",e=>{
   if(d.in==="dnote"){getDaily(state.day).note=el.value; saveSoon(); return}
   if(d.in==="svname"){const x=state.savings.find(v=>v.id===d.id); if(x) x.name=el.value; saveSoon(); return}
   if(d.in==="svgoal"){const x=state.savings.find(v=>v.id===d.id); if(x) x.goal=Math.max(0,parseFloat(el.value)||0); saveSoon(); return}
-  if(d.in==="habitname"){const h=state.habits.find(x=>x.id===d.h); if(h) h.name=el.value; saveSoon(); return}
+  if(d.in==="habitname"){const f=findHabit(d.h); if(f) f.h.name=el.value; saveSoon(); return}
   if(d.in==="budget"){const b=getBudget(); if(d.i!=null) b[d.f][d.i][d.k]=el.value; else b[d.f]=el.value; refreshBudgetTotals(); saveSoon(); return}
   if(d.in==="goal"){state.books.goal=Math.max(1,parseInt(el.value)||1); saveSoon(); return}
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
