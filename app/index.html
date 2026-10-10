@@ -354,6 +354,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
 .demo .pro-bar{display:none}
+.no-premium .pro-only{display:none !important}
 .clear-btn{margin-left:auto; border:1px solid var(--rule); background:var(--paper); color:var(--muted); font-family:var(--ui); font-size:12px; font-weight:600; border-radius:999px; padding-block:4px; padding-inline:12px}
 .clear-btn:hover{color:var(--ink); border-color:var(--ink)}
 .clear-btn.armed{background:#C0584C; border-color:#C0584C; color:#fff}
@@ -491,7 +492,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   <div class="themes" id="themes"></div>
   <div class="creator" id="creatorRow"><div class="txt"><b>Creator mode</b><span>Unlocks Premium tools for you as the app's creator, including resizable boxes and text fields and Premium exports. Other users would see these as paid features.</span></div><button class="switch" id="creatorSw" role="switch" aria-checked="false" aria-label="Creator mode"></button></div>
   <div class="sheet-foot">
-    <span class="ui-note" style="color:var(--chrome-muted)">Premium themes and your own journal wallpapers are coming soon.</span>
+    <span class="ui-note pro-only" style="color:var(--chrome-muted)">Premium themes and your own journal wallpapers are coming soon.</span>
     <button class="ghost" id="resetBtn">Clear all entries</button>
   </div>
 </section>
@@ -500,19 +501,19 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
     <div><h2 id="xTitle">Export</h2><p class="lead" id="xLead">Save this spread to share or print.</p></div>
     <button class="close" id="closeX" aria-label="Close">×</button>
   </div>
-  <h3 class="xgroup">This spread · free</h3>
+  <h3 class="xgroup">This spread<span class="pro-only"> · free</span></h3>
   <div class="xgrid">
     <button class="xopt" data-x="png"><b>Share image</b><span>PNG picture of this spread, ready to post or send</span></button>
     <button class="xopt" data-x="pdf"><b>PDF pages</b><span>A5 notebook pages to print or keep</span></button>
   </div>
-  <h3 class="xgroup">Premium</h3>
-  <div class="xgrid">
+  <h3 class="xgroup pro-only">Premium</h3>
+  <div class="xgrid pro-only">
     <button class="xopt pro" data-x="journal"><b>Whole journal</b><span>All 10 spreads in one PDF</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="square"><b>Square post</b><span>PNG, 1080 × 1080</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="story"><b>Story</b><span>PNG, 1080 × 1920</span><i class="badge"></i></button>
   </div>
-  <div class="creator"><div class="txt"><b>Hide the “Made with Petal &amp; Page” mark</b><span>Free exports carry a small mark in the bottom corner. Premium can turn it off.</span></div><button class="switch" id="markSw" role="switch" aria-checked="false" aria-label="Hide the Petal and Page mark"></button></div>
-  <h3 class="xgroup">Your data · free</h3>
+  <div class="creator pro-only"><div class="txt"><b>Hide the “Made with Petal &amp; Page” mark</b><span>Free exports carry a small mark in the bottom corner. Premium can turn it off.</span></div><button class="switch" id="markSw" role="switch" aria-checked="false" aria-label="Hide the Petal and Page mark"></button></div>
+  <h3 class="xgroup">Your data<span class="pro-only"> · free</span></h3>
   <div class="xgrid">
     <button class="xopt" data-x="backup"><b>Back up journal</b><span>One file with every entry, theme and setting</span></button>
     <label class="xopt" for="restoreFile"><b>Restore from backup</b><span>Load a backup file into this browser</span></label>
@@ -573,6 +574,9 @@ const SPREADS = [
 /* Build switches: the public website sets window.PETAL_PUBLIC (no Creator mode; Premium shows as coming soon).
    "?demo" runs a throwaway copy (used by the landing page preview) that never touches the visitor's real journal. */
 const PUBLIC = !!window.PETAL_PUBLIC;
+/* While payments aren't live, the public site hides every Premium feature (set PETAL_SHOW_PREMIUM to show them as "coming soon" again). */
+const HIDE_PREMIUM = PUBLIC && !window.PETAL_SHOW_PREMIUM;
+if(HIDE_PREMIUM) document.documentElement.classList.add("no-premium");
 const QS = new URLSearchParams(location.search);
 const DEMO = QS.has("demo");
 const KEY = DEMO ? "petal-page-demo" : "petal-page-v1";
@@ -853,6 +857,7 @@ function clearPage(sp){
 }
 function proBar(sp){
   const custom=(state.layout&&state.layout[sp]&&Object.keys(state.layout[sp]).length)||(state.fields&&state.fields[sp]&&Object.keys(state.fields[sp]).length);
+  if(HIDE_PREMIUM) return `<div class="pro-bar">${clearBtn(sp)}</div>`;
   return state.creator
     ? `<div class="pro-bar"><span class="pro-chip on"><span class="b">Premium</span>Resizable boxes</span><span>Drag a box's corner to resize it. Hover or tap into any text field to resize that kind of field.</span>${custom?`<button class="pen-btn" style="font-family:var(--ui);font-size:12px" data-act="resetlayout" data-spread="${sp}">Reset sizes</button>`:""}${clearBtn(sp)}</div>`
     : `<div class="pro-bar"><button class="pro-chip" data-act="prolocked"><span class="b">Premium</span>🔒 Resize boxes${PUBLIC?" · coming soon":""}</button>${clearBtn(sp)}</div>`;
@@ -1242,7 +1247,7 @@ function renderThemes(){
         <div class="t" style="font-family:${t.display};font-size:${t.motif==="botanical"?"14px":"22px"}">${t.motif==="doodle"?"MAY":"May"}</div>
         <div><div class="spines">${t.spines.slice(0,6).map((c,i)=>`<i style="height:${26+(i*7)%18}px;background:${c};border-color:${t.ink}"></i>`).join("")}<span style="margin-left:auto;width:14px;height:14px;border-radius:50%;background:${t.accent}"></span></div><div class="sh" style="background:${t.shelf}"></div></div>
       </div><div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
-  const locked=LOCKED.map(t=>`<button class="tcard" data-locked="${t.id}">
+  const locked=HIDE_PREMIUM?"":LOCKED.map(t=>`<button class="tcard" data-locked="${t.id}">
       <div class="pv" style="background:${t.ai?`linear-gradient(135deg,#F5E6DA,#DDE9E1 55%,#E9E1F2)`:t.paper};color:${t.ink}">
         <div class="t" style="font-family:${t.font};font-size:${t.ai?"13px":"22px"}">${t.ai?"your idea here":"May"}</div>
         <div><div class="spines">${t.spines.map((c,i)=>`<i style="height:${24+i*8}px;background:${c};border-color:${t.ink}"></i>`).join("")}</div><div class="sh" style="background:${t.shelf}"></div></div>
