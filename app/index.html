@@ -550,14 +550,14 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
    mobile theme provider later. `locked` themes preview the paid tier.
    ===================================================================== */
 const THEMES = {
-  sage:{name:"Sage Library", blurb:"Muted greens, parchment and candlelight", motif:"botanical",
-    display:"'Homemade Apple', cursive", dsize:"28px", hand:"'Caveat', cursive", hsize:"21px",
-    paper:"#FBFAF4", dot:"#D6D2C3", ink:"#2E2D29", muted:"#8B8779", rule:"#D9D3C3", accent:"#8DA57A", wash:"#EFE4D1", shelf:"#33302C",
-    spines:["#B7C6A1","#E7D1BA","#DAD6CA","#CBB99B","#9CAE88","#E1C7BD"], sky:"#DDE7E0", water:"#A7C2BA", land:"#9FB58A", earth:"#D9C4A3"},
   marigold:{name:"Marigold Garden", blurb:"Mustard blooms and deep leaf green", motif:"floral",
     display:"'Caveat Brush', cursive", dsize:"46px", hand:"'Patrick Hand', cursive", hsize:"18px",
     paper:"#FFFCF2", dot:"#DDD6C2", ink:"#1E2A20", muted:"#7F7A66", rule:"#E3DAC0", accent:"#E0A42A", wash:"#F7E2B5", shelf:"#2C3B2E",
     spines:["#E9B83F","#F4E4B6","#2F5E3B","#DDAAA2","#A8C4D8","#F1D27A"], sky:"#D7E7F0", water:"#8FB9D3", land:"#4F7F4E", earth:"#EDCB85"},
+  sage:{name:"Sage Library", blurb:"Muted greens, parchment and candlelight", motif:"botanical",
+    display:"'Homemade Apple', cursive", dsize:"28px", hand:"'Caveat', cursive", hsize:"21px",
+    paper:"#FBFAF4", dot:"#D6D2C3", ink:"#2E2D29", muted:"#8B8779", rule:"#D9D3C3", accent:"#8DA57A", wash:"#EFE4D1", shelf:"#33302C",
+    spines:["#B7C6A1","#E7D1BA","#DAD6CA","#CBB99B","#9CAE88","#E1C7BD"], sky:"#DDE7E0", water:"#A7C2BA", land:"#9FB58A", earth:"#D9C4A3"},
   ink:{name:"Ink & Graphite", blurb:"Black fineliner on bright white", motif:"doodle",
     display:"'Amatic SC', cursive", dsize:"52px", hand:"'Patrick Hand', cursive", hsize:"18px",
     paper:"#FFFFFF", dot:"#CFCFCF", ink:"#1C1C1C", muted:"#7A7A7A", rule:"#D6D6D6", accent:"#4A4A4A", wash:"#ECECEC", shelf:"#1C1C1C",
@@ -676,7 +676,7 @@ function seed(){
   const mood={}; const cut = (m===thisMonth)? now.getDate() : 30;
   moodVals.forEach((v,i)=>{ if(i+1<=cut) mood[i+1]=v });
   return {
-    theme:"sage", spread:"log", month:m, year:now.getFullYear(), sample:true,
+    theme:"marigold", spread:"log", month:m, year:now.getFullYear(), sample:true,
     log:{[m]:log}, mood:{[m]:mood},
     budget:{[m]:{income:5200, checkStart:2140, checkEnd:"", saveStart:8600, saveEnd:"",
       bills:[
@@ -708,7 +708,7 @@ function seed(){
 /* ---------- helpers ---------- */
 const $ = s=>document.querySelector(s);
 const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const T = ()=>THEMES[state.theme]||THEMES.sage;
+const T = ()=>THEMES[state.theme]||THEMES.marigold;
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function parts(){const [y,m]=state.month.split("-").map(Number); return {y,m,days:new Date(y,m,0).getDate()}}
 function money(n){const v=Number(n)||0; return (v<0?"−$":"$")+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2})}
