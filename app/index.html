@@ -262,8 +262,21 @@ table.pixels tbody th{width:22px; text-align:right; padding-right:3px}
 .section-title .ui-note{font-family:var(--ui); margin-left:6px}
 .sched{display:grid}
 .hour{display:grid; grid-template-columns:44px minmax(0,1fr); align-items:start; border-bottom:1px dotted var(--rule)}
-.hour span{color:var(--muted); font-size:.75em; padding-top:6px; font-variant-numeric:tabular-nums}
+.hour>span{color:var(--muted); font-size:.75em; padding-top:6px; font-variant-numeric:tabular-nums}
 .hour .hand-input{border-bottom:0}
+.hour .slot{display:grid; min-width:0}
+.hour.has .slot textarea{min-height:1.1em; font-size:.85em}
+.hour.has .slot textarea:not(:focus):placeholder-shown{height:8px!important; min-height:0; padding:0}
+.hour{cursor:text}
+.slink{display:flex; align-items:baseline; gap:6px; width:100%; text-align:left; border:0; background:transparent; color:var(--ink); font:inherit; padding-block:2px 0; padding-inline:2px; border-radius:4px; cursor:pointer}
+.slink:hover{background:var(--wash)}
+.slink .sb{flex:none; width:14px; text-align:center}
+.slink .st{flex:1; min-width:0; overflow-wrap:anywhere}
+.slink .tm{flex:none; font-size:.75em; color:var(--muted); font-variant-numeric:tabular-nums}
+.slink.done .st{text-decoration:line-through; color:var(--muted)}
+.slink.migrated .st{color:var(--muted)}
+.slink.event .st{font-weight:600}
+.item.flash .hand-input{background:color-mix(in srgb, var(--accent) 22%, transparent); transition:background .6s}
 .dmoods{display:flex; gap:6px; flex-wrap:wrap}
 .dmood{display:flex; flex-direction:column; align-items:center; gap:2px; border:1.5px solid transparent; background:transparent; border-radius:10px; padding:4px 6px; color:var(--ink); font-family:var(--hand); font-size:.75em}
 .dmood svg{width:32px; height:32px}
@@ -655,8 +668,30 @@ function migrate(s){
       {id:"s3",name:"House deposit",goal:20000,steps:50,shape:"house",color:3,filled:[...Array(14).keys()]},
     ] : []; }
   if(!s.weekly[mondayOf(now)] && s.sample!==false) s.weekly[mondayOf(now)]={focus:[{b:"task",t:"Set up October spreads"},{b:"task",t:"Two early nights"},{b:"note",t:"Pack for the weekend trip"}]};
+  /* the daily schedule now shows timed to-dos; anything written straight into an hour becomes a to-do with that time */
+  if(!s.schedSynced){ s.log=s.log||{};
+    Object.entries(s.daily||{}).forEach(([k,D])=>{ if(!D||!D.sched) return; const dt=fromIso(k), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
+      Object.keys(D.sched).map(Number).sort((a,b)=>a-b).forEach(h=>{ const txt=(D.sched[h]||"").trim(); if(!txt) return;
+        const L=(s.log[mk]=s.log[mk]||{}), arr=(L[day]=L[day]||[]), t=withTime(txt,h);
+        if(!arr.some(x=>x.t.trim()===t)){ if(arr.length===1&&!arr[0].t.trim()) arr[0]={b:"task",t}; else arr.push({b:"task",t}) } });
+      D.sched={}; });
+    s.schedSynced=true; }
   return s;
 }
+/* ---- times written in to-dos: "6:30pm", "7ish pm", "10 a.m.", "noon", "18:00" ---- */
+function fmtHour(h){return (h%12||12)+(h<12?"am":"pm")}
+function parseTime(t){
+  if(!t) return null; let m;
+  if((m=/(?<![\d:])(\d{1,2})(?::([0-5]\d))?\s*(?:ish)?\s*([ap])\.?\s*m\b\.?/i.exec(t))){ const hh=+m[1]; if(hh<1||hh>12) return null;
+    return {h:(hh%12)+(m[3].toLowerCase()==="p"?12:0), at:m.index, len:m[0].length, label:m[0].replace(/\s+/g,"").toLowerCase()} }
+  if((m=/\bnoon\b/i.exec(t))) return {h:12, at:m.index, len:m[0].length, label:"noon"};
+  if((m=/\bmidnight\b/i.exec(t))) return {h:0, at:m.index, len:m[0].length, label:"midnight"};
+  if((m=/(?<![\d:])([01]?\d|2[0-3]):([0-5]\d)(?![\d:])/.exec(t))){ const hh=+m[1]; if(hh>=13||m[1].startsWith("0")) return {h:hh, at:m.index, len:m[0].length, label:m[0]} }
+  return null;
+}
+/* the to-do text without its time, for showing beside the hour: "Roomie dinner @ 6:30pm" -> "Roomie dinner" */
+function stripTime(t,p){ const pre=t.slice(0,p.at).replace(/[\s,;–-]*(?:@|\bat|\bby|\bfrom)?\s*$/i,""), post=t.slice(p.at+p.len).replace(/^\s*[,;–-]?\s*/,""); return (pre+(pre&&post?" ":"")+post).trim()||t }
+function withTime(txt,h){ return parseTime(txt)?txt:txt+" @ "+fmtHour(h) }
 function load(){try{const s=localStorage.getItem(KEY); return s?JSON.parse(s):null}catch(e){return null}}
 let afterSave=null; /* set by the accounts module to sync each change */
 function save(){try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} if(afterSave) afterSave()}
@@ -676,7 +711,7 @@ function seed(){
   const mood={}; const cut = (m===thisMonth)? now.getDate() : 30;
   moodVals.forEach((v,i)=>{ if(i+1<=cut) mood[i+1]=v });
   return {
-    theme:"marigold", spread:"log", month:m, year:now.getFullYear(), sample:true,
+    theme:"marigold", spread:"habits", month:m, year:now.getFullYear(), sample:true,
     log:{[m]:log}, mood:{[m]:mood},
     budget:{[m]:{income:5200, checkStart:2140, checkEnd:"", saveStart:8600, saveEnd:"",
       bills:[
@@ -1182,13 +1217,32 @@ function renderYear(){
    ===================================================================== */
 function getDaily(k){return (state.daily[k]=state.daily[k]||{sched:{},water:0,grat:["","",""],note:""})}
 function dayLabel(){const dt=fromIso(state.day); return DAYNAMES[dt.getDay()].slice(0,3)+", "+MONTHS[dt.getMonth()].slice(0,3)+" "+dt.getDate()}
+/* the schedule lists every to-do for the day that has a time in it, at its hour (7am–9pm, wider when needed).
+   Writing in an empty hour adds a to-do with that time, so both sides always match. */
+function schedHTML(mk,d,D){
+  const items=peekList(mk,d).map((it,i)=>({it,i,p:parseTime(it.t)})).filter(x=>x.p&&x.it.t.trim());
+  const hs=items.map(x=>x.p.h); let lo=Math.min(7,...hs), hi=Math.max(21,...hs);
+  let out=""; for(let h=lo;h<=hi;h++){
+    const here=items.filter(x=>x.p.h===h).sort((a,b)=>(+(a.p.label.match(/:(\d\d)/)||[0,0])[1])-(+(b.p.label.match(/:(\d\d)/)||[0,0])[1]));
+    const links=here.map(x=>`<button class="slink ${x.it.b}" data-act="gotodo" data-m="${mk}" data-day="${d}" data-i="${x.i}" title="Go to this to-do"><span class="sb">${BULLETS[x.it.b]}</span><span class="st">${esc(stripTime(x.it.t,x.p))}</span><span class="tm">${esc(x.p.label)}</span></button>`).join("");
+    const leftover=(D&&D.sched&&D.sched[h])||"";
+    out+=`<div class="hour${here.length?" has":""}"><span>${fmtHour(h)}</span><div class="slot">${links}<textarea rows="1" class="hand-input" data-in="sched" data-h="${h}" placeholder=" " aria-label="Add something at ${fmtHour(h)}">${esc(leftover)}</textarea></div></div>`;
+  }
+  return out;
+}
+/* re-draw the page but keep the cursor in the field the person just moved to */
+function rerenderKeepFocus(){
+  const a=document.activeElement, keys=["in","m","day","i","h","act"];
+  const sel=a&&paper.contains(a)&&a.dataset?(a.tagName.toLowerCase()+keys.filter(k=>a.dataset[k]!=null).map(k=>`[data-${k}="${a.dataset[k]}"]`).join("")):null;
+  render(); if(sel){ const n=paper.querySelector(sel); if(n){ n.focus(); if(n.setSelectionRange&&n.value!=null) n.setSelectionRange(n.value.length,n.value.length) } }
+}
+function refreshSched(){ if(state.spread!=="day") return; const box=paper.querySelector(".sched"); if(!box) return;
+  const dt=fromIso(state.day); box.innerHTML=schedHTML(ym(dt.getFullYear(),dt.getMonth()+1), dt.getDate(), state.daily[state.day]); }
 function renderDay(){
   const t=T(), dt=fromIso(state.day), mk=ym(dt.getFullYear(),dt.getMonth()+1), d=dt.getDate();
   const D=state.daily[state.day]||{sched:{},water:0,grat:["","",""],note:""};
   const mood=(state.mood[mk]||{})[d];
-  const hrs=[]; for(let h=7;h<=21;h++) hrs.push(h);
-  const fmt=h=>(h%12||12)+(h<12?"am":"pm");
-  const sched=hrs.map(h=>`<div class="hour"><span>${fmt(h)}</span><textarea rows="1" class="hand-input" data-in="sched" data-h="${h}" aria-label="${fmt(h)}">${esc(D.sched[h]||"")}</textarea></div>`).join("");
+  const sched=schedHTML(mk,d,D);
   const moods=[1,2,3,4,5].map(v=>`<button class="dmood${mood===v?" on":""}" data-act="dmood" data-v="${v}" aria-pressed="${mood===v}" aria-label="${FACE_LABELS[v]}"><svg viewBox="0 0 30 30" aria-hidden="true">${S.face(15,15,12,v,t.ink)}</svg><span>${FACE_LABELS[v]}</span></button>`).join("");
   const glass=(on)=>`<svg viewBox="0 0 24 30" aria-hidden="true"><path d="M4 3h16l-2 24H6z" fill="${on?t.wash:"none"}" stroke="${t.ink}" stroke-width="1.6" stroke-linejoin="round"/>${on?`<path d="M5.2 11h13.6L17.4 26H6.6z" fill="${t.water||t.accent}" opacity=".85"/>`:""}</svg>`;
   const water=[...Array(8).keys()].map(i=>`<button class="glass" data-act="water" data-n="${i+1}" aria-label="${i+1} glass${i?"es":""}" aria-pressed="${i<D.water}">${glass(i<D.water)}</button>`).join("");
@@ -1205,7 +1259,7 @@ function renderDay(){
     blk("day","habits",2,`<h2 class="section-title">Habits</h2><div class="hchips">${habits}</div>`) +
     blk("day","grat",2,`<h2 class="section-title">Grateful for</h2><div class="items">${grat}</div>`) +
     blk("day","notes",4,`<h2 class="section-title">Notes</h2><textarea rows="3" class="hand-input dnote" data-in="dnote" placeholder="Thoughts, ideas, things to remember…" aria-label="Notes">${esc(D.note||"")}</textarea>`)) +
-    `<p class="ui-note" style="margin-top:12px">Tasks here also appear on the weekly spread and monthly log. Mood and habits update their trackers too.</p>`;
+    `<p class="ui-note" style="margin-top:12px">Tasks here also appear on the weekly spread and monthly log. Add a time to a task (like “dinner @ 6:30pm”) and it shows on the schedule; write in the schedule and it becomes a task. Mood and habits update their trackers too.</p>`;
 }
 
 /* =====================================================================
@@ -1343,13 +1397,15 @@ $("#resetBtn").onclick=()=>{
 
 const paper=$("#paper");
 paper.addEventListener("click",e=>{
+  const hr=e.target.closest(".hour"); if(hr&&!e.target.closest(".slink")&&e.target.tagName!=="TEXTAREA"){ hr.querySelector("textarea")?.focus(); return }
   const a=e.target.closest("[data-act]"); if(!a) return; const d=a.dataset;
   const act=d.act;
   if(act==="bullet"){
     const arr=getList(d.m||state.month,+d.day); const it=arr[d.i]; it.b=ORDER[(ORDER.indexOf(it.b)+1)%ORDER.length]; save();
-    a.textContent=BULLETS[it.b]; a.parentElement.className="item "+it.b; a.setAttribute("aria-label","Bullet type: "+it.b+". Tap to change"); return;
+    a.textContent=BULLETS[it.b]; a.parentElement.className="item "+it.b; a.setAttribute("aria-label","Bullet type: "+it.b+". Tap to change"); refreshSched(); return;
   }
   if(act==="copytask"){ openCopy(a); return }
+  if(act==="gotodo"){ const n=paper.querySelector(`[data-in="log"][data-m="${d.m}"][data-day="${d.day}"][data-i="${d.i}"]`); if(n){ n.focus(); const it=n.closest(".item"); it.classList.add("flash"); setTimeout(()=>it.classList.remove("flash"),900) } return }
   if(act==="prolocked"){toast(premiumMsg("Resizing boxes and text")); return}
   if(act==="resetlayout"){if(state.layout) delete state.layout[d.spread]; if(state.fields) delete state.fields[d.spread]; save(); render(); toast("Sizes reset for this spread"); return}
   if(act==="clearpage"){ const sp=state.spread;
@@ -1396,7 +1452,7 @@ paper.addEventListener("click",e=>{
 });
 paper.addEventListener("input",e=>{
   const el=e.target, d=el.dataset; if(el.tagName==="TEXTAREA") grow(el); if(!d.in) return;
-  if(d.in==="log"){getList(d.m||state.month,+d.day)[d.i].t=el.value; saveSoon(); return}
+  if(d.in==="log"){getList(d.m||state.month,+d.day)[d.i].t=el.value; saveSoon(); refreshSched(); return}
   if(d.in==="note"){state.titles=state.titles||{}; (state.titles[d.spread]=state.titles[d.spread]||{}).note=el.value; saveSoon(); return}
   if(d.in==="sched"){getDaily(state.day).sched[d.h]=el.value; saveSoon(); return}
   if(d.in==="grat"){getDaily(state.day).grat[d.i]=el.value; saveSoon(); return}
@@ -1417,6 +1473,11 @@ paper.addEventListener("focusout",e=>{const el=e.target; if(el.dataset&&el.datas
 paper.addEventListener("paste",e=>{const el=e.target.closest&&e.target.closest("[data-edit]"); if(!el) return; e.preventDefault();
   const txt=(e.clipboardData||window.clipboardData).getData("text").replace(/\s+/g," "); document.execCommand("insertText",false,txt)});
 paper.addEventListener("change",e=>{const d=e.target.dataset;
+  if(d.in==="sched"){ const txt=e.target.value.trim(), h=+d.h, dt=fromIso(state.day), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
+    delete getDaily(state.day).sched[h]; if(!txt){ save(); return }
+    const arr=getList(mk,day), t=withTime(txt,h);
+    if(arr.length===1&&!arr[0].t.trim()) arr[0]={b:"task",t}; else arr.push({b:"task",t});
+    save(); setTimeout(()=>rerenderKeepFocus(),0); return }
   if(d.in==="goal"||d.in==="svgoal"){save(); render(); return}
   const x=d.id&&state.savings&&state.savings.find(v=>v.id===d.id); if(!x) return;
   if(d.in==="svsteps"){x.steps=+e.target.value; x.filled=x.filled.filter(i=>i<x.steps); save(); render()}
@@ -1698,7 +1759,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
