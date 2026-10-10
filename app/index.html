@@ -124,6 +124,24 @@ textarea.hand-input{display:block; resize:none; overflow:hidden; line-height:1.3
 .item.done .hand-input{text-decoration:line-through; color:var(--muted)}
 .item.migrated .hand-input{color:var(--muted)}
 .item.event .hand-input{font-weight:600}
+/* copy a task to another day: a small button that shows on hover/focus (always faintly on touch screens) */
+.cp-btn{flex:none; align-self:center; width:26px; height:26px; display:grid; place-items:center; border:0; background:none; color:var(--muted); border-radius:7px; cursor:pointer; opacity:0; padding:0}
+.cp-btn svg{width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round}
+.item:hover .cp-btn, .item:focus-within .cp-btn, .cp-btn:focus-visible, .cp-btn.open{opacity:1}
+.cp-btn:hover{background:var(--wash); color:var(--ink)}
+@media (hover:none){ .cp-btn{opacity:.5} }
+.item:has(textarea:placeholder-shown) .cp-btn{display:none}
+.cp-pop{position:fixed; z-index:60; width:min(300px, calc(100vw - 32px)); background:var(--chrome); color:var(--chrome-ink); border:1px solid var(--line); border-radius:14px; box-shadow:0 12px 32px rgba(0,0,0,.18); padding:14px; font-family:var(--ui); font-size:13px}
+.cp-pop h3{margin:0 0 2px; font-size:14px}
+.cp-pop .what{color:var(--chrome-muted); margin:0 0 10px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.cp-pop .quick{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px}
+.cp-pop .quick button, .cp-pop .go{border:1px solid var(--line); background:var(--chip); color:var(--chrome-ink); border-radius:999px; padding:6px 12px; font:inherit; cursor:pointer}
+.cp-pop .quick button:hover, .cp-pop .go:hover{border-color:var(--chrome-ink)}
+.cp-pop .pick{display:flex; gap:6px; align-items:center}
+.cp-pop input[type=date]{flex:1; min-width:0; font:inherit; padding:5px 8px; border:1px solid var(--line); border-radius:8px; background:var(--chip); color:var(--chrome-ink)}
+.cp-pop .go{background:var(--chrome-ink); color:var(--chrome); border-color:var(--chrome-ink); font-weight:600}
+.cp-pop label.mv{display:flex; gap:7px; align-items:flex-start; margin-top:10px; color:var(--chrome-muted); line-height:1.35; cursor:pointer}
+.cp-pop label.mv input{margin-top:2px}
 .key{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:22px; padding-top:12px; border-top:1.5px dashed var(--rule); font-size:.85em; color:var(--muted)}
 .key b{color:var(--ink); display:inline-block; width:18px; text-align:center}
 
@@ -377,7 +395,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .exporting *{transition:none!important; animation:none!important}
 .exporting, .exporting *:not(.tape){transform:none!important}
 .paper.exporting{min-height:0!important}
-.exporting .pro-bar, .exporting .rsz, .exporting .add-row, .exporting .row-actions, .exporting .x-btn, .exporting .pol .tools, .exporting .editor,
+.exporting .pro-bar, .exporting .cp-btn, .exporting .rsz, .exporting .add-row, .exporting .row-actions, .exporting .x-btn, .exporting .pol .tools, .exporting .editor,
 .exporting .blk[data-box="add"], .exporting .seg, .exporting .svopts, .exporting .source .pen-btn, .exporting > p.ui-note, .exporting .key .ui-note,
 .exporting .brushes > .ui-note, .exporting .legend .ui-note, .exporting .tf-handle, .exporting .head .note:placeholder-shown{display:none!important}
 
@@ -767,7 +785,7 @@ function getList(mk,day){
   const L=(state.log[mk]=state.log[mk]||{}); if(!L[day]||!L[day].length) L[day]=[{b:"task",t:""}]; return L[day];
 }
 function itemRows(mk,day,label,ph=""){
-  return peekList(mk,day).map((it,i)=>`<div class="item ${it.b}"><button class="bullet" data-act="bullet" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Bullet type: ${it.b}. Tap to change">${BULLETS[it.b]}</button><textarea rows="1" class="hand-input" data-in="log" data-m="${mk}" data-day="${day}" data-i="${i}" placeholder="${i===0?ph:"…"}" aria-label="${label} entry">${esc(it.t)}</textarea></div>`).join("");
+  return peekList(mk,day).map((it,i)=>`<div class="item ${it.b}"><button class="bullet" data-act="bullet" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Bullet type: ${it.b}. Tap to change">${BULLETS[it.b]}</button><textarea rows="1" class="hand-input" data-in="log" data-m="${mk}" data-day="${day}" data-i="${i}" placeholder="${i===0?ph:"…"}" aria-label="${label} entry">${esc(it.t)}</textarea><button class="cp-btn" data-act="copytask" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Copy to another day" title="Copy to another day"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>`).join("");
 }
 function renderLog(){
   const {y,m,days}=parts();
@@ -780,7 +798,7 @@ function renderLog(){
   return head(MONTHS[m-1], "Monthly log · "+y, "log", "", "Monthly log · "+MONTHS[m-1]+" "+y) +
     grid(blk("log","prio",4,`<header class="mprio-h"><span class="wdname">This month's priorities</span><span class="ui-note">focus · must-dos</span></header><div class="items">${itemRows("mfoc:"+state.month,0,"Monthly priority","What matters most this month?")}</div>`,"wbox focus mprio") +
       blk("log","days",4,`<div class="log">${rows}</div>`) +
-      blk("log","key",4,`<div class="key"><span><b>•</b>task</span><span><b>×</b>done</span><span><b>›</b>migrated</span><span><b>○</b>event</span><span><b>–</b>note</span><span class="ui-note">Tap a bullet to change it. Press Enter to add another line to the same day.</span></div>`));
+      blk("log","key",4,`<div class="key"><span><b>•</b>task</span><span><b>×</b>done</span><span><b>›</b>migrated</span><span><b>○</b>event</span><span><b>–</b>note</span><span class="ui-note">Tap a bullet to change it. Press Enter to add another line to the same day. Use the copy button beside a task to add it to another day.</span></div>`));
 }
 
 /* =====================================================================
@@ -833,6 +851,46 @@ function clearLabel(sp){
 }
 function undoToast(msg,snap){ ui.lastClear=snap; const t=$("#toast"); t.innerHTML=msg+" <button class='undo' id='undoClear'>Undo</button>"; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>{t.hidden=true; ui.lastClear=null},6000);
   const u=$("#undoClear"); if(u) u.onclick=()=>{ if(!ui.lastClear) return; state=JSON.parse(ui.lastClear); ui.lastClear=null; save(); render(); toast("Restored") }; }
+/* ---- copy a task to another day. Every day's tasks live in one list (state.log[month][day]),
+   so a copy shows up on that day's monthly log, weekly spread and daily log at once. ---- */
+function fmtDay(dt){ return DAYNAMES[dt.getDay()].slice(0,3)+", "+MONTHS[dt.getMonth()].slice(0,3)+" "+dt.getDate() }
+function closeCopy(){ const p=$("#cpPop"); if(p) p.remove(); document.querySelectorAll(".cp-btn.open").forEach(b=>b.classList.remove("open")); ui.cp=null }
+function openCopy(btn){
+  const d=btn.dataset, src=peekList(d.m,+d.day)[+d.i]; if(!src||!src.t.trim()){ return }
+  if(ui.cp&&ui.cp.btn===btn){ closeCopy(); return } closeCopy();
+  /* "tomorrow" counts from the task's own day when it has one, otherwise from today */
+  const own=/^\d{4}-\d{2}$/.test(d.m)&&+d.day>0; const base=own?new Date(+d.m.slice(0,4),+d.m.slice(5)-1,+d.day):new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const add=n=>{const x=new Date(base); x.setDate(x.getDate()+n); return x};
+  const quick=[["Tomorrow",add(1)],["Next week",add(7)]]; if(own&&iso(base)!==iso(now)) quick.unshift(["Today",new Date(now.getFullYear(),now.getMonth(),now.getDate())]);
+  const seen=new Set(); for(let k=0;k<quick.length;k++){ const key=iso(quick[k][1]); if(seen.has(key)) quick.splice(k--,1); else seen.add(key) }
+  ui.cp={btn, m:d.m, day:+d.day, i:+d.i};
+  const pop=document.createElement("div"); pop.className="cp-pop"; pop.id="cpPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Copy to another day");
+  pop.innerHTML=`<h3>Copy to another day</h3><p class="what">${esc(src.t)}</p>
+    <div class="quick">${quick.map(([l,dt])=>`<button data-to="${iso(dt)}">${l} <span style="color:var(--chrome-muted)">· ${fmtDay(dt)}</span></button>`).join("")}</div>
+    <div class="pick"><input type="date" id="cpDate" value="${iso(add(1))}" aria-label="Pick a date"><button class="go" id="cpGo">Copy</button></div>
+    ${own?`<label class="mv"><input type="checkbox" id="cpMove"> Move it instead (marks this one › migrated)</label>`:""}`;
+  document.body.appendChild(pop); btn.classList.add("open");
+  const r=btn.getBoundingClientRect(), pw=pop.offsetWidth, ph=pop.offsetHeight;
+  let left=Math.min(Math.max(16, r.right-pw), innerWidth-pw-16), top=r.bottom+6; if(top+ph>innerHeight-12) top=Math.max(12, r.top-ph-6);
+  pop.style.left=left+"px"; pop.style.top=top+"px";
+  pop.addEventListener("click",e=>{ const q=e.target.closest("[data-to]"); if(q) doCopy(q.dataset.to); if(e.target.closest("#cpGo")){ const v=$("#cpDate").value; if(v) doCopy(v); else toast("Pick a date first") } });
+  pop.addEventListener("keydown",e=>{ if(e.key==="Enter"&&e.target.id==="cpDate"){ e.preventDefault(); $("#cpGo").click() } });
+  (pop.querySelector("[data-to]")||pop.querySelector("#cpDate")).focus();
+}
+function doCopy(to){
+  const c=ui.cp; if(!c) return; const src=peekList(c.m,c.day)[c.i]; if(!src) return closeCopy();
+  if(!guard()) return closeCopy();
+  const snap=JSON.stringify(state), dt=fromIso(to), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
+  const move=!!($("#cpMove")&&$("#cpMove").checked);
+  const list=getList(mk,day), b=src.b==="done"||src.b==="migrated"?"task":src.b, item={b, t:src.t};
+  if(list.length===1&&!list[0].t.trim()) list[0]=item; else list.push(item);
+  if(move) getList(c.m,c.day)[c.i].b="migrated";
+  closeCopy(); save(); render();
+  undoToast((move?"Moved to ":"Copied to ")+fmtDay(dt)+".", snap);
+}
+document.addEventListener("pointerdown",e=>{ if(ui.cp&&!e.target.closest("#cpPop")&&!e.target.closest(".cp-btn")) closeCopy() },true);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&ui.cp){ const b=ui.cp.btn; closeCopy(); if(b&&b.isConnected) b.focus() } });
+addEventListener("resize",()=>{ if(ui.cp) closeCopy() });
 function clearBtn(sp){ const armed=ui.clearArmed===sp;
   return `<button class="clear-btn${armed?" armed":""}" data-act="clearpage" aria-label="${armed?"Tap again to clear "+esc(clearLabel(sp)):"Clear this page"}">${armed?"Tap again to clear "+esc(clearLabel(sp)):"Clear page"}</button>`; }
 function clearPage(sp){
@@ -1291,6 +1349,7 @@ paper.addEventListener("click",e=>{
     const arr=getList(d.m||state.month,+d.day); const it=arr[d.i]; it.b=ORDER[(ORDER.indexOf(it.b)+1)%ORDER.length]; save();
     a.textContent=BULLETS[it.b]; a.parentElement.className="item "+it.b; a.setAttribute("aria-label","Bullet type: "+it.b+". Tap to change"); return;
   }
+  if(act==="copytask"){ openCopy(a); return }
   if(act==="prolocked"){toast(premiumMsg("Resizing boxes and text")); return}
   if(act==="resetlayout"){if(state.layout) delete state.layout[d.spread]; if(state.fields) delete state.fields[d.spread]; save(); render(); toast("Sizes reset for this spread"); return}
   if(act==="clearpage"){ const sp=state.spread;
