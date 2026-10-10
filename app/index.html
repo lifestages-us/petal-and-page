@@ -143,6 +143,8 @@ textarea.hand-input{display:block; resize:none; overflow:hidden; line-height:1.3
 .st-pop .sw{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-block:4px 12px}
 .st-pop .sw button{aspect-ratio:1; border-radius:50%; border:2px solid transparent; padding:0; cursor:pointer; outline-offset:2px}
 .st-pop .sw button[aria-pressed="true"]{outline:2px solid var(--chrome-ink)}
+.st-pop .pbadge{font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border:1px solid var(--line); border-radius:999px; padding:1px 7px; margin-left:6px; vertical-align:2px; color:var(--chrome-muted)}
+.st-pop .sw.locked button{opacity:.45}
 .st-pop .sw .none{background:var(--chip); border:1px dashed var(--chrome-muted); color:var(--chrome-muted); font-size:15px; line-height:1}
 .st-pop .ind{display:flex; gap:6px; flex-wrap:wrap}
 .st-pop .ind button{flex:1; border:1px solid var(--line); background:var(--chip); color:var(--chrome-ink); border-radius:999px; padding:6px 10px; font:inherit; cursor:pointer; white-space:nowrap}
@@ -837,7 +839,7 @@ function getList(mk,day){
   const L=(state.log[mk]=state.log[mk]||{}); if(!L[day]||!L[day].length) L[day]=[{b:"task",t:""}]; return L[day];
 }
 function itemRows(mk,day,label,ph=""){
-  return peekList(mk,day).map((it,i)=>`<div class="item ${it.b}${it.lvl?" l"+it.lvl:""}${INKS[it.c]?" tc":""}"${INKS[it.c]?` style="--tc:${INKS[it.c].v}"`:""}><button class="bullet" data-act="bullet" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Bullet type: ${it.b}. Tap to change">${BULLETS[it.b]}</button><textarea rows="1" class="hand-input" data-in="log" data-m="${mk}" data-day="${day}" data-i="${i}" placeholder="${i===0?ph:"…"}" aria-label="${label} entry">${esc(it.t)}</textarea><button class="st-btn" data-act="styletask" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Colour and indent" title="Colour and indent"><span class="dot${INKS[it.c]?" set":""}"></span></button><button class="cp-btn" data-act="copytask" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Copy to another day" title="Copy to another day"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>`).join("");
+  return peekList(mk,day).map((it,i)=>`<div class="item ${it.b}${it.lvl?" l"+it.lvl:""}${INKS[it.c]?" tc":""}"${INKS[it.c]?` style="--tc:${INKS[it.c].v}"`:""}><button class="bullet" data-act="bullet" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Bullet type: ${it.b}. Tap to change">${BULLETS[it.b]}</button><textarea rows="1" class="hand-input" data-in="log" data-m="${mk}" data-day="${day}" data-i="${i}" placeholder="${i===0?ph:"…"}" aria-label="${label} entry">${esc(it.t)}</textarea><button class="st-btn" data-act="styletask" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="${HIDE_PREMIUM?"Indent":"Colour and indent"}" title="${HIDE_PREMIUM?"Indent":"Colour and indent"}">${HIDE_PREMIUM?`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M10 12h10M10 18h10M4 10l3 2-3 2"/></svg>`:`<span class="dot${INKS[it.c]?" set":""}"></span>`}</button><button class="cp-btn" data-act="copytask" data-m="${mk}" data-day="${day}" data-i="${i}" aria-label="Copy to another day" title="Copy to another day"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></button></div>`).join("");
 }
 function renderLog(){
   const {y,m,days}=parts();
@@ -850,7 +852,7 @@ function renderLog(){
   return head(MONTHS[m-1], "Monthly log · "+y, "log", "", "Monthly log · "+MONTHS[m-1]+" "+y) +
     grid(blk("log","prio",4,`<header class="mprio-h"><span class="wdname">This month's priorities</span><span class="ui-note">focus · must-dos</span></header><div class="items">${itemRows("mfoc:"+state.month,0,"Monthly priority","What matters most this month?")}</div>`,"wbox focus mprio") +
       blk("log","days",4,`<div class="log">${rows}</div>`) +
-      blk("log","key",4,`<div class="key"><span><b>•</b>task</span><span><b>×</b>done</span><span><b>›</b>migrated</span><span><b>○</b>event</span><span><b>–</b>note</span><span class="ui-note">Tap a bullet to change it. Press Enter to add another line to the same day. Use the copy button beside a task to add it to another day. Press Tab to put a line under the one above, and use the colour dot to colour-code it.</span></div>`));
+      blk("log","key",4,`<div class="key"><span><b>•</b>task</span><span><b>×</b>done</span><span><b>›</b>migrated</span><span><b>○</b>event</span><span><b>–</b>note</span><span class="ui-note">Tap a bullet to change it. Press Enter to add another line to the same day. Use the copy button beside a task to add it to another day. Press Tab to put a line under the one above.</span></div>`));
 }
 
 /* =====================================================================
@@ -918,11 +920,14 @@ function openStyle(btn){
   const arr=peekList(d.m,+d.day), i=+d.i, it=arr[i]; if(!it) return; const lvl=it.lvl||0, prevLvl=i>0?(arr[i-1].lvl||0):-1;
   ui.st={btn, m:d.m, day:+d.day, i};
   const pop=document.createElement("div"); pop.className="cp-pop st-pop"; pop.id="stPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Colour and indent");
-  pop.innerHTML=`<h3>Text colour</h3><div class="sw">${Object.entries(INKS).map(([k,c])=>`<button data-c="${k}" style="background:${c.v}" aria-pressed="${it.c===k}" aria-label="${c.n}" title="${c.n}"></button>`).join("")}<button class="none" data-c="" aria-pressed="${!INKS[it.c]}" aria-label="No colour" title="No colour">×</button></div>
+  /* colour-coding is a Premium feature: hidden on the public site for now, unlocked by Creator mode in the preview */
+  const colours=HIDE_PREMIUM?"":`<h3>Text colour ${state.creator?`<span class="pbadge">Premium</span>`:`<span class="pbadge">🔒 Premium</span>`}</h3><div class="sw${state.creator?"":" locked"}">${Object.entries(INKS).map(([k,c])=>`<button data-c="${k}" style="background:${c.v}" aria-pressed="${it.c===k}" aria-label="${c.n}" title="${c.n}"></button>`).join("")}<button class="none" data-c="" aria-pressed="${!INKS[it.c]}" aria-label="No colour" title="No colour">×</button></div>`;
+  pop.innerHTML=`${colours}
     <h3>Indent</h3><div class="ind"><button data-ind="1" ${i===0||lvl>=2||lvl>prevLvl?"disabled":""}>→ Tab under the line above</button><button data-ind="-1" ${lvl?"":"disabled"}>← Move back out</button></div>
     <p class="tip">On a keyboard: Tab indents, Shift+Tab moves back out.</p>`;
   document.body.appendChild(pop); btn.classList.add("open"); placePop(pop,btn);
   pop.addEventListener("click",e=>{ const c=e.target.closest("[data-c]"), n=e.target.closest("[data-ind]:not([disabled])"); if(!c&&!n) return;
+    if(c&&!state.creator){ toast(premiumMsg("Colour-coding lines")); return }
     if(!guard()) return closeStyle(); const s=ui.st, x=getList(s.m,s.day)[s.i];
     if(c){ if(c.dataset.c) x.c=c.dataset.c; else delete x.c }
     if(n) indentItem(s.m,s.day,s.i,+n.dataset.ind);
