@@ -445,6 +445,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .dwhen b{font-weight:600}
 .pl-pop{max-height:calc(100vh - 24px); overflow:auto}
 .pl-pop.sheetish{left:16px!important; right:16px; width:auto; bottom:calc(16px + env(safe-area-inset-bottom,0px)); top:auto!important}
+.pl-pop #askDays button[aria-pressed="true"]::before{content:"✓ "}
 .pl-pop .quick button.on{border-color:var(--chrome-ink); background:var(--chrome)}
 .pl-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px}
 .pl-grid label{display:grid; gap:4px; font-weight:600; font-size:12px}
@@ -1483,13 +1484,21 @@ function openPlan(id,step){
   const P=state.partner||{};
   const today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), fri=nextDow(5), sat=nextDow(6), sun=nextDow(0);
   const quick=[["Tonight",today,"19:00"],["Fri",fri,"19:00"],["Sat",sat,""],["Sun",sun,""]].filter(([l,d],i)=>i===0||iso(d)!==iso(today));
-  if(step!=="invite"){
+  if(step==="ask"){
+    const days=[]; for(let i=1;i<=14&&days.length<6;i++){ const d=new Date(today); d.setDate(d.getDate()+i); if([5,6,0].includes(d.getDay())) days.push(d) }
+    pop.innerHTML=`<h3>Invite your partner or a friend ♥</h3><p class="what">${esc(x.t)}</p>
+      <p class="tip" style="margin:0 0 10px">Send the idea now and choose the day together. Suggest a few days if you like.</p>
+      <div class="quick" id="askDays">${days.map(d=>`<button type="button" data-sd="${iso(d)}" aria-pressed="false">${fmtShort(iso(d))}</button>`).join("")}</div>
+      <div class="pl-grid"><label>Their name <span class="opt">optional</span><input id="plName" value="${esc(P.name||"")}" placeholder="Sam" autocomplete="off"></label><label>Their email <span class="opt">optional</span><input type="email" id="plEmail" value="${esc(P.email||"")}" placeholder="sam@example.com" autocomplete="off"></label></div>
+      <div class="inv"><button data-inv="askmsg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button><button data-inv="askemail"><b>Email the idea</b><span>Opens your email app</span></button></div>
+      <div class="pl-actions"><button class="ghostb" id="plCancel">Done</button></div>`;
+  } else if(step!=="invite"){
     pop.innerHTML=`<h3>Plan this date</h3><p class="what">${esc(x.t)}</p>
       <div class="quick">${quick.map(([l,d,tm])=>`<button type="button" data-qd="${iso(d)}" data-qt="${tm}">${l} <span style="color:var(--chrome-muted)">· ${fmtShort(iso(d)).slice(5)}</span></button>`).join("")}</div>
       <div class="pl-grid"><label>Date<input type="date" id="plDate" value="${x.when||""}" min="${iso(today)}"></label><label>Time <span class="opt">optional</span><input type="time" id="plTime" value="${x.time||""}"></label></div>
       <div class="pl-actions"><button class="go" id="plSave">Save to my journal</button><button class="ghostb" id="plCancel">Cancel</button></div>`;
   } else {
-    pop.innerHTML=`<h3>Invite your partner ♥</h3><p class="what">${esc(x.t)} · ${fmtShort(x.when)}${x.time?" · "+fmtClock(x.time):""}</p>
+    pop.innerHTML=`<h3>Invite your partner or a friend ♥</h3><p class="what">${esc(x.t)} · ${fmtShort(x.when)}${x.time?" · "+fmtClock(x.time):""}</p>
       <div class="pl-grid"><label>Their name <span class="opt">optional</span><input id="plName" value="${esc(P.name||"")}" placeholder="Sam" autocomplete="off"></label><label>Their email <span class="opt">for calendar invites</span><input type="email" id="plEmail" value="${esc(P.email||"")}" placeholder="sam@example.com" autocomplete="off"></label></div>
       <div class="inv">
         <button data-inv="msg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button>
@@ -1506,13 +1515,23 @@ function openPlan(id,step){
     const q=e.target.closest("[data-qd]"); if(q){ $("#plDate").value=q.dataset.qd; if(q.dataset.qt&&!$("#plTime").value) $("#plTime").value=q.dataset.qt; pop.querySelectorAll("[data-qd]").forEach(b=>b.classList.toggle("on",b===q)); return }
     if(e.target.closest("#plCancel")){ closePlan(); return }
     if(e.target.closest("#plSave")){ const d=$("#plDate").value; if(!d){ toast("Pick a date first"); $("#plDate").focus(); return } if(!guard()) return closePlan();
-      const first=x.status!=="planned"; x.when=d; x.time=$("#plTime").value||""; x.status="planned"; syncDateEvent(x); ui.dpick=null; ui.dfilter="planned"; save(); render();
+      const first=x.status!=="planned"; delete x.asked; x.when=d; x.time=$("#plTime").value||""; x.status="planned"; syncDateEvent(x); ui.dpick=null; ui.dfilter="planned"; save(); render();
       toast((first?"Planned for ":"Moved to ")+fmtShort(x.when)+(x.time?" at "+fmtClock(x.time):"")+". It's on your log too."); openPlan(id,"invite"); return }
+    const sd=e.target.closest("[data-sd]"); if(sd){ const on=sd.getAttribute("aria-pressed")!=="true"; sd.setAttribute("aria-pressed",String(on)); sd.classList.toggle("on",on); return }
     const iv=e.target.closest("[data-inv]"); if(iv){ const name=$("#plName").value.trim(), email=$("#plEmail").value.trim();
-      state.partner={name,email}; sendInvite(x, iv.dataset.inv, name, email); x.invited=true; save(); render(); }
+      state.partner={name,email};
+      if(iv.dataset.inv.startsWith("ask")){ const picks=[...pop.querySelectorAll('[data-sd][aria-pressed="true"]')].map(b=>b.dataset.sd); sendAsk(x, iv.dataset.inv, name, email, picks); x.asked=name||"them"; }
+      else { sendInvite(x, iv.dataset.inv, name, email); x.invited=true }
+      save(); render(); }
   });
   (pop.querySelector("#plDate")||pop.querySelector("[data-inv]")).focus();
 }
+function askText(x,name,days){ const list=days.map(fmtShort); const when=list.length?("I'm free "+(list.length===1?list[0]:list.slice(0,-1).join(", ")+" or "+list[list.length-1])+". Which works for you?"):"When works for you?";
+  return (name?name+", ":"")+"want to do this together sometime? ♥\n"+x.t+"\n"+when+"\n\nFrom my Petal & Page date jar" }
+async function sendAsk(x,how,name,email,days){ const text=askText(x,name,days);
+  if(how==="askemail"){ location.href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent("Date idea? ♥ "+x.t)+"&body="+encodeURIComponent(text); return }
+  if(navigator.share){ try{ await navigator.share({text}); return }catch(e){ if(e&&e.name==="AbortError") return } }
+  try{ await navigator.clipboard.writeText(text); toast("Copied. Paste it into a text to "+(name||"them")+".") }catch(e){ toast("Couldn't copy here. Try the email option.") } }
 function inviteText(x,name){ return (name?name+", ":"")+"date night? ♥\n"+x.t+"\n"+fmtShort(x.when)+(x.time?" at "+fmtClock(x.time):"")+"\n\nPlanned in my Petal & Page journal" }
 function calTimes(x){ const d=x.when.replace(/-/g,"");
   if(!x.time){ const e=fromIso(x.when); e.setDate(e.getDate()+1); return {allDay:true, s:d, e:iso(e).replace(/-/g,"")} }
@@ -1562,7 +1581,7 @@ function renderDates(){
   const chips=[["all","All ideas"],["planned",`Planned · ${planned.length}`],["done",`Memories · ${done.length}`],...Object.entries(DCATS)]
     .map(([k,l])=>`<button class="chipb${f===k?" on":""}" data-act="dfilter" data-f="${k}" aria-pressed="${f===k}">${esc(l)}</button>`).join("");
   const card=x=>{ const c=dcol(t,x.cat);
-    const foot = x.status==="idea" ? `<button class="pen-btn" data-act="dplan" data-id="${x.id}">Plan it</button>`
+    const foot = x.status==="idea" ? `<button class="pen-btn" data-act="dplan" data-id="${x.id}">Plan it</button><button class="pen-btn" data-act="dinvite" data-id="${x.id}">Invite ♥</button>${x.asked?`<span class="ui-note">Asked ${esc(x.asked)} ♡</span>`:""}`
       : x.status==="planned" ? `<div class="dwhen"><b>${x.when?fmtShort(x.when):""}${x.time?" · "+fmtClock(x.time):""}</b>${x.invited?`<span class="ui-note">${state.partner&&state.partner.name?"Invited "+esc(state.partner.name):"Invite sent"} ♡</span>`:""}</div>
         <button class="pen-btn" data-act="dplan" data-id="${x.id}">Change</button><button class="pen-btn" data-act="dinvite" data-id="${x.id}">${x.invited?"Invite again":"Invite ♥"}</button><button class="pen-btn solid" data-act="ddone" data-id="${x.id}">We went ♥</button><button class="linkish" data-act="dunplan" data-id="${x.id}">Not yet</button>`
       : `<div class="hearts" role="group" aria-label="How was it?">${[1,2,3,4,5].map(n=>`<button data-act="dheart" data-id="${x.id}" data-n="${n}" aria-label="${n} of 5" aria-pressed="${(x.hearts||0)>=n}">${(x.hearts||0)>=n?"♥":"♡"}</button>`).join("")}</div><span class="ui-note">${x.when?fmtShort(x.when):""}${x.time?" · "+fmtClock(x.time):""}</span>`;
@@ -1574,7 +1593,7 @@ function renderDates(){
   const empty = f==="done"?"No memories yet. When you go on a planned date, tap “We went ♥”.":f==="planned"?"Nothing planned yet. Tap “Plan it” on an idea.":"No ideas here yet. Add one below.";
   return head("Date ideas", ideas.length+" in the jar · "+planned.length+" planned · "+done.length+(done.length===1?" memory":" memories"), "dates") + grid(
     blk("dates","jar",2,`<div class="jarbox">${dateJar(t,ideas.length)}<div class="jartext"><h2 class="section-title">The date jar</h2>
-      ${pick?`<p class="drawn">How about…<br><b>${esc(pick.t)}</b></p><div class="row"><button class="pen-btn solid" data-act="dplan" data-id="${pick.id}">Plan it</button><button class="pen-btn" data-act="dsurprise">Pick again</button></div>`
+      ${pick?`<p class="drawn">How about…<br><b>${esc(pick.t)}</b></p><div class="row"><button class="pen-btn solid" data-act="dplan" data-id="${pick.id}">Plan it</button><button class="pen-btn" data-act="dinvite" data-id="${pick.id}">Invite ♥</button><button class="pen-btn" data-act="dsurprise">Pick again</button></div>`
         : `<p class="ui-note">${ideas.length?"Can't decide? Pull an idea out of the jar.":"Add a few ideas and the jar will pick one for you."}</p>${ideas.length?`<button class="pen-btn solid" data-act="dsurprise">Surprise me ♥</button>`:""}`}
       </div></div>${ideas.length?jarChips:""}`,"dbox") +
     blk("dates","add",2,`<form class="dbox dadd" id="addDate"><h2 class="section-title">Add an idea</h2>
@@ -1731,7 +1750,7 @@ paper.addEventListener("click",e=>{
     if(act==="dcat"){ const k=Object.keys(DCATS); dx.cat=k[(k.indexOf(dx.cat)+1)%k.length]; save(); render(); return }
     if(act==="dcost"){ dx.cost=((dx.cost||0)+1)%DCOST.length; save(); render(); return }
     if(act==="dplan"){ openPlan(dx.id); return }
-    if(act==="dinvite"){ openPlan(dx.id,"invite"); return }
+    if(act==="dinvite"){ openPlan(dx.id, dx.status==="planned"?"invite":"ask"); return }
     if(act==="dunplan"){ dx.status="idea"; dx.invited=false; syncDateEvent(dx); save(); render(); toast("Back in the jar"); return }
     if(act==="ddone"){ dx.status="done"; if(!dx.when) dx.when=iso(now); syncDateEvent(dx); ui.dfilter="done"; save(); render(); toast("Saved to your memories ♥"); return }
     if(act==="dheart"){ dx.hearts=(dx.hearts===+d.n?0:+d.n); save(); render(); return }
