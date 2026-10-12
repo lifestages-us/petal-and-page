@@ -411,6 +411,8 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .jartext{min-width:0; display:grid; gap:8px; justify-items:start}
 .jartext .row, .dadd .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .drawn{margin:0; line-height:1.25}
+.sharebar{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; margin-bottom:14px; padding:9px 14px; border:1.5px dashed var(--accent); border-radius:12px; background:color-mix(in srgb, var(--wash) 55%, var(--paper)); font-family:var(--ui); font-size:13px; color:var(--ink)}
+.exporting .sharebar{display:none!important}
 .jarpick{display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-top:10px; padding-top:10px; border-top:1.5px dashed var(--rule)}
 .jarpick .ui-note{margin-right:2px; min-width:3.6em}
 .jarpick.budget{margin-top:6px; padding-top:0; border-top:0}
@@ -692,6 +694,7 @@ if(HIDE_PREMIUM) document.documentElement.classList.add("no-premium");
 const QS = new URLSearchParams(location.search);
 const DEMO = QS.has("demo");
 const KEY = DEMO ? "petal-page-demo" : "petal-page-v1";
+if(QS.get("join")){ try{ localStorage.setItem("petal-join", QS.get("join")) }catch(e){} history.replaceState(null,"",location.pathname) }
 /* on the public site, visitors see paid features as "Coming soon" (never "Premium"); creator accounts get full access */
 const SOON = ()=>PUBLIC&&!IS_CREATOR;
 function applySoonLabels(){ const h=$("#xProHead"), m=$("#markNote"); if(h) h.textContent=SOON()?"Coming soon":"Premium"; if(m) m.textContent=SOON()?"Turning it off is coming soon.":"Premium can turn it off." }
@@ -707,7 +710,7 @@ let state = migrate((DEMO?null:load()) || seed());
 if(PUBLIC) state.creator=false;
 if(DEMO) document.documentElement.classList.add("demo");
 if(DEMO){ if(QS.get("theme")&&THEMES[QS.get("theme")]) state.theme=QS.get("theme"); if(QS.get("spread")) state.spread=QS.get("spread"); }
-let ui = {selBook:null, confirmReset:false};
+let ui = {selBook:null, confirmReset:false, jarGone:new Set()};
 
 /* adds spreads introduced after a journal was first created */
 function migrate(s){
@@ -795,7 +798,7 @@ function stripTime(t,p){ const pre=t.slice(0,p.at).replace(/[\s,;–-]*(?:@|\bat
 function withTime(txt,h){ return parseTime(txt)?txt:txt+" @ "+fmtHour(h) }
 function load(){try{const s=localStorage.getItem(KEY); return s?JSON.parse(s):null}catch(e){return null}}
 let afterSave=null; /* set by the accounts module to sync each change */
-function save(){try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} if(afterSave) afterSave()}
+function save(){try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} if(afterSave) afterSave(); if(typeof jarHook==="function") jarHook()}
 let saveT; function saveSoon(){clearTimeout(saveT); saveT=setTimeout(save,250)}
 
 function seed(){
@@ -1596,7 +1599,11 @@ function renderDates(){
       ${x.status==="done"?`<textarea rows="1" class="hand-input tk-note" data-in="dmem" data-id="${x.id}" placeholder="What made it special?" aria-label="Memory">${esc(x.note||"")}</textarea>`:""}
       <div class="tk-foot">${foot}</div></article>`; };
   const empty = f==="done"?"No memories yet. When you go on a planned date, tap “We went ♥”.":f==="planned"?"Nothing planned yet. Tap “Plan it” on an idea.":"No ideas here yet. Add one below.";
-  return head("Date ideas", ideas.length+" in the jar · "+planned.length+" planned · "+done.length+(done.length===1?" memory":" memories"), "dates") + grid(
+  const J=ui.jar, canShare=AUTH_ON&&user&&IS_CREATOR;
+  const shareBar = J&&!J.owner ? `<div class="sharebar"><span>♥ Shared jar with <b>${esc(J.ownerName||"your partner")}</b>. You can both add, plan and remember dates.</span><button class="linkish" data-act="dleave">Leave</button></div>`
+    : J ? `<div class="sharebar"><span>♥ Shared ${J.members?`with ${J.members} ${J.members===1?"person":"people"}`:"· waiting for your partner to join"}</span><button class="pen-btn" data-act="dshare">Manage sharing</button></div>`
+    : canShare ? `<div class="sharebar"><span>Plan dates together: share this jar with your partner.</span><button class="pen-btn solid" data-act="dshare">Share with my partner ♥</button></div>` : "";
+  return head("Date ideas", ideas.length+" in the jar · "+planned.length+" planned · "+done.length+(done.length===1?" memory":" memories"), "dates") + shareBar + grid(
     blk("dates","jar",2,`<div class="jarbox">${dateJar(t,ideas.length)}<div class="jartext"><h2 class="section-title">The date jar</h2>
       ${pick?`<p class="drawn">How about…<br><b>${esc(pick.t)}</b></p><div class="row"><button class="pen-btn solid" data-act="dplan" data-id="${pick.id}">Plan it</button><button class="pen-btn" data-act="dinvite" data-id="${pick.id}">Invite ♥</button><button class="pen-btn" data-act="dsurprise">Pick again</button></div>`
         : `<p class="ui-note">${ideas.length?"Can't decide? Pull an idea out of the jar.":"Add a few ideas and the jar will pick one for you."}</p>${ideas.length?`<button class="pen-btn solid" data-act="dsurprise">Surprise me ♥</button>`:""}`}
@@ -1745,6 +1752,8 @@ paper.addEventListener("click",e=>{
   if(act==="scene"&&place){place.scene=SCENES[(SCENES.indexOf(place.scene)+1)%SCENES.length]; save(); render(); return}
   const dx=d.id&&(state.dates||[]).find(x=>x.id===d.id);
   if(act==="dfilter"){ ui.dfilter=d.f; ui.dpick=null; render(); return }
+  if(act==="dshare"){ openShare(); return }
+  if(act==="dleave"){ if(a.dataset.armed){ leaveJar() } else { a.dataset.armed="1"; a.textContent="Tap again to leave" } return }
   if(act==="djcat"){ ui.djcat=d.c; ui.dpick=null; render(); return }
   if(act==="djcost"){ ui.djcost=d.c==="any"?null:+d.c; ui.dpick=null; render(); return }
   if(act==="dsurprise"){ const f=ui.dfilter||"all", jc=ui.djcat||"any", jb=ui.djcost; let pool=state.dates.filter(x=>x.status==="idea"&&(jc==="any"||x.cat===jc)&&(jb==null||(x.cost||0)<=jb));
@@ -2085,7 +2094,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["djcost","djcat","dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["dshare","dleave","djcost","djcat","dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
@@ -2124,7 +2133,8 @@ function openAuth(mode, extra){
   if(!AUTH_ON) return; authMode=mode; const sh=$("#authSheet"); const n=touched().length;
   const head=(t,l)=>`<div class="sheet-head"><div><h2 id="authTitle">${t}</h2><p class="lead">${l}</p></div><button class="close" id="aClose" aria-label="Close">×</button></div>`;
   let html="";
-  if(mode==="limit") html=head("Keep your journal",`You've written on ${GUEST_LIMIT} spreads as a guest. Create a free account to keep going. Everything you've written comes with you.`)+authForm();
+  if(mode==="join") html=head("Join the shared date jar ♥","Sign in or create a free account to plan dates together. It's free, no password needed.")+authForm();
+  else if(mode==="limit") html=head("Keep your journal",`You've written on ${GUEST_LIMIT} spreads as a guest. Create a free account to keep going. Everything you've written comes with you.`)+authForm();
   else if(mode==="save") html=head("Save your journal", n?`Keep the ${n===1?"page":"pages"} you've started safe and open your journal on any device. Free, no password.`:"Create a free account to save your journal and open it on any device. Free, no password.")+authForm();
   else if(mode==="sent") html=head("Check your email",`We sent a sign-in link to <b>${esc(extra)}</b>. Open it on this device so your guest pages come with you.`)+`<div class="auth-body"><button class="ghost" id="aBack">Use a different email</button></div>`;
   else if(mode==="choose") html=head("This account already has a journal","Which one would you like to keep?")+`<div class="choose">
@@ -2178,10 +2188,120 @@ async function pushNow(){
   finally{ pushing=false }
 }
 function writeLocal(){ try{localStorage.setItem(KEY, JSON.stringify(state))}catch(e){} }
-function applyRemote(r){ const keep={spread:state.spread}; state=migrate(r.data||{}); state.creator=false; state.ownerId=user.id; state.syncedAt=r.updated_at; state.pending=false; state.guest={touched:[]}; if(keep.spread) state.spread=keep.spread; writeLocal(); render(true); syncGuestBar() }
+function applyRemote(r){ const keep={spread:state.spread}; state=migrate(r.data||{}); state.creator=false; state.ownerId=user.id; state.syncedAt=r.updated_at; state.pending=false; state.guest={touched:[]}; if(keep.spread) state.spread=keep.spread; if(ui.jar&&ui.jarCache) mergeJar(ui.jarCache,true); writeLocal(); render(true); syncGuestBar() }
+/* =====================================================================
+   SHARED DATE JAR — a creator shares the Date ideas spread with a partner.
+   Both edit the same jar from their own accounts; each idea carries a "u" time so the newest edit wins.
+   ===================================================================== */
+const jarStrip=a=>(a||[]).map(x=>{ const {evKey,...r}=x; return r });
+const jarKey=x=>{ const {evKey,u,...r}=x; return JSON.stringify(r) };
+let jarTimer=null, jarPullT=null;
+function jarStamp(){ /* give changed or new ideas a fresh time; remember removed ones so they stay removed */
+  if(!ui.jar) return; const prev=ui.jarSnap||{}, now2=Date.now(), seen=new Set();
+  (state.dates||[]).forEach(x=>{ seen.add(x.id); if(prev[x.id]!==jarKey(x)) x.u=now2 });
+  Object.keys(prev).forEach(id=>{ if(!seen.has(id)) ui.jarGone.add(id) });
+}
+function jarSnapNow(){ ui.jarSnap={}; (state.dates||[]).forEach(x=>ui.jarSnap[x.id]=jarKey(x)) }
+function mergeJar(remote,quiet){
+  ui.jarCache=remote; jarStamp();
+  const gone=new Set([...(remote.gone||[]), ...ui.jarGone]); ui.jarGone=gone;
+  const byId={}; (state.dates||[]).forEach(x=>byId[x.id]=x);
+  (remote.dates||[]).forEach(r=>{ const l=byId[r.id]; if(!l||(r.u||0)>(l.u||0)) byId[r.id]={...r, evKey:l&&l.evKey} });
+  state.dates=Object.values(byId).filter(x=>!gone.has(x.id)).sort((a,b)=>(b.u||0)-(a.u||0));
+  if(remote.ownerName&&ui.jar) ui.jar.ownerName=remote.ownerName;
+  reconcileDateEvents(); jarSnapNow(); writeLocal();
+  if(!quiet&&state.spread==="dates") render();
+}
+/* each person's own log shows the shared plans as ○ events */
+function reconcileDateEvents(){
+  const want={}; (state.dates||[]).forEach(x=>{ if(x.status!=="idea"&&x.when) want[x.id]=x });
+  Object.entries(state.log||{}).forEach(([mk,L])=>Object.keys(L).forEach(day=>{ L[day]=L[day].filter(it=>{ if(!it.dref) return true; const x=want[it.dref];
+    if(!x) return false; const dt=fromIso(x.when); if(ym(dt.getFullYear(),dt.getMonth()+1)!==mk||String(dt.getDate())!==String(day)) return false;
+    it.t=dateEventText(x); it.b=x.status==="done"?"done":"event"; x.evKey=mk+"|"+day; return true }) }));
+  Object.values(want).forEach(x=>{ const dt=fromIso(x.when), k=ym(dt.getFullYear(),dt.getMonth()+1)+"|"+dt.getDate(); if(x.evKey!==k){ delete x.evKey; syncDateEvent(x) } });
+}
+function jarHook(){ if(!ui.jar||!user) return; const cur={}; (state.dates||[]).forEach(x=>cur[x.id]=jarKey(x)); const prev=ui.jarSnap||{};
+  if(Object.keys(cur).length===Object.keys(prev).length&&Object.keys(cur).every(k=>prev[k]===cur[k])) return;
+  clearTimeout(jarTimer); jarTimer=setTimeout(pushJar,900) }
+async function pushJar(){
+  if(!ui.jar||!user) return;
+  try{ const {data:r,error}=await sb.from("date_jars").select("data,updated_at").eq("id",ui.jar.id).maybeSingle(); if(error) throw error;
+    if(!r){ toast("This date jar isn't shared any more."); dropJar(); render(); return }
+    mergeJar(r.data||{},true);
+    const out={dates:jarStrip(state.dates), gone:[...ui.jarGone].slice(-500), ownerName:ui.jar.ownerName||""}, ts=new Date().toISOString();
+    const {error:e2}=await sb.from("date_jars").update({data:out, updated_at:ts}).eq("id",ui.jar.id); if(e2) throw e2;
+    ui.jar.seen=ts; ui.jarCache=out;
+  }catch(e){ clearTimeout(jarTimer); jarTimer=setTimeout(pushJar,8000) }
+}
+async function pullJar(){
+  if(!ui.jar||!user||document.visibilityState!=="visible") return;
+  try{ const {data:r}=await sb.from("date_jars").select("data,updated_at").eq("id",ui.jar.id).maybeSingle();
+    if(!r){ toast("This date jar isn't shared any more."); dropJar(); render(); return }
+    if(ui.jar.owner){ const {count}=await sb.from("date_jar_members").select("user_id",{count:"exact",head:true}).eq("jar_id",ui.jar.id); if((count||0)!==ui.jar.members){ ui.jar.members=count||0; if(state.spread==="dates") render() } }
+    if(r.updated_at!==ui.jar.seen){ ui.jar.seen=r.updated_at; mergeJar(r.data||{}) } }catch(e){}
+}
+function dropJar(){ ui.jar=null; ui.jarCache=null; ui.jarSnap=null; ui.jarGone=new Set(); clearInterval(jarPullT); jarPullT=null }
+async function initJar(){
+  if(!sb||!user) return;
+  let token=null; try{ token=localStorage.getItem("petal-join") }catch(e){}
+  if(token){ try{ localStorage.removeItem("petal-join") }catch(e){}
+    const {error}=await sb.rpc("join_date_jar",{p_token:token});
+    if(error){ toast(/used/.test(error.message)?"That invite link has already been used. Ask for a new one.":/not found/.test(error.message)?"That invite link isn't valid any more. Ask for a new one.":"Couldn't join the date jar. Try the link again.") }
+    else ui.justJoined=true;
+  }
+  try{
+    const {data,error}=await sb.from("date_jars").select("id,owner_id,data,updated_at").order("updated_at",{ascending:false}).limit(1); if(error) throw error;
+    if(!data||!data.length){ dropJar(); if(state.spread==="dates") render(); return }
+    const r=data[0]; ui.jarGone=new Set(); ui.jarSnap={}; /* local ideas not in the shared jar yet get added to it */
+    ui.jar={id:r.id, owner:r.owner_id===user.id, ownerName:(r.data&&r.data.ownerName)||"", seen:r.updated_at, members:0};
+    mergeJar(r.data||{},true); save();
+    if(ui.jar.owner){ const {count}=await sb.from("date_jar_members").select("user_id",{count:"exact",head:true}).eq("jar_id",r.id); ui.jar.members=count||0 }
+    clearInterval(jarPullT); jarPullT=setInterval(pullJar,20000);
+    if(ui.justJoined){ ui.justJoined=false; state.spread="dates"; save(); render(true); toast("You've joined "+(ui.jar.ownerName?ui.jar.ownerName+"'s":"the shared")+" date jar ♥") }
+    else if(state.spread==="dates") render();
+  }catch(e){}
+}
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible") pullJar() });
+/* creator: share pop-up (create the jar, make one-time invite links, stop sharing) */
+function closeShare(){ const p=$("#shPop"); if(p) p.remove(); ui.sh=null }
+function newToken(){ const b=new Uint8Array(18); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"") }
+function openShare(){
+  closeShare(); ui.sh=true; const J=ui.jar;
+  const pop=document.createElement("div"); pop.className="cp-pop pl-pop"; pop.id="shPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Share your date jar");
+  pop.innerHTML = !J ? `<h3>Share your date jar ♥</h3><p class="tip" style="margin:0 0 10px">Your partner gets the same jar in their own free account. You can both add ideas, plan dates and keep memories, and changes show up for both of you.</p>
+      <div class="pl-grid" style="grid-template-columns:1fr"><label>Your name <span class="opt">shown to your partner</span><input id="shName" value="${esc((state.partner&&state.partner.me)||"")}" placeholder="Zulma" autocomplete="off"></label></div>
+      <div class="pl-actions"><button class="go" id="shCreate">Create an invite link</button><button class="ghostb" id="shClose">Cancel</button></div>`
+    : `<h3>Your shared date jar ♥</h3><p class="tip" style="margin:0 0 10px">${J.members?`Shared with ${J.members} ${J.members===1?"person":"people"}.`:"No one has joined yet."} Each invite link works once.</p>
+      <div id="shLink"></div>
+      <div class="pl-actions"><button class="go" id="shNew">New invite link</button><button class="ghostb" id="shClose">Done</button></div>
+      <p class="tip" style="margin:12px 0 0"><button class="linkish" id="shStop" style="color:#C0584C;font:inherit">Stop sharing</button></p>`;
+  document.body.appendChild(pop); const btn=document.querySelector('[data-act="dshare"]'); if(innerWidth<=560) pop.classList.add("sheetish"); else if(btn) placePop(pop,btn);
+  const showLink=url=>{ $("#shLink").innerHTML=`<div class="pl-grid" style="grid-template-columns:1fr"><label>Invite link <span class="opt">send this to your partner</span><input id="shUrl" readonly value="${esc(url)}"></label></div>
+      <div class="inv"><button data-sh="msg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button><button data-sh="email"><b>Email the link</b><span>Opens your email app</span></button><button data-sh="copy"><b>Copy the link</b><span>Paste it anywhere</span></button></div>`;
+    pop.dataset.url=url };
+  async function makeLink(){ const token=newToken(); const {error}=await sb.from("date_jar_invites").insert({token, jar_id:ui.jar.id}); if(error){ toast("Couldn't make a link. Try again."); return } showLink(appUrl()+"?join="+token) }
+  pop.addEventListener("click",async e=>{
+    if(e.target.closest("#shClose")) return closeShare();
+    if(e.target.closest("#shCreate")){ const name=$("#shName").value.trim(); state.partner={...(state.partner||{}), me:name}; const b=e.target.closest("#shCreate"); b.disabled=true;
+      jarSnapNow(); const data={dates:jarStrip(state.dates).map(x=>({...x,u:x.u||Date.now()})), gone:[], ownerName:name};
+      const {data:row,error}=await sb.from("date_jars").insert({owner_id:user.id, data}).select("id,updated_at").single();
+      if(error){ b.disabled=false; toast("Only creator accounts can share for now."); return }
+      ui.jar={id:row.id, owner:true, ownerName:name, seen:row.updated_at, members:0}; ui.jarGone=new Set(); ui.jarCache=data; jarSnapNow(); save();
+      clearInterval(jarPullT); jarPullT=setInterval(pullJar,20000); render(); openShare(); await makeLink(); return }
+    if(e.target.closest("#shNew")) return makeLink();
+    if(e.target.closest("#shStop")){ const b=e.target.closest("#shStop"); if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Tap again: your partner loses access"; return }
+      await sb.from("date_jars").delete().eq("id",ui.jar.id); dropJar(); closeShare(); render(); toast("Stopped sharing. Your ideas are still here."); return }
+    const s2=e.target.closest("[data-sh]"); if(s2){ const url=pop.dataset.url, who=(state.partner&&state.partner.me)||"", text=(who?who+" wants":"Want")+" to plan dates together ♥ Join my date jar on Petal & Page:\n"+url;
+      if(s2.dataset.sh==="email"){ location.href="mailto:?subject="+encodeURIComponent("Plan dates with me ♥")+"&body="+encodeURIComponent(text); return }
+      if(s2.dataset.sh==="msg"&&navigator.share){ try{ await navigator.share({text}); return }catch(err){ if(err&&err.name==="AbortError") return } }
+      try{ await navigator.clipboard.writeText(s2.dataset.sh==="copy"?url:text); toast(s2.dataset.sh==="copy"?"Link copied":"Invite copied. Paste it into a text.") }catch(err){ $("#shUrl").select(); toast("Select the link and copy it") } }
+  });
+}
+document.addEventListener("pointerdown",e=>{ if(ui.sh&&!e.target.closest("#shPop")&&!e.target.closest('[data-act="dshare"]')) closeShare() },true);
+async function leaveJar(){ if(!ui.jar) return; await sb.from("date_jar_members").delete().eq("jar_id",ui.jar.id).eq("user_id",user.id); const n=ui.jar.ownerName; dropJar(); render(); toast("You've left "+(n?n+"'s":"the shared")+" date jar. Your copy of the ideas stays here.") }
 async function setUser(u){
   user=u||null; syncHeader(); syncGuestBar();
-  if(!user){ afterSave=null; setCreatorAccount(false); return }
+  if(!user){ afterSave=null; setCreatorAccount(false); dropJar(); return }
   sb.from("creators").select("user_id").eq("user_id",user.id).maybeSingle().then(({data})=>setCreatorAccount(!!data),()=>{});
   afterSave=()=>{ if(!user) return; if(!state.pending){ state.pending=true; writeLocal() } setStatus(navigator.onLine===false?"offline":"pending"); pushSoon() };
   if(!$("#authSheet").hidden&&authMode!=="account") closeAuth();
@@ -2195,6 +2315,7 @@ async function setUser(u){
     if(touched().length){ pendingRemote=r; openAuth("choose", r.updated_at); return }
     applyRemote(r); toast("Welcome back. Your journal is open.");
   }catch(err){ setStatus("pending"); toast("Signed in, but your journal couldn't load yet. Check your connection and reload.") }
+  finally{ if(user) initJar() }
 }
 async function keepRemote(){
   try{ await saveFile("petal-and-page-guest-pages-"+iso(new Date())+".json", JSON.stringify(state,null,1)) }catch(e){}
@@ -2218,6 +2339,9 @@ async function initAuth(){
     history.replaceState(null,"",location.pathname); if(msg&&!session) toast("Sign-in didn't finish: "+msg);
   }
   await setUser(session&&session.user);
+  /* a partner who opened an invite link before signing in: ask them to sign in first */
+  let jt=null; try{ jt=localStorage.getItem("petal-join") }catch(e){}
+  if(jt&&!user){ state.spread="dates"; render(true); openAuth("join") }
   sb.auth.onAuthStateChange((ev,ses)=>{ const u=ses&&ses.user||null; if((u&&u.id)!==(user&&user.id)) setUser(u) });
   addEventListener("online",()=>{ if(user&&state.pending) pushSoon(0) });
   addEventListener("offline",()=>{ if(user) setStatus("offline") });
