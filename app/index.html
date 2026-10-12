@@ -431,6 +431,22 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .dwhen{font-family:var(--ui); font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px}
 .dwhen input{font:inherit; color:var(--ink); background:var(--paper); border:1.3px solid var(--ink); border-radius:6px; padding:1px 4px}
 .hearts{display:flex; gap:2px}
+.dwhen{flex-basis:100%; display:flex; flex-wrap:wrap; gap:4px 10px; align-items:baseline; font-family:var(--hand); color:var(--ink); font-size:1em}
+.dwhen b{font-weight:600}
+.pl-pop{max-height:calc(100vh - 24px); overflow:auto}
+.pl-pop.sheetish{left:16px!important; right:16px; width:auto; bottom:calc(16px + env(safe-area-inset-bottom,0px)); top:auto!important}
+.pl-pop .quick button.on{border-color:var(--chrome-ink); background:var(--chrome)}
+.pl-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px}
+.pl-grid label{display:grid; gap:4px; font-weight:600; font-size:12px}
+.pl-grid .opt{font-weight:400; color:var(--chrome-muted)}
+.pl-grid input{font:inherit; font-weight:400; font-size:13px; min-width:0; padding:6px 8px; border:1px solid var(--line); border-radius:8px; background:var(--chip); color:var(--chrome-ink)}
+@media (max-width:380px){ .pl-grid{grid-template-columns:1fr} }
+.pl-actions{display:flex; gap:8px; justify-content:flex-end}
+.pl-pop .ghostb{border:1px solid var(--line); background:transparent; color:var(--chrome-muted); border-radius:999px; padding:6px 14px; font:inherit; cursor:pointer}
+.inv{display:grid; gap:8px; margin-bottom:12px}
+.inv button{display:grid; gap:1px; text-align:left; border:1px solid var(--line); background:var(--chip); color:var(--chrome-ink); border-radius:12px; padding:9px 12px; font:inherit; cursor:pointer}
+.inv button:hover{border-color:var(--chrome-ink)}
+.inv button span{font-size:12px; color:var(--chrome-muted)}
 .hearts button{border:0; background:transparent; padding:0 2px; font-size:1.2em; line-height:1; color:#C0584C; cursor:pointer}
 .exporting .dchips, .exporting .jartext .pen-btn, .exporting .tk-top .x-btn, .exporting .ticket .linkish, .exporting .ticket .pen-btn{display:none!important}
 .demo .pro-bar{display:none}
@@ -1441,10 +1457,74 @@ function fmtShort(isoStr){ const d=fromIso(isoStr); return DAYNAMES[d.getDay()].
 function syncDateEvent(x){
   if(x.evKey){ const [mk,day]=x.evKey.split("|"), L=state.log[mk]; if(L&&L[day]){ L[day]=L[day].filter(it=>it.dref!==x.id) } delete x.evKey }
   if(x.status==="idea"||!x.when) return;
-  const dt=fromIso(x.when), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate(), arr=getList(mk,day), item={b:x.status==="done"?"done":"event", t:"Date: "+x.t, dref:x.id};
+  const dt=fromIso(x.when), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate(), arr=getList(mk,day), item={b:x.status==="done"?"done":"event", t:dateEventText(x), dref:x.id};
   if(arr.length===1&&!arr[0].t.trim()) arr[0]=item; else arr.push(item);
   x.evKey=mk+"|"+day;
 }
+function fmtClock(hm){ const [h,m]=hm.split(":").map(Number); return (h%12||12)+(m?":"+String(m).padStart(2,"0"):"")+(h<12?"am":"pm") }
+function dateEventText(x){ return "Date: "+x.t+(x.time?" @ "+fmtClock(x.time):"") }
+/* ---- plan a date: pick the day and time, then (optionally) invite your partner ---- */
+function closePlan(){ const p=$("#plPop"); if(p) p.remove(); ui.pl=null }
+function nextDow(dow){ const d=new Date(now.getFullYear(),now.getMonth(),now.getDate()); d.setDate(d.getDate()+((dow-d.getDay()+7)%7)); return d }
+function openPlan(id,step){
+  const x=state.dates.find(v=>v.id===id); if(!x) return; closePlan(); closeCopy(); closeStyle();
+  ui.pl={id};
+  const pop=document.createElement("div"); pop.className="cp-pop pl-pop"; pop.id="plPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Plan this date");
+  const P=state.partner||{};
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), fri=nextDow(5), sat=nextDow(6), sun=nextDow(0);
+  const quick=[["Tonight",today,"19:00"],["Fri",fri,"19:00"],["Sat",sat,""],["Sun",sun,""]].filter(([l,d],i)=>i===0||iso(d)!==iso(today));
+  if(step!=="invite"){
+    pop.innerHTML=`<h3>Plan this date</h3><p class="what">${esc(x.t)}</p>
+      <div class="quick">${quick.map(([l,d,tm])=>`<button type="button" data-qd="${iso(d)}" data-qt="${tm}">${l} <span style="color:var(--chrome-muted)">· ${fmtShort(iso(d)).slice(5)}</span></button>`).join("")}</div>
+      <div class="pl-grid"><label>Date<input type="date" id="plDate" value="${x.when||""}" min="${iso(today)}"></label><label>Time <span class="opt">optional</span><input type="time" id="plTime" value="${x.time||""}"></label></div>
+      <div class="pl-actions"><button class="go" id="plSave">Save to my journal</button><button class="ghostb" id="plCancel">Cancel</button></div>`;
+  } else {
+    pop.innerHTML=`<h3>Invite your partner ♥</h3><p class="what">${esc(x.t)} · ${fmtShort(x.when)}${x.time?" · "+fmtClock(x.time):""}</p>
+      <div class="pl-grid"><label>Their name <span class="opt">optional</span><input id="plName" value="${esc(P.name||"")}" placeholder="Sam" autocomplete="off"></label><label>Their email <span class="opt">for calendar invites</span><input type="email" id="plEmail" value="${esc(P.email||"")}" placeholder="sam@example.com" autocomplete="off"></label></div>
+      <div class="inv">
+        <button data-inv="msg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button>
+        <button data-inv="email"><b>Email the invite</b><span>Opens your email app</span></button>
+        <button data-inv="gcal"><b>Google Calendar</b><span>Adds it to your calendar and invites them</span></button>
+        <button data-inv="ics"><b>Apple or Outlook calendar</b><span>Downloads a calendar file to add or send</span></button>
+      </div>
+      <div class="pl-actions"><button class="ghostb" id="plCancel">Done</button></div>`;
+  }
+  document.body.appendChild(pop);
+  const btn=document.querySelector(`[data-act="${step==="invite"?"dinvite":"dplan"}"][data-id="${id}"]`)||document.getElementById("dt-"+id);
+  if(innerWidth<=560){ pop.classList.add("sheetish") } else if(btn) placePop(pop,btn);
+  pop.addEventListener("click",e=>{
+    const q=e.target.closest("[data-qd]"); if(q){ $("#plDate").value=q.dataset.qd; if(q.dataset.qt&&!$("#plTime").value) $("#plTime").value=q.dataset.qt; pop.querySelectorAll("[data-qd]").forEach(b=>b.classList.toggle("on",b===q)); return }
+    if(e.target.closest("#plCancel")){ closePlan(); return }
+    if(e.target.closest("#plSave")){ const d=$("#plDate").value; if(!d){ toast("Pick a date first"); $("#plDate").focus(); return } if(!guard()) return closePlan();
+      const first=x.status!=="planned"; x.when=d; x.time=$("#plTime").value||""; x.status="planned"; syncDateEvent(x); ui.dpick=null; ui.dfilter="planned"; save(); render();
+      toast((first?"Planned for ":"Moved to ")+fmtShort(x.when)+(x.time?" at "+fmtClock(x.time):"")+". It's on your log too."); openPlan(id,"invite"); return }
+    const iv=e.target.closest("[data-inv]"); if(iv){ const name=$("#plName").value.trim(), email=$("#plEmail").value.trim();
+      state.partner={name,email}; sendInvite(x, iv.dataset.inv, name, email); x.invited=true; save(); render(); }
+  });
+  (pop.querySelector("#plDate")||pop.querySelector("[data-inv]")).focus();
+}
+function inviteText(x,name){ return (name?name+", ":"")+"date night? ♥\n"+x.t+"\n"+fmtShort(x.when)+(x.time?" at "+fmtClock(x.time):"")+"\n\nPlanned in my Petal & Page journal" }
+function calTimes(x){ const d=x.when.replace(/-/g,"");
+  if(!x.time){ const e=fromIso(x.when); e.setDate(e.getDate()+1); return {allDay:true, s:d, e:iso(e).replace(/-/g,"")} }
+  const [h,m]=x.time.split(":").map(Number), st=new Date(+x.when.slice(0,4),+x.when.slice(5,7)-1,+x.when.slice(8),h,m), en=new Date(st.getTime()+2*3600e3);
+  const f=dt=>iso(dt).replace(/-/g,"")+"T"+String(dt.getHours()).padStart(2,"0")+String(dt.getMinutes()).padStart(2,"0")+"00"; return {allDay:false, s:f(st), e:f(en)} }
+async function sendInvite(x,how,name,email){
+  const text=inviteText(x,name), title="Date: "+x.t;
+  if(how==="msg"){
+    if(navigator.share){ try{ await navigator.share({text}); return }catch(e){ if(e&&e.name==="AbortError") return } }
+    try{ await navigator.clipboard.writeText(text); toast("Invite copied. Paste it into a text to "+(name||"your partner")+".") }catch(e){ toast("Couldn't copy here. Try the email option.") } return }
+  if(how==="email"){ location.href="mailto:"+encodeURIComponent(email)+"?subject="+encodeURIComponent("Date night? ♥ "+x.t)+"&body="+encodeURIComponent(text); return }
+  const T2=calTimes(x);
+  if(how==="gcal"){ const u="https://calendar.google.com/calendar/render?action=TEMPLATE&text="+encodeURIComponent(title)+"&dates="+T2.s+"/"+T2.e+"&details="+encodeURIComponent("Planned in Petal & Page ♥")+(email?"&add="+encodeURIComponent(email):"");
+    window.open(u,"_blank","noopener"); if(!email) toast("Add their email above and Google Calendar will invite them too."); return }
+  if(how==="ics"){ const stamp=new Date().toISOString().replace(/[-:]/g,"").replace(/\.\d+/,""), esc2=v=>v.replace(/([,;\\])/g,"\\$1").replace(/\n/g,"\\n");
+    const ics=["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//Petal & Page//Date ideas//EN","METHOD:PUBLISH","BEGIN:VEVENT","UID:"+x.id+"-"+x.when+"@petal-and-page","DTSTAMP:"+stamp,
+      T2.allDay?"DTSTART;VALUE=DATE:"+T2.s:"DTSTART:"+T2.s, T2.allDay?"DTEND;VALUE=DATE:"+T2.e:"DTEND:"+T2.e, "SUMMARY:"+esc2(title), "DESCRIPTION:"+esc2("Planned in Petal & Page ♥"),
+      ...(email?["ATTENDEE;CN="+esc2(name||email)+";RSVP=TRUE:mailto:"+email]:[]), "END:VEVENT","END:VCALENDAR"].join("\r\n");
+    await saveFile("date-"+x.when+".ics", new Blob([ics],{type:"text/calendar"})); return }
+}
+document.addEventListener("pointerdown",e=>{ if(ui.pl&&!e.target.closest("#plPop")&&!e.target.closest('[data-act="dplan"],[data-act="dinvite"]')) closePlan() },true);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&ui.pl) closePlan() });
 function dateJar(t,n){
   const spots=[[34,118],[52,122],[70,118],[88,122],[42,104],[60,106],[78,104],[34,90],[52,92],[70,90],[88,92],[44,76],[62,78],[80,76],[36,62],[54,64],[72,62],[88,64]];
   const heart=(x,y,c)=>`<path d="M${x} ${y+5}c-5-3.4-8-6.2-8-9a4.2 4.2 0 0 1 8-1.8 4.2 4.2 0 0 1 8 1.8c0 2.8-3 5.6-8 9z" fill="${c}" stroke="${t.ink}" stroke-width="1.1"/>`;
@@ -1466,8 +1546,9 @@ function renderDates(){
     .map(([k,l])=>`<button class="chipb${f===k?" on":""}" data-act="dfilter" data-f="${k}" aria-pressed="${f===k}">${esc(l)}</button>`).join("");
   const card=x=>{ const c=dcol(t,x.cat);
     const foot = x.status==="idea" ? `<button class="pen-btn" data-act="dplan" data-id="${x.id}">Plan it</button>`
-      : x.status==="planned" ? `<label class="dwhen">On <input type="date" data-in="dwhen" data-id="${x.id}" value="${x.when||""}" aria-label="Date for ${esc(x.t)}"></label><button class="pen-btn solid" data-act="ddone" data-id="${x.id}">We went ♥</button><button class="linkish" data-act="dunplan" data-id="${x.id}">Not yet</button>`
-      : `<div class="hearts" role="group" aria-label="How was it?">${[1,2,3,4,5].map(n=>`<button data-act="dheart" data-id="${x.id}" data-n="${n}" aria-label="${n} of 5" aria-pressed="${(x.hearts||0)>=n}">${(x.hearts||0)>=n?"♥":"♡"}</button>`).join("")}</div><span class="ui-note">${x.when?fmtShort(x.when):""}</span>`;
+      : x.status==="planned" ? `<div class="dwhen"><b>${x.when?fmtShort(x.when):""}${x.time?" · "+fmtClock(x.time):""}</b>${x.invited?`<span class="ui-note">${state.partner&&state.partner.name?"Invited "+esc(state.partner.name):"Invite sent"} ♡</span>`:""}</div>
+        <button class="pen-btn" data-act="dplan" data-id="${x.id}">Change</button><button class="pen-btn" data-act="dinvite" data-id="${x.id}">${x.invited?"Invite again":"Invite ♥"}</button><button class="pen-btn solid" data-act="ddone" data-id="${x.id}">We went ♥</button><button class="linkish" data-act="dunplan" data-id="${x.id}">Not yet</button>`
+      : `<div class="hearts" role="group" aria-label="How was it?">${[1,2,3,4,5].map(n=>`<button data-act="dheart" data-id="${x.id}" data-n="${n}" aria-label="${n} of 5" aria-pressed="${(x.hearts||0)>=n}">${(x.hearts||0)>=n?"♥":"♡"}</button>`).join("")}</div><span class="ui-note">${x.when?fmtShort(x.when):""}${x.time?" · "+fmtClock(x.time):""}</span>`;
     return `<article class="ticket ${x.status}${pick&&pick.id===x.id?" picked":""}" id="dt-${x.id}" style="--cc:${c}">
       <div class="tk-top"><button class="tk-cat" data-act="dcat" data-id="${x.id}" title="Change type">${esc(DCATS[x.cat]||"Idea")}</button><button class="tk-cost" data-act="dcost" data-id="${x.id}" title="Change cost">${DCOST[x.cost||0]}</button><button class="x-btn" data-act="ddel" data-id="${x.id}" aria-label="Remove this idea">×</button></div>
       <textarea rows="1" class="hand-input tk-title" data-in="dtitle" data-id="${x.id}" aria-label="Date idea">${esc(x.t)}</textarea>
@@ -1629,9 +1710,9 @@ paper.addEventListener("click",e=>{
   if(dx){
     if(act==="dcat"){ const k=Object.keys(DCATS); dx.cat=k[(k.indexOf(dx.cat)+1)%k.length]; save(); render(); return }
     if(act==="dcost"){ dx.cost=((dx.cost||0)+1)%DCOST.length; save(); render(); return }
-    if(act==="dplan"){ if(!dx.when||dx.when<iso(now)){ const sat=new Date(now.getFullYear(),now.getMonth(),now.getDate()); sat.setDate(sat.getDate()+((6-sat.getDay()+7)%7||7)); dx.when=iso(sat) }
-      dx.status="planned"; syncDateEvent(dx); ui.dpick=null; ui.dfilter="planned"; save(); render(); toast("Planned for "+fmtShort(dx.when)+". It's on your log too. Change the date on the ticket."); return }
-    if(act==="dunplan"){ dx.status="idea"; syncDateEvent(dx); save(); render(); toast("Back in the jar"); return }
+    if(act==="dplan"){ openPlan(dx.id); return }
+    if(act==="dinvite"){ openPlan(dx.id,"invite"); return }
+    if(act==="dunplan"){ dx.status="idea"; dx.invited=false; syncDateEvent(dx); save(); render(); toast("Back in the jar"); return }
     if(act==="ddone"){ dx.status="done"; if(!dx.when) dx.when=iso(now); syncDateEvent(dx); ui.dfilter="done"; save(); render(); toast("Saved to your memories ♥"); return }
     if(act==="dheart"){ dx.hearts=(dx.hearts===+d.n?0:+d.n); save(); render(); return }
     if(act==="ddel"){ const snap=JSON.stringify(state); dx.status="idea"; syncDateEvent(dx); state.dates=state.dates.filter(x=>x!==dx); save(); render(); undoToast("Removed “"+esc(dx.t||"idea")+"”.", snap); return }
@@ -1653,7 +1734,7 @@ paper.addEventListener("input",e=>{
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
   if(d.in==="dtitle"||d.in==="dmem"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(!x) return;
     if(d.in==="dmem"){ x.note=el.value; saveSoon(); return }
-    x.t=el.value; if(x.evKey){ const [mk,day]=x.evKey.split("|"), it=((state.log[mk]||{})[day]||[]).find(v=>v.dref===x.id); if(it) it.t="Date: "+x.t } saveSoon(); return }
+    x.t=el.value; if(x.evKey){ const [mk,day]=x.evKey.split("|"), it=((state.log[mk]||{})[day]||[]).find(v=>v.dref===x.id); if(it) it.t=dateEventText(x) } saveSoon(); return }
   if(d.in==="place"){const p=state.travel.find(x=>x.id===d.id); if(p) p.name=el.value; saveSoon(); return}
 });
 function saveTitle(el){
@@ -1960,7 +2041,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
