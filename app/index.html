@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Caveat:wght@400;600;700&family=Caveat+Brush&family=Chewy&family=Figtree:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Homemade+Apple&family=Patrick+Hand&display=swap">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
-<script>window.PETAL_PUBLIC = true;</script>
+<script>window.PETAL_PUBLIC = true; window.PETAL_SHOW_PREMIUM = true;</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>window.PETAL_CONFIG = {"supabaseUrl": "https://jioraparnnukflswpipl.supabase.co", "supabaseAnonKey": "sb_publishable_yNGawc49zAvQzEAvOX28LQ_Dhj1gmdA"};</script>
 </head>
@@ -477,6 +477,8 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .xopt span{font-size:12px; color:var(--chrome-muted); line-height:1.35}
 .xopt .badge{position:absolute; top:10px; right:10px; font-style:normal; font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background:var(--chrome); border:1px solid var(--line); border-radius:999px; padding-block:2px; padding-inline:7px}
 .xopt[disabled]{opacity:.55; cursor:progress}
+.xopt .badge:empty{display:none}
+.xopt:has(.badge:empty) b{padding-right:0}
 .xconfirm{display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:14px; padding:12px 14px; border:1px solid #C0584C; border-radius:12px}
 .xconfirm span{flex:1 1 220px}
 .xstatus{min-height:1.3em; margin-block:12px 0; color:var(--chrome-muted)}
@@ -599,7 +601,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   <div class="themes" id="themes"></div>
   <div class="creator" id="creatorRow"><div class="txt"><b>Creator mode</b><span>Unlocks Premium tools for you as the app's creator, including resizable boxes and text fields and Premium exports. Other users would see these as paid features.</span></div><button class="switch" id="creatorSw" role="switch" aria-checked="false" aria-label="Creator mode"></button></div>
   <div class="sheet-foot">
-    <span class="ui-note pro-only" style="color:var(--chrome-muted)">Premium themes and your own journal wallpapers are coming soon.</span>
+    <span class="ui-note pro-only" style="color:var(--chrome-muted)">More themes and your own journal wallpapers are coming soon.</span>
     <button class="ghost" id="resetBtn">Clear all entries</button>
   </div>
 </section>
@@ -613,13 +615,13 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
     <button class="xopt" data-x="png"><b>Share image</b><span>PNG picture of this spread, ready to post or send</span></button>
     <button class="xopt" data-x="pdf"><b>PDF pages</b><span>A5 notebook pages to print or keep</span></button>
   </div>
-  <h3 class="xgroup pro-only">Premium</h3>
+  <h3 class="xgroup pro-only" id="xProHead">Premium</h3>
   <div class="xgrid pro-only">
     <button class="xopt pro" data-x="journal"><b>Whole journal</b><span>Every spread in one PDF</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="square"><b>Square post</b><span>PNG, 1080 × 1080</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="story"><b>Story</b><span>PNG, 1080 × 1920</span><i class="badge"></i></button>
   </div>
-  <div class="creator pro-only"><div class="txt"><b>Hide the “Made with Petal &amp; Page” mark</b><span>Free exports carry a small mark in the bottom corner. Premium can turn it off.</span></div><button class="switch" id="markSw" role="switch" aria-checked="false" aria-label="Hide the Petal and Page mark"></button></div>
+  <div class="creator pro-only"><div class="txt"><b>Hide the “Made with Petal &amp; Page” mark</b><span>Free exports carry a small mark in the bottom corner. <span id="markNote">Premium can turn it off.</span></span></div><button class="switch" id="markSw" role="switch" aria-checked="false" aria-label="Hide the Petal and Page mark"></button></div>
   <h3 class="xgroup">Your data<span class="pro-only"> · free</span></h3>
   <div class="xgrid">
     <button class="xopt" data-x="backup"><b>Back up journal</b><span>One file with every entry, theme and setting</span></button>
@@ -690,7 +692,10 @@ if(HIDE_PREMIUM) document.documentElement.classList.add("no-premium");
 const QS = new URLSearchParams(location.search);
 const DEMO = QS.has("demo");
 const KEY = DEMO ? "petal-page-demo" : "petal-page-v1";
-const premiumMsg = what => PUBLIC ? what+" is coming soon with Petal & Page Premium." : what+" is a Premium feature. Turn on Creator mode in Themes to try it.";
+/* on the public site, visitors see paid features as "Coming soon" (never "Premium"); creator accounts get full access */
+const SOON = ()=>PUBLIC&&!IS_CREATOR;
+function applySoonLabels(){ const h=$("#xProHead"), m=$("#markNote"); if(h) h.textContent=SOON()?"Coming soon":"Premium"; if(m) m.textContent=SOON()?"Turning it off is coming soon.":"Premium can turn it off." }
+const premiumMsg = what => PUBLIC ? what+" is coming soon." : what+" is a Premium feature. Turn on Creator mode in Themes to try it.";
 const now = new Date();
 const thisMonth = ym(now.getFullYear(), now.getMonth()+1);
 function ym(y,m){return y+"-"+String(m).padStart(2,"0")}
@@ -998,7 +1003,7 @@ function openStyle(btn){
   ui.st={btn, m:d.m, day:+d.day, i};
   const pop=document.createElement("div"); pop.className="cp-pop st-pop"; pop.id="stPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Colour and indent");
   /* colour-coding is a Premium feature: hidden on the public site for now, unlocked by Creator mode in the preview */
-  const colours=HIDE_PREMIUM?"":`<h3>Text colour ${state.creator?`<span class="pbadge">Premium</span>`:`<span class="pbadge">🔒 Premium</span>`}</h3><div class="sw${state.creator?"":" locked"}">${Object.entries(INKS).map(([k,c])=>`<button data-c="${k}" style="background:${c.v}" aria-pressed="${it.c===k}" aria-label="${c.n}" title="${c.n}"></button>`).join("")}<button class="none" data-c="" aria-pressed="${!INKS[it.c]}" aria-label="No colour" title="No colour">×</button></div>`;
+  const colours=HIDE_PREMIUM?"":`<h3>Text colour ${state.creator?`<span class="pbadge">Premium</span>`:`<span class="pbadge">${SOON()?"Coming soon":"🔒 Premium"}</span>`}</h3><div class="sw${state.creator?"":" locked"}">${Object.entries(INKS).map(([k,c])=>`<button data-c="${k}" style="background:${c.v}" aria-pressed="${it.c===k}" aria-label="${c.n}" title="${c.n}"></button>`).join("")}<button class="none" data-c="" aria-pressed="${!INKS[it.c]}" aria-label="No colour" title="No colour">×</button></div>`;
   pop.innerHTML=`${colours}
     <h3>Indent</h3><div class="ind"><button data-ind="1" ${i===0||lvl>=2||lvl>prevLvl?"disabled":""}>→ Tab under the line above</button><button data-ind="-1" ${lvl?"":"disabled"}>← Move back out</button></div>
     <p class="tip">On a keyboard: Tab indents, Shift+Tab moves back out.</p>`;
@@ -1086,7 +1091,7 @@ function proBar(sp){
   if(HIDE_PREMIUM) return `<div class="pro-bar">${clearBtn(sp)}</div>`;
   return state.creator
     ? `<div class="pro-bar"><span class="pro-chip on"><span class="b">Premium</span>Resizable boxes</span><span>Drag a box's corner to resize it. Hover or tap into any text field to resize that kind of field.</span>${custom?`<button class="pen-btn" style="font-family:var(--ui);font-size:12px" data-act="resetlayout" data-spread="${sp}">Reset sizes</button>`:""}${clearBtn(sp)}</div>`
-    : `<div class="pro-bar"><button class="pro-chip" data-act="prolocked"><span class="b">Premium</span>🔒 Resize boxes${PUBLIC?" · coming soon":""}</button>${clearBtn(sp)}</div>`;
+    : `<div class="pro-bar"><button class="pro-chip" data-act="prolocked">${SOON()?`<span class="b">Coming soon</span>Resize boxes`:`<span class="b">Premium</span>🔒 Resize boxes`}</button>${clearBtn(sp)}</div>`;
 }
 function weekLabel(){
   const a=fromIso(state.week), b=new Date(a); b.setDate(a.getDate()+6);
@@ -1644,7 +1649,7 @@ function renderThemes(){
       <div class="pv" style="background:${t.ai?`linear-gradient(135deg,#F5E6DA,#DDE9E1 55%,#E9E1F2)`:t.paper};color:${t.ink}">
         <div class="t" style="font-family:${t.font};font-size:${t.ai?"13px":"22px"}">${t.ai?"your idea here":"May"}</div>
         <div><div class="spines">${t.spines.map((c,i)=>`<i style="height:${24+i*8}px;background:${c};border-color:${t.ink}"></i>`).join("")}</div><div class="sh" style="background:${t.shelf}"></div></div>
-      </div><span class="badge">${t.badge}</span><div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
+      </div><span class="badge">${SOON()?"Coming soon":t.badge}</span><div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
   $("#themes").innerHTML=cards+locked;
   const rb=$("#resetBtn"); rb.textContent=ui.confirmReset?"Tap again to erase everything":"Clear all entries"; rb.classList.toggle("warn",ui.confirmReset);
 }
@@ -1653,7 +1658,7 @@ function setCreatorAccount(on){
   HIDE_PREMIUM=!window.PETAL_SHOW_PREMIUM&&!on; document.documentElement.classList.toggle("no-premium",HIDE_PREMIUM);
   const cr=$("#creatorRow"); if(cr) cr.hidden=!on;
   let pref=null; try{pref=localStorage.getItem("petal-creator")}catch(e){}
-  state.creator=on&&pref!=="0"; syncCreator(); renderThemes(); render();
+  state.creator=on&&pref!=="0"; applySoonLabels(); syncCreator(); renderThemes(); render();
   if(on) toast(state.creator?"Creator account: Premium tools unlocked":"Creator account: turn on Creator mode in Themes");
 }
 function syncCreator(){$("#creatorSw").setAttribute("aria-checked", String(!!state.creator))}
@@ -1676,7 +1681,7 @@ $("#themeBtn").onclick=openSheet; $("#closeSheet").onclick=closeSheet; $("#scrim
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden) closeSheet()});
 $("#themes").addEventListener("click",e=>{
   const c=e.target.closest("[data-theme-id]"); if(c){state.theme=c.dataset.themeId; save(); render(true); renderThemes(); toast(THEMES[state.theme].name+" applied"); return}
-  const l=e.target.closest("[data-locked]"); if(l) toast(l.dataset.locked==="ai"?"Creating your own journal wallpapers is coming soon.":"Premium themes are planned for the mobile app.");
+  const l=e.target.closest("[data-locked]"); if(l) toast(l.dataset.locked==="ai"?"Creating your own journal wallpapers is coming soon.":"Lavender Dusk is coming soon.");
 });
 $("#resetBtn").onclick=()=>{
   if(!ui.confirmReset){ui.confirmReset=true; renderThemes(); return}
@@ -2050,7 +2055,7 @@ async function runExport(kind){
 function syncX(){
   const sp=SPREADS.find(s=>s.id===state.spread), own=state.titles&&state.titles[state.spread]&&state.titles[state.spread].title;
   $("#xLead").textContent=`Save “${own||sp.name}” to share or print.`;
-  document.querySelectorAll("#xsheet .xopt.pro .badge").forEach(b=>b.textContent=PUBLIC?"Coming soon":state.creator?"Premium":"🔒 Premium");
+  document.querySelectorAll("#xsheet .xopt.pro .badge").forEach(b=>b.textContent=SOON()?"":state.creator?"Premium":"🔒 Premium");
   $("#markSw").setAttribute("aria-checked",String(!!(state.creator&&state.hideMark)));
 }
 function openX(){ syncX(); $("#xConfirm").hidden=true; $("#xsheet").hidden=false; $("#scrim").hidden=false; $("#closeX").focus() }
@@ -2221,6 +2226,7 @@ async function initAuth(){
 }
 if(AUTH_ON) initAuth();
 
+applySoonLabels();
 if(PUBLIC){ const cr=$("#creatorRow"); if(cr) cr.hidden=true;
   const br=document.querySelector(".brand"); if(br&&!DEMO){ br.setAttribute("role","link"); br.tabIndex=0; br.title="Petal & Page home"; br.style.cursor="pointer";
     const home=()=>{location.href="../"}; br.addEventListener("click",home); br.addEventListener("keydown",e=>{if(e.key==="Enter") home()}); } }
