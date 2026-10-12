@@ -2272,6 +2272,7 @@ function openShare(makeNow){
       <div class="pl-grid" style="grid-template-columns:1fr"><label>Your name <span class="opt">shown to your partner</span><input id="shName" value="${esc((state.partner&&state.partner.me)||"")}" placeholder="Zulma" autocomplete="off"></label></div>
       <div class="pl-actions"><button class="go" id="shCreate">Create an invite link</button><button class="ghostb" id="shClose">Cancel</button></div>`
     : `<h3>Your shared date jar ♥</h3><p class="tip" style="margin:0 0 10px">${J.members?`Shared with ${J.members} ${J.members===1?"person":"people"}.`:"No one has joined yet."} Each invite link works once.</p>
+      <div class="pl-grid" style="grid-template-columns:1fr"><label>Your name <span class="opt">shown to your partner</span><input id="shMe" value="${esc(J.ownerName||(state.partner&&state.partner.me)||"")}" placeholder="Zulma" autocomplete="off"></label></div>
       <div id="shLink"></div>
       <div class="pl-actions"><button class="go" id="shNew">New invite link</button><button class="ghostb" id="shClose">Done</button></div>
       <p class="tip" style="margin:12px 0 0"><button class="linkish" id="shStop" style="color:#C0584C;font:inherit">Stop sharing</button></p>`;
@@ -2281,6 +2282,7 @@ function openShare(makeNow){
     pop.dataset.url=url };
   async function makeLink(){ const token=newToken(); const {error}=await sb.from("date_jar_invites").insert({token, jar_id:ui.jar.id}); if(error){ toast("Couldn't make a link. Try again."); return } showLink(appUrl()+"?join="+token) }
   if(makeNow) makeLink();
+  const me=pop.querySelector("#shMe"); if(me) me.addEventListener("change",()=>{ const v=me.value.trim(); state.partner={...(state.partner||{}), me:v}; if(ui.jar&&ui.jar.owner){ ui.jar.ownerName=v; ui.jarSnap={}; save(); pushJar(); toast(v?"Your partner will see you as "+v:"Name removed") } });
   pop.addEventListener("click",async e=>{
     if(e.target.closest("#shClose")) return closeShare();
     if(e.target.closest("#shCreate")){ const name=$("#shName").value.trim(); state.partner={...(state.partner||{}), me:name}; const b=e.target.closest("#shCreate"); b.disabled=true;
@@ -2292,7 +2294,7 @@ function openShare(makeNow){
     if(e.target.closest("#shNew")) return makeLink();
     if(e.target.closest("#shStop")){ const b=e.target.closest("#shStop"); if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Tap again: your partner loses access"; return }
       await sb.from("date_jars").delete().eq("id",ui.jar.id); dropJar(); closeShare(); render(); toast("Stopped sharing. Your ideas are still here."); return }
-    const s2=e.target.closest("[data-sh]"); if(s2){ const url=($("#shUrl")&&$("#shUrl").value)||""; if(!url){ toast("Make an invite link first"); return } who=(state.partner&&state.partner.me)||"", text=(who?who+" wants":"Want")+" to plan dates together ♥ Join my date jar on Petal & Page:\n"+url;
+    const s2=e.target.closest("[data-sh]"); if(s2){ const url=($("#shUrl")&&$("#shUrl").value)||""; if(!url){ toast("Make an invite link first"); return } const who=($("#shMe")&&$("#shMe").value.trim())||(ui.jar&&ui.jar.ownerName)||(state.partner&&state.partner.me)||"", text=(who?who+" wants":"Want")+" to plan dates together ♥ Join my date jar on Petal & Page:\n"+url;
       if(s2.dataset.sh==="email"){ location.href="mailto:?subject="+encodeURIComponent("Plan dates with me ♥")+"&body="+encodeURIComponent(text); return }
       if(s2.dataset.sh==="msg"&&navigator.share){ try{ await navigator.share({text}); return }catch(err){ if(err&&err.name==="AbortError") return } }
       try{ await navigator.clipboard.writeText(s2.dataset.sh==="copy"?url:text); toast(s2.dataset.sh==="copy"?"Link copied":"Invite copied. Paste it into a text.") }catch(err){ $("#shUrl").select(); toast("Select the link and copy it") } }
