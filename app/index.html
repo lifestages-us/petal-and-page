@@ -2265,7 +2265,7 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 /* creator: share pop-up (create the jar, make one-time invite links, stop sharing) */
 function closeShare(){ const p=$("#shPop"); if(p) p.remove(); ui.sh=null }
 function newToken(){ const b=new Uint8Array(18); crypto.getRandomValues(b); return btoa(String.fromCharCode(...b)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"") }
-function openShare(){
+function openShare(makeNow){
   closeShare(); ui.sh=true; const J=ui.jar;
   const pop=document.createElement("div"); pop.className="cp-pop pl-pop"; pop.id="shPop"; pop.setAttribute("role","dialog"); pop.setAttribute("aria-label","Share your date jar");
   pop.innerHTML = !J ? `<h3>Share your date jar ♥</h3><p class="tip" style="margin:0 0 10px">Your partner gets the same jar in their own free account. You can both add ideas, plan dates and keep memories, and changes show up for both of you.</p>
@@ -2280,6 +2280,7 @@ function openShare(){
       <div class="inv"><button data-sh="msg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button><button data-sh="email"><b>Email the link</b><span>Opens your email app</span></button><button data-sh="copy"><b>Copy the link</b><span>Paste it anywhere</span></button></div>`;
     pop.dataset.url=url };
   async function makeLink(){ const token=newToken(); const {error}=await sb.from("date_jar_invites").insert({token, jar_id:ui.jar.id}); if(error){ toast("Couldn't make a link. Try again."); return } showLink(appUrl()+"?join="+token) }
+  if(makeNow) makeLink();
   pop.addEventListener("click",async e=>{
     if(e.target.closest("#shClose")) return closeShare();
     if(e.target.closest("#shCreate")){ const name=$("#shName").value.trim(); state.partner={...(state.partner||{}), me:name}; const b=e.target.closest("#shCreate"); b.disabled=true;
@@ -2287,11 +2288,11 @@ function openShare(){
       const {data:row,error}=await sb.from("date_jars").insert({owner_id:user.id, data}).select("id,updated_at").single();
       if(error){ b.disabled=false; toast("Only creator accounts can share for now."); return }
       ui.jar={id:row.id, owner:true, ownerName:name, seen:row.updated_at, members:0}; ui.jarGone=new Set(); ui.jarCache=data; jarSnapNow(); save();
-      clearInterval(jarPullT); jarPullT=setInterval(pullJar,20000); render(); openShare(); await makeLink(); return }
+      clearInterval(jarPullT); jarPullT=setInterval(pullJar,20000); render(); openShare(true); return }
     if(e.target.closest("#shNew")) return makeLink();
     if(e.target.closest("#shStop")){ const b=e.target.closest("#shStop"); if(!b.dataset.armed){ b.dataset.armed="1"; b.textContent="Tap again: your partner loses access"; return }
       await sb.from("date_jars").delete().eq("id",ui.jar.id); dropJar(); closeShare(); render(); toast("Stopped sharing. Your ideas are still here."); return }
-    const s2=e.target.closest("[data-sh]"); if(s2){ const url=pop.dataset.url, who=(state.partner&&state.partner.me)||"", text=(who?who+" wants":"Want")+" to plan dates together ♥ Join my date jar on Petal & Page:\n"+url;
+    const s2=e.target.closest("[data-sh]"); if(s2){ const url=($("#shUrl")&&$("#shUrl").value)||""; if(!url){ toast("Make an invite link first"); return } who=(state.partner&&state.partner.me)||"", text=(who?who+" wants":"Want")+" to plan dates together ♥ Join my date jar on Petal & Page:\n"+url;
       if(s2.dataset.sh==="email"){ location.href="mailto:?subject="+encodeURIComponent("Plan dates with me ♥")+"&body="+encodeURIComponent(text); return }
       if(s2.dataset.sh==="msg"&&navigator.share){ try{ await navigator.share({text}); return }catch(err){ if(err&&err.name==="AbortError") return } }
       try{ await navigator.clipboard.writeText(s2.dataset.sh==="copy"?url:text); toast(s2.dataset.sh==="copy"?"Link copied":"Invite copied. Paste it into a text.") }catch(err){ $("#shUrl").select(); toast("Select the link and copy it") } }
