@@ -625,7 +625,9 @@ const SPREADS = [
    "?demo" runs a throwaway copy (used by the landing page preview) that never touches the visitor's real journal. */
 const PUBLIC = !!window.PETAL_PUBLIC;
 /* While payments aren't live, the public site hides every Premium feature (set PETAL_SHOW_PREMIUM to show them as "coming soon" again). */
-const HIDE_PREMIUM = PUBLIC && !window.PETAL_SHOW_PREMIUM;
+let HIDE_PREMIUM = PUBLIC && !window.PETAL_SHOW_PREMIUM;
+/* creator accounts (listed in the Supabase "creators" table) get Creator mode on the public site after signing in */
+let IS_CREATOR = false;
 if(HIDE_PREMIUM) document.documentElement.classList.add("no-premium");
 const QS = new URLSearchParams(location.search);
 const DEMO = QS.has("demo");
@@ -1398,7 +1400,7 @@ function renderPager(){
   if(sp.period==="week") $("#period").textContent=weekLabel();
   if(sp.period==="day") $("#period").textContent=dayLabel();
 }
-function render(anim){ requestAnimationFrame(()=>{const a=document.querySelector('.tab[aria-current="true"]'), rl=$("#rail"); if(a&&rl&&innerWidth<=820) rl.scrollLeft=a.offsetLeft-(rl.clientWidth-a.offsetWidth)/2});
+function render(anim){ if(PUBLIC&&!IS_CREATOR) state.creator=false; requestAnimationFrame(()=>{const a=document.querySelector('.tab[aria-current="true"]'), rl=$("#rail"); if(a&&rl&&innerWidth<=820) rl.scrollLeft=a.offsetLeft-(rl.clientWidth-a.offsetWidth)/2});
   applyTheme(); renderRail(); renderPager();
   const paper=$("#paper");
   paper.innerHTML=`<div class="tape" aria-hidden="true"></div>`+RENDER[state.spread]();
@@ -1422,8 +1424,16 @@ function renderThemes(){
   $("#themes").innerHTML=cards+locked;
   const rb=$("#resetBtn"); rb.textContent=ui.confirmReset?"Tap again to erase everything":"Clear all entries"; rb.classList.toggle("warn",ui.confirmReset);
 }
+function setCreatorAccount(on){
+  if(!PUBLIC||IS_CREATOR===on) return; IS_CREATOR=on;
+  HIDE_PREMIUM=!window.PETAL_SHOW_PREMIUM&&!on; document.documentElement.classList.toggle("no-premium",HIDE_PREMIUM);
+  const cr=$("#creatorRow"); if(cr) cr.hidden=!on;
+  let pref=null; try{pref=localStorage.getItem("petal-creator")}catch(e){}
+  state.creator=on&&pref!=="0"; syncCreator(); renderThemes(); render();
+  if(on) toast(state.creator?"Creator account: Premium tools unlocked":"Creator account: turn on Creator mode in Themes");
+}
 function syncCreator(){$("#creatorSw").setAttribute("aria-checked", String(!!state.creator))}
-$("#creatorSw").onclick=()=>{state.creator=!state.creator; save(); syncCreator(); render(); toast(state.creator?"Creator mode on: Premium tools unlocked":"Creator mode off")};
+$("#creatorSw").onclick=()=>{state.creator=!state.creator; try{localStorage.setItem("petal-creator",state.creator?"1":"0")}catch(e){} save(); syncCreator(); render(); toast(state.creator?"Creator mode on: Premium tools unlocked":"Creator mode off")};
 function openSheet(){syncCreator(); renderThemes(); $("#sheet").hidden=false; $("#scrim").hidden=false; $("#closeSheet").focus()}
 function closeSheet(){$("#sheet").hidden=true; $("#scrim").hidden=true; ui.confirmReset=false; $("#themeBtn").focus()}
 
@@ -1917,7 +1927,8 @@ function writeLocal(){ try{localStorage.setItem(KEY, JSON.stringify(state))}catc
 function applyRemote(r){ const keep={spread:state.spread}; state=migrate(r.data||{}); state.creator=false; state.ownerId=user.id; state.syncedAt=r.updated_at; state.pending=false; state.guest={touched:[]}; if(keep.spread) state.spread=keep.spread; writeLocal(); render(true); syncGuestBar() }
 async function setUser(u){
   user=u||null; syncHeader(); syncGuestBar();
-  if(!user){ afterSave=null; return }
+  if(!user){ afterSave=null; setCreatorAccount(false); return }
+  sb.from("creators").select("user_id").eq("user_id",user.id).maybeSingle().then(({data})=>setCreatorAccount(!!data),()=>{});
   afterSave=()=>{ if(!user) return; if(!state.pending){ state.pending=true; writeLocal() } setStatus(navigator.onLine===false?"offline":"pending"); pushSoon() };
   if(!$("#authSheet").hidden&&authMode!=="account") closeAuth();
   try{
