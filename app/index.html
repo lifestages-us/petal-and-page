@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Your Petal & Page journal: ten themed bullet journal spreads, saved in your browser.">
+<meta name="description" content="Your Petal & Page journal: eleven themed bullet journal spreads, saved in your browser.">
 <meta name="theme-color" content="#ECE8E0">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23EFE4D1' stroke='%232E2D29' stroke-width='2.5'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%238DA57A'/%3E%3C/svg%3E">
 <title>Petal &amp; Page</title>
@@ -403,6 +403,36 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add{background:transparent; border-style:dashed; display:grid; gap:8px; align-content:center; min-height:200px; box-shadow:none}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
+/* ---------- date ideas ---------- */
+.dbox{border:1.5px solid var(--ink); border-radius:12px 10px 14px 9px; background:var(--paper); padding:12px 14px; min-height:var(--h,0px); height:100%}
+.dbox .section-title{margin-top:0}
+.jarbox{display:flex; gap:14px; align-items:center}
+.djar{flex:none; width:104px; height:auto}
+.jartext{min-width:0; display:grid; gap:8px; justify-items:start}
+.jartext .row, .dadd .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.drawn{margin:0; line-height:1.25}
+.drawn b{font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.55)}
+.dadd{display:grid; gap:10px; align-content:start}
+.dadd select{font:inherit; font-family:var(--ui); font-size:12px; color:var(--ink); background:var(--paper); border:1.5px solid var(--ink); border-radius:6px; padding:2px 4px}
+.dchips{margin-bottom:14px}
+.tickets{display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px}
+.ticket{position:relative; display:grid; gap:6px; align-content:start; background:var(--paper); border:1.5px solid var(--ink); border-left:9px solid var(--cc); border-radius:10px; padding:10px 14px 10px 14px;
+  box-shadow:3px 3px 0 color-mix(in srgb, var(--cc) 45%, transparent)}
+.ticket .tk-foot{border-top:1.5px dashed var(--rule); padding-top:8px; display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.tk-top{display:flex; align-items:center; gap:6px}
+.tk-cat, .tk-cost{border:1.3px solid var(--ink); background:color-mix(in srgb, var(--cc) 35%, var(--paper)); color:var(--ink); border-radius:999px; font-family:var(--ui); font-size:11px; font-weight:600; padding:2px 9px; cursor:pointer}
+.tk-cost{background:var(--paper)}
+.tk-top .x-btn{margin-left:auto}
+.tk-title{font-size:1.05em; border-bottom:0}
+.tk-note{font-size:.9em; color:var(--muted)}
+.ticket.done{background:color-mix(in srgb, var(--cc) 14%, var(--paper))}
+.ticket.picked{outline:2.5px solid var(--accent); outline-offset:3px; animation:wiggle .5s ease-in-out}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-1.5deg)}75%{transform:rotate(1.5deg)}}
+.dwhen{font-family:var(--ui); font-size:12px; color:var(--muted); display:flex; align-items:center; gap:6px}
+.dwhen input{font:inherit; color:var(--ink); background:var(--paper); border:1.3px solid var(--ink); border-radius:6px; padding:1px 4px}
+.hearts{display:flex; gap:2px}
+.hearts button{border:0; background:transparent; padding:0 2px; font-size:1.2em; line-height:1; color:#C0584C; cursor:pointer}
+.exporting .dchips, .exporting .jartext .pen-btn, .exporting .tk-top .x-btn, .exporting .ticket .linkish, .exporting .ticket .pen-btn{display:none!important}
 .demo .pro-bar{display:none}
 .no-premium .pro-only{display:none !important}
 .clear-btn{margin-left:auto; border:1px solid var(--rule); background:var(--paper); color:var(--muted); font-family:var(--ui); font-size:12px; font-weight:600; border-radius:999px; padding-block:4px; padding-inline:12px}
@@ -558,7 +588,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   </div>
   <h3 class="xgroup pro-only">Premium</h3>
   <div class="xgrid pro-only">
-    <button class="xopt pro" data-x="journal"><b>Whole journal</b><span>All 10 spreads in one PDF</span><i class="badge"></i></button>
+    <button class="xopt pro" data-x="journal"><b>Whole journal</b><span>Every spread in one PDF</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="square"><b>Square post</b><span>PNG, 1080 × 1080</span><i class="badge"></i></button>
     <button class="xopt pro" data-x="story"><b>Story</b><span>PNG, 1080 × 1920</span><i class="badge"></i></button>
   </div>
@@ -615,6 +645,7 @@ const SPREADS = [
   {id:"year", name:"Year at a glance", short:"Year", period:"year", icon:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9.5h18M3 15h18M9 4v17M15 4v17"/>'},
   {id:"books", name:"Bookshelf", short:"Books", period:"year", icon:'<path d="M4 20V6h3v14M7 20V4h3v16M11 20l2.5-13 3 .6-2.5 13"/><path d="M3 20h18"/>'},
   {id:"travel", name:"Travel list", short:"Travel", period:"none", icon:'<rect x="4" y="3" width="16" height="18" rx="1"/><rect x="6.5" y="5.5" width="11" height="10"/><path d="m6.5 13 3.5-3.5 3 3 2-2 2.5 2.5"/>'},
+  {id:"dates", name:"Date ideas", short:"Dates", period:"none", icon:'<path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M12 14.6s-3.2-1.9-3.2-3.8a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 1.9-3.2 3.8-3.2 3.8z"/>'},
   {id:"mood", name:"Mood tracker", short:"Mood", period:"month", icon:'<circle cx="12" cy="12" r="9"/><path d="M8 14.5c1.2 1.4 2.5 2 4 2s2.8-.6 4-2"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/>'},
   {id:"budget", name:"Budget", short:"Budget", period:"month", icon:'<ellipse cx="12" cy="13" rx="8" ry="6.5"/><path d="M8 7.5 7 4l3 2.3M16 7.5l1-3.5-3 2.3M10.5 7h3"/><circle cx="12" cy="14" r="2"/>'},
   {id:"savings", name:"Savings trackers", short:"Savings", period:"none", icon:'<path d="M8 3.5h8v3H8zM6.5 9c0-1.4 1-2.5 2.5-2.5h6c1.5 0 2.5 1.1 2.5 2.5v10c0 1.4-1 2.5-2.5 2.5H9c-1.5 0-2.5-1.1-2.5-2.5z"/><path d="M6.5 14.5h11M6.5 18h11" />'},
@@ -689,6 +720,23 @@ function migrate(s){
       {id:"s3",name:"House deposit",goal:20000,steps:50,shape:"house",color:3,filled:[...Array(14).keys()]},
     ] : []; }
   if(!s.weekly[mondayOf(now)] && s.sample!==false) s.weekly[mondayOf(now)]={focus:[{b:"task",t:"Set up October spreads"},{b:"task",t:"Two early nights"},{b:"note",t:"Pack for the weekend trip"}]};
+  if(!s.dates){ s.dates=[];
+    if(smp){ const sat=new Date(now.getFullYear(),now.getMonth(),now.getDate()); sat.setDate(sat.getDate()+((6-sat.getDay()+7)%7||7));
+      const past=new Date(now.getFullYear(),now.getMonth(),now.getDate()-12);
+      s.dates=[
+        {id:"d1",t:"Picnic in the park with a playlist",cat:"out",cost:1,status:"idea"},
+        {id:"d2",t:"Cook a new recipe together",cat:"cozy",cost:2,status:"planned",when:iso(sat)},
+        {id:"d3",t:"Drive out to see the stars",cat:"adventure",cost:0,status:"idea"},
+        {id:"d4",t:"Pottery class",cat:"creative",cost:3,status:"idea"},
+        {id:"d5",t:"Bookshop and coffee crawl",cat:"out",cost:1,status:"done",when:iso(past),hearts:5,note:"Found the tiny poetry shop on 4th!"},
+        {id:"d6",t:"Blanket fort movie night",cat:"cozy",cost:0,status:"idea"},
+        {id:"d7",t:"Try the new dumpling spot",cat:"food",cost:2,status:"idea"},
+      ];
+      s.log=s.log||{}; const ev=s.dates[1], dt=fromIso(ev.when), mk=ym(dt.getFullYear(),dt.getMonth()+1), L=(s.log[mk]=s.log[mk]||{});
+      (L[dt.getDate()]=L[dt.getDate()]||[]).push({b:"event",t:"Date: "+ev.t,dref:ev.id}); ev.evKey=mk+"|"+dt.getDate();
+    }
+    if(smp){ const tt=(s.titles.dates=s.titles.dates||{}); if(tt.note===undefined) tt.note="Play around to get a feel for the tracker! Clear the page to start your own journey."; }
+  }
   /* the daily schedule now shows timed to-dos; anything written straight into an hour becomes a to-do with that time */
   if(!s.schedSynced){ s.log=s.log||{};
     Object.entries(s.daily||{}).forEach(([k,D])=>{ if(!D||!D.sched) return; const dt=fromIso(k), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
@@ -1000,6 +1048,7 @@ function clearPage(sp){
   if(sp==="year"){ for(let m=1;m<=12;m++){ const k=ym(state.year,m); if(state.yearView==="pixels") delete state.mood[k]; else delete state.future[k] } }
   if(sp==="books"){ state.books.list=[]; ui.selBook=null }
   if(sp==="travel"){ state.travel=[] }
+  if(sp==="dates"){ (state.dates||[]).forEach(x=>{ x.status="idea"; syncDateEvent(x) }); state.dates=[]; ui.dpick=null }
   if(sp==="savings"){ state.savings=[] }
   ui.lastClear=snap; save(); render();
   const t=$("#toast"); t.innerHTML="Page cleared. <button class='undo' id='undoClear'>Undo</button>"; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>{t.hidden=true; ui.lastClear=null},6000);
@@ -1380,9 +1429,67 @@ function renderTravel(){
 }
 
 /* =====================================================================
+   SPREAD: DATE IDEAS — a jar of ideas, ticket cards, plan it onto the calendar, keep the memories
+   ===================================================================== */
+const DCATS={cozy:"Cozy at home", out:"Out & about", food:"Food & drink", adventure:"Adventure", creative:"Make something"};
+const DCOST=["Free","$","$$","$$$"];
+/* category colours stay the same in every theme so the types are easy to tell apart */
+const DCOL={cozy:"#F0A9A0", out:"#8FC4AA", food:"#F2C66E", adventure:"#8DB9DE", creative:"#BBA6DC"};
+const dcol=(t,c)=>DCOL[c]||t.accent;
+function fmtShort(isoStr){ const d=fromIso(isoStr); return DAYNAMES[d.getDay()].slice(0,3)+", "+MONTHS[d.getMonth()].slice(0,3)+" "+d.getDate() }
+/* a planned or done date also sits on that day's log (as ○ event, × once you've been) */
+function syncDateEvent(x){
+  if(x.evKey){ const [mk,day]=x.evKey.split("|"), L=state.log[mk]; if(L&&L[day]){ L[day]=L[day].filter(it=>it.dref!==x.id) } delete x.evKey }
+  if(x.status==="idea"||!x.when) return;
+  const dt=fromIso(x.when), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate(), arr=getList(mk,day), item={b:x.status==="done"?"done":"event", t:"Date: "+x.t, dref:x.id};
+  if(arr.length===1&&!arr[0].t.trim()) arr[0]=item; else arr.push(item);
+  x.evKey=mk+"|"+day;
+}
+function dateJar(t,n){
+  const spots=[[34,118],[52,122],[70,118],[88,122],[42,104],[60,106],[78,104],[34,90],[52,92],[70,90],[88,92],[44,76],[62,78],[80,76],[36,62],[54,64],[72,62],[88,64]];
+  const heart=(x,y,c)=>`<path d="M${x} ${y+5}c-5-3.4-8-6.2-8-9a4.2 4.2 0 0 1 8-1.8 4.2 4.2 0 0 1 8 1.8c0 2.8-3 5.6-8 9z" fill="${c}" stroke="${t.ink}" stroke-width="1.1"/>`;
+  return `<svg class="djar" viewBox="0 0 124 150" aria-hidden="true">
+    <rect x="34" y="10" width="56" height="14" rx="4" fill="${t.wash}" stroke="${t.ink}" stroke-width="2"/>
+    <path d="M24 34 Q24 24 36 24 H88 Q100 24 100 34 V132 Q100 144 88 144 H36 Q24 144 24 132 Z" fill="${t.paper}" stroke="${t.ink}" stroke-width="2"/>
+    ${spots.slice(0,Math.min(n,spots.length)).map(([x,y],i)=>heart(x,y,Object.values(DCOL)[i%5])).join("")}
+    <path d="M32 40 V70" stroke="${t.ink}" stroke-width="2" stroke-linecap="round" opacity=".25"/>
+    <rect x="40" y="0" width="44" height="12" rx="2" fill="${t.accent}" opacity=".7" transform="rotate(-4 62 6)"/>
+  </svg>`;
+}
+function renderDates(){
+  const t=T(), all=state.dates||[], f=ui.dfilter||"all";
+  const ideas=all.filter(x=>x.status==="idea"), planned=all.filter(x=>x.status==="planned"), done=all.filter(x=>x.status==="done");
+  const show=all.filter(x=> f==="all"?x.status!=="done" : f==="planned"?x.status==="planned" : f==="done"?x.status==="done" : (x.cat===f&&x.status!=="done"))
+    .sort((a,b)=>(a.status==="planned"?0:1)-(b.status==="planned"?0:1) || (a.when||"").localeCompare(b.when||""));
+  const pick=ui.dpick&&all.find(x=>x.id===ui.dpick&&x.status==="idea");
+  const chips=[["all","All ideas"],["planned",`Planned · ${planned.length}`],["done",`Memories · ${done.length}`],...Object.entries(DCATS)]
+    .map(([k,l])=>`<button class="chipb${f===k?" on":""}" data-act="dfilter" data-f="${k}" aria-pressed="${f===k}">${esc(l)}</button>`).join("");
+  const card=x=>{ const c=dcol(t,x.cat);
+    const foot = x.status==="idea" ? `<button class="pen-btn" data-act="dplan" data-id="${x.id}">Plan it</button>`
+      : x.status==="planned" ? `<label class="dwhen">On <input type="date" data-in="dwhen" data-id="${x.id}" value="${x.when||""}" aria-label="Date for ${esc(x.t)}"></label><button class="pen-btn solid" data-act="ddone" data-id="${x.id}">We went ♥</button><button class="linkish" data-act="dunplan" data-id="${x.id}">Not yet</button>`
+      : `<div class="hearts" role="group" aria-label="How was it?">${[1,2,3,4,5].map(n=>`<button data-act="dheart" data-id="${x.id}" data-n="${n}" aria-label="${n} of 5" aria-pressed="${(x.hearts||0)>=n}">${(x.hearts||0)>=n?"♥":"♡"}</button>`).join("")}</div><span class="ui-note">${x.when?fmtShort(x.when):""}</span>`;
+    return `<article class="ticket ${x.status}${pick&&pick.id===x.id?" picked":""}" id="dt-${x.id}" style="--cc:${c}">
+      <div class="tk-top"><button class="tk-cat" data-act="dcat" data-id="${x.id}" title="Change type">${esc(DCATS[x.cat]||"Idea")}</button><button class="tk-cost" data-act="dcost" data-id="${x.id}" title="Change cost">${DCOST[x.cost||0]}</button><button class="x-btn" data-act="ddel" data-id="${x.id}" aria-label="Remove this idea">×</button></div>
+      <textarea rows="1" class="hand-input tk-title" data-in="dtitle" data-id="${x.id}" aria-label="Date idea">${esc(x.t)}</textarea>
+      ${x.status==="done"?`<textarea rows="1" class="hand-input tk-note" data-in="dmem" data-id="${x.id}" placeholder="What made it special?" aria-label="Memory">${esc(x.note||"")}</textarea>`:""}
+      <div class="tk-foot">${foot}</div></article>`; };
+  const empty = f==="done"?"No memories yet. When you go on a planned date, tap “We went ♥”.":f==="planned"?"Nothing planned yet. Tap “Plan it” on an idea.":"No ideas here yet. Add one below.";
+  return head("Date ideas", ideas.length+" in the jar · "+planned.length+" planned · "+done.length+(done.length===1?" memory":" memories"), "dates") + grid(
+    blk("dates","jar",2,`<div class="jarbox">${dateJar(t,ideas.length)}<div class="jartext"><h2 class="section-title">The date jar</h2>
+      ${pick?`<p class="drawn">How about…<br><b>${esc(pick.t)}</b></p><div class="row"><button class="pen-btn solid" data-act="dplan" data-id="${pick.id}">Plan it</button><button class="pen-btn" data-act="dsurprise">Pick again</button></div>`
+        : `<p class="ui-note">${ideas.length?"Can't decide? Pull an idea out of the jar.":"Add a few ideas and the jar will pick one for you."}</p>${ideas.length?`<button class="pen-btn solid" data-act="dsurprise">Surprise me ♥</button>`:""}`}
+      </div></div>`,"dbox") +
+    blk("dates","add",2,`<form class="dbox dadd" id="addDate"><h2 class="section-title">Add an idea</h2>
+      <input class="hand-input" id="newDate" placeholder="Sunset picnic, mini golf, cook-off…" aria-label="New date idea" autocomplete="off">
+      <div class="row"><select id="newDateCat" aria-label="Type">${Object.entries(DCATS).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select>
+      <select id="newDateCost" aria-label="Cost">${DCOST.map((l,i)=>`<option value="${i}">${l}</option>`).join("")}</select><button class="pen-btn solid" type="submit">+ Add to the jar</button></div></form>`) +
+    blk("dates","list",4,`<div class="chips dchips">${chips}</div><div class="tickets">${show.length?show.map(card).join(""):`<p class="ui-note">${empty}</p>`}</div>`));
+}
+
+/* =====================================================================
    RENDER + CHROME
    ===================================================================== */
-const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel};
+const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates};
 function applyTheme(){
   const t=T(), r=document.documentElement.style;
   ["paper","dot","ink","muted","rule","accent","wash","shelf","display","dsize","hand","hsize"].forEach(k=>r.setProperty("--"+k,t[k]));
@@ -1514,6 +1621,21 @@ paper.addEventListener("click",e=>{
   const place=d.id&&state.travel.find(p=>p.id===d.id);
   if(act==="visit"&&place){place.visited=!place.visited; save(); render(); return}
   if(act==="scene"&&place){place.scene=SCENES[(SCENES.indexOf(place.scene)+1)%SCENES.length]; save(); render(); return}
+  const dx=d.id&&(state.dates||[]).find(x=>x.id===d.id);
+  if(act==="dfilter"){ ui.dfilter=d.f; ui.dpick=null; render(); return }
+  if(act==="dsurprise"){ const f=ui.dfilter||"all"; let pool=state.dates.filter(x=>x.status==="idea"&&(DCATS[f]?x.cat===f:true)); if(!pool.length) pool=state.dates.filter(x=>x.status==="idea");
+    if(pool.length>1) pool=pool.filter(x=>x.id!==ui.dpick); const x=pool[Math.floor(Math.random()*pool.length)]; if(!x) return;
+    ui.dpick=x.id; if(!(f==="all"||x.cat===f)) ui.dfilter="all"; render(); document.getElementById("dt-"+x.id)?.scrollIntoView({block:"nearest",behavior:"smooth"}); return }
+  if(dx){
+    if(act==="dcat"){ const k=Object.keys(DCATS); dx.cat=k[(k.indexOf(dx.cat)+1)%k.length]; save(); render(); return }
+    if(act==="dcost"){ dx.cost=((dx.cost||0)+1)%DCOST.length; save(); render(); return }
+    if(act==="dplan"){ if(!dx.when||dx.when<iso(now)){ const sat=new Date(now.getFullYear(),now.getMonth(),now.getDate()); sat.setDate(sat.getDate()+((6-sat.getDay()+7)%7||7)); dx.when=iso(sat) }
+      dx.status="planned"; syncDateEvent(dx); ui.dpick=null; ui.dfilter="planned"; save(); render(); toast("Planned for "+fmtShort(dx.when)+". It's on your log too. Change the date on the ticket."); return }
+    if(act==="dunplan"){ dx.status="idea"; syncDateEvent(dx); save(); render(); toast("Back in the jar"); return }
+    if(act==="ddone"){ dx.status="done"; if(!dx.when) dx.when=iso(now); syncDateEvent(dx); ui.dfilter="done"; save(); render(); toast("Saved to your memories ♥"); return }
+    if(act==="dheart"){ dx.hearts=(dx.hearts===+d.n?0:+d.n); save(); render(); return }
+    if(act==="ddel"){ const snap=JSON.stringify(state); dx.status="idea"; syncDateEvent(dx); state.dates=state.dates.filter(x=>x!==dx); save(); render(); undoToast("Removed “"+esc(dx.t||"idea")+"”.", snap); return }
+  }
   if(act==="delplace"&&place){state.travel=state.travel.filter(p=>p!==place); save(); render(); return}
 });
 paper.addEventListener("input",e=>{
@@ -1529,6 +1651,9 @@ paper.addEventListener("input",e=>{
   if(d.in==="budget"){const b=getBudget(); if(d.i!=null) b[d.f][d.i][d.k]=el.value; else b[d.f]=el.value; refreshBudgetTotals(); saveSoon(); return}
   if(d.in==="goal"){state.books.goal=Math.max(1,parseInt(el.value)||1); saveSoon(); return}
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
+  if(d.in==="dtitle"||d.in==="dmem"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(!x) return;
+    if(d.in==="dmem"){ x.note=el.value; saveSoon(); return }
+    x.t=el.value; if(x.evKey){ const [mk,day]=x.evKey.split("|"), it=((state.log[mk]||{})[day]||[]).find(v=>v.dref===x.id); if(it) it.t="Date: "+x.t } saveSoon(); return }
   if(d.in==="place"){const p=state.travel.find(x=>x.id===d.id); if(p) p.name=el.value; saveSoon(); return}
 });
 function saveTitle(el){
@@ -1541,6 +1666,7 @@ paper.addEventListener("focusout",e=>{const el=e.target; if(el.dataset&&el.datas
 paper.addEventListener("paste",e=>{const el=e.target.closest&&e.target.closest("[data-edit]"); if(!el) return; e.preventDefault();
   const txt=(e.clipboardData||window.clipboardData).getData("text").replace(/\s+/g," "); document.execCommand("insertText",false,txt)});
 paper.addEventListener("change",e=>{const d=e.target.dataset;
+  if(d.in==="dwhen"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(x&&e.target.value){ x.when=e.target.value; syncDateEvent(x); save(); render(); toast("Moved to "+fmtShort(x.when)) } return }
   if(d.in==="sched"){ const txt=e.target.value.trim(), h=+d.h, dt=fromIso(state.day), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
     delete getDaily(state.day).sched[h]; if(!txt){ save(); return }
     const arr=getList(mk,day), t=withTime(txt,h);
@@ -1575,6 +1701,9 @@ paper.addEventListener("submit",e=>{
     save(); render(); toast("Started: "+v); return}
   if(e.target.id==="addHabit"){const v=$("#newHabit").value.trim(); if(!v) return; const used=state.habits.map(h=>h.color);
     state.habits.push({id:"h"+Date.now(), name:v, color:[0,1,2,3,4,5].find(c=>!used.includes(c))??state.habits.length%6}); save(); render(); $("#newHabit")?.focus()}
+  if(e.target.id==="addDate"){ const v=$("#newDate").value.trim(); if(!v){ $("#newDate").focus(); return } if(!guard()) return;
+    state.dates=state.dates||[]; state.dates.unshift({id:"d"+Date.now(), t:v, cat:$("#newDateCat").value, cost:+$("#newDateCost").value, status:"idea"});
+    if(ui.dfilter==="done"||ui.dfilter==="planned") ui.dfilter="all"; save(); render(); $("#newDate")?.focus(); toast("Added to the jar ♥"); return }
   if(e.target.id==="addPlace"){const v=$("#newPlace").value.trim(); if(!v) return;
     state.travel.push({id:"t"+Date.now(), name:v, scene:$("#newScene").value, visited:false}); save(); render(); $("#newPlace")?.focus()}
 });
@@ -1831,7 +1960,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
