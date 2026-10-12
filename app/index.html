@@ -2339,7 +2339,7 @@ async function initAuth(){
   let session=null; try{ ({data:{session}}=await sb.auth.getSession()) }catch(e){}
   if(/[?&](code|error|error_description)=/.test(location.search)||/access_token|error/.test(location.hash)){
     const q=new URLSearchParams(location.search+"&"+location.hash.slice(1)); const msg=q.get("error_description");
-    history.replaceState(null,"",location.pathname); if(msg&&!session) toast("Sign-in didn't finish: "+msg);
+    history.replaceState(null,"",location.pathname); if(msg&&!session) toast(/external code|provider/i.test(msg)?"Google sign-in isn't working right now. Please use “Email me a sign-in link” instead.":"Sign-in didn't finish: "+msg);
   }
   await setUser(session&&session.user);
   /* a partner who opened an invite link before signing in: ask them to sign in first */
