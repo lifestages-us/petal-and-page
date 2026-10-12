@@ -406,11 +406,19 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 /* ---------- date ideas ---------- */
 .dbox{border:1.5px solid var(--ink); border-radius:12px 10px 14px 9px; background:var(--paper); padding:12px 14px; min-height:var(--h,0px); height:100%}
 .dbox .section-title{margin-top:0}
-.jarbox{display:flex; gap:14px; align-items:center}
+.jarbox{display:flex; gap:14px; align-items:flex-start}
 .djar{flex:none; width:104px; height:auto}
 .jartext{min-width:0; display:grid; gap:8px; justify-items:start}
 .jartext .row, .dadd .row{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
 .drawn{margin:0; line-height:1.25}
+.jarpick{display:flex; flex-wrap:wrap; gap:5px; align-items:center; margin-top:10px; padding-top:10px; border-top:1.5px dashed var(--rule)}
+.jarpick .ui-note{margin-right:2px}
+.jchip{display:inline-flex; align-items:center; gap:5px; border:1.3px solid var(--rule); background:var(--paper); color:var(--ink); border-radius:999px; padding:2px 9px; font-family:var(--ui); font-size:11.5px; font-weight:600; cursor:pointer}
+.jchip i{width:9px; height:9px; border-radius:50%; background:var(--cc); border:1px solid var(--ink)}
+.jchip span{color:var(--muted); font-weight:500}
+.jchip.on{border-color:var(--ink); background:color-mix(in srgb, var(--cc, var(--wash)) 40%, var(--paper))}
+.jchip[disabled]{opacity:.4; cursor:default}
+.exporting .jarpick{display:none!important}
 .drawn b{font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.55)}
 .dadd{display:grid; gap:10px; align-content:start}
 .dadd select{font:inherit; font-family:var(--ui); font-size:12px; color:var(--ink); background:var(--paper); border:1.5px solid var(--ink); border-radius:6px; padding:2px 4px}
@@ -1542,6 +1550,9 @@ function renderDates(){
   const show=all.filter(x=> f==="all"?x.status!=="done" : f==="planned"?x.status==="planned" : f==="done"?x.status==="done" : (x.cat===f&&x.status!=="done"))
     .sort((a,b)=>(a.status==="planned"?0:1)-(b.status==="planned"?0:1) || (a.when||"").localeCompare(b.when||""));
   const pick=ui.dpick&&all.find(x=>x.id===ui.dpick&&x.status==="idea");
+  const jc=ui.djcat||"any";
+  const jarChips=`<div class="jarpick" role="group" aria-label="Pull from"><span class="ui-note">Pull from</span>${[["any","Any type"],...Object.entries(DCATS)].map(([k,l])=>{ const n=k==="any"?ideas.length:ideas.filter(x=>x.cat===k).length;
+    return `<button class="jchip${jc===k?" on":""}" data-act="djcat" data-c="${k}" aria-pressed="${jc===k}" ${n?"":"disabled"} style="${k!=="any"?`--cc:${dcol(t,k)}`:""}">${k!=="any"?`<i></i>`:""}${esc(l)} <span>${n}</span></button>` }).join("")}</div>`;
   const chips=[["all","All ideas"],["planned",`Planned · ${planned.length}`],["done",`Memories · ${done.length}`],...Object.entries(DCATS)]
     .map(([k,l])=>`<button class="chipb${f===k?" on":""}" data-act="dfilter" data-f="${k}" aria-pressed="${f===k}">${esc(l)}</button>`).join("");
   const card=x=>{ const c=dcol(t,x.cat);
@@ -1559,7 +1570,7 @@ function renderDates(){
     blk("dates","jar",2,`<div class="jarbox">${dateJar(t,ideas.length)}<div class="jartext"><h2 class="section-title">The date jar</h2>
       ${pick?`<p class="drawn">How about…<br><b>${esc(pick.t)}</b></p><div class="row"><button class="pen-btn solid" data-act="dplan" data-id="${pick.id}">Plan it</button><button class="pen-btn" data-act="dsurprise">Pick again</button></div>`
         : `<p class="ui-note">${ideas.length?"Can't decide? Pull an idea out of the jar.":"Add a few ideas and the jar will pick one for you."}</p>${ideas.length?`<button class="pen-btn solid" data-act="dsurprise">Surprise me ♥</button>`:""}`}
-      </div></div>`,"dbox") +
+      </div></div>${ideas.length?jarChips:""}`,"dbox") +
     blk("dates","add",2,`<form class="dbox dadd" id="addDate"><h2 class="section-title">Add an idea</h2>
       <input class="hand-input" id="newDate" placeholder="Sunset picnic, mini golf, cook-off…" aria-label="New date idea" autocomplete="off">
       <div class="row"><select id="newDateCat" aria-label="Type">${Object.entries(DCATS).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select>
@@ -1704,7 +1715,9 @@ paper.addEventListener("click",e=>{
   if(act==="scene"&&place){place.scene=SCENES[(SCENES.indexOf(place.scene)+1)%SCENES.length]; save(); render(); return}
   const dx=d.id&&(state.dates||[]).find(x=>x.id===d.id);
   if(act==="dfilter"){ ui.dfilter=d.f; ui.dpick=null; render(); return }
-  if(act==="dsurprise"){ const f=ui.dfilter||"all"; let pool=state.dates.filter(x=>x.status==="idea"&&(DCATS[f]?x.cat===f:true)); if(!pool.length) pool=state.dates.filter(x=>x.status==="idea");
+  if(act==="djcat"){ ui.djcat=d.c; ui.dpick=null; render(); return }
+  if(act==="dsurprise"){ const f=ui.dfilter||"all", jc=ui.djcat||"any"; let pool=state.dates.filter(x=>x.status==="idea"&&(jc==="any"||x.cat===jc));
+    if(!pool.length){ toast("No "+(DCATS[jc]||"")+" ideas in the jar yet."); return }
     if(pool.length>1) pool=pool.filter(x=>x.id!==ui.dpick); const x=pool[Math.floor(Math.random()*pool.length)]; if(!x) return;
     ui.dpick=x.id; if(!(f==="all"||x.cat===f)) ui.dfilter="all"; render(); document.getElementById("dt-"+x.id)?.scrollIntoView({block:"nearest",behavior:"smooth"}); return }
   if(dx){
@@ -2041,7 +2054,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["djcat","dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
