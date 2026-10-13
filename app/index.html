@@ -403,6 +403,14 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add{background:transparent; border-style:dashed; display:grid; gap:8px; align-content:center; min-height:200px; box-shadow:none}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
+/* ---------- meal planner ---------- */
+.mslots{display:grid; gap:2px}
+.mslot{display:grid; grid-template-columns:74px minmax(0,1fr); align-items:start; gap:6px; border-bottom:1px dotted var(--rule)}
+.mslot span{font-family:var(--ui); font-size:10.5px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); padding-top:7px}
+.mslot .hand-input{border-bottom:0}
+.groc .cp-btn{display:none!important}
+.dtag{font-style:normal; font-family:var(--ui); font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border:1px dashed var(--chrome-muted); color:var(--chrome-muted); border-radius:999px; padding:1px 6px; margin-left:4px; vertical-align:1px}
+.ddot{display:inline-block; width:6px; height:6px; border-radius:50%; background:var(--accent); margin-left:3px; vertical-align:2px}
 /* ---------- date ideas ---------- */
 .dbox{border:1.5px solid var(--ink); border-radius:12px 10px 14px 9px; background:var(--paper); padding:12px 14px; min-height:var(--h,0px); height:100%}
 .dbox .section-title{margin-top:0}
@@ -677,6 +685,7 @@ const SPREADS = [
   {id:"books", name:"Bookshelf", short:"Books", period:"year", icon:'<path d="M4 20V6h3v14M7 20V4h3v16M11 20l2.5-13 3 .6-2.5 13"/><path d="M3 20h18"/>'},
   {id:"travel", name:"Travel list", short:"Travel", period:"none", icon:'<rect x="4" y="3" width="16" height="18" rx="1"/><rect x="6.5" y="5.5" width="11" height="10"/><path d="m6.5 13 3.5-3.5 3 3 2-2 2.5 2.5"/>'},
   {id:"dates", name:"Date ideas", short:"Dates", period:"none", icon:'<path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M12 14.6s-3.2-1.9-3.2-3.8a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 1.9-3.2 3.8-3.2 3.8z"/>'},
+  {id:"meals", name:"Meal planner", short:"Meals", period:"week", draft:true, icon:'<path d="M3 12h18a9 8 0 0 1-18 0z"/><path d="M8 8c0-1.2 1.2-1.6 1.2-2.8M12 8c0-1.2 1.2-1.6 1.2-2.8M16 8c0-1.2 1.2-1.6 1.2-2.8"/>'},
   {id:"mood", name:"Mood tracker", short:"Mood", period:"month", icon:'<circle cx="12" cy="12" r="9"/><path d="M8 14.5c1.2 1.4 2.5 2 4 2s2.8-.6 4-2"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/>'},
   {id:"budget", name:"Budget", short:"Budget", period:"month", icon:'<ellipse cx="12" cy="13" rx="8" ry="6.5"/><path d="M8 7.5 7 4l3 2.3M16 7.5l1-3.5-3 2.3M10.5 7h3"/><circle cx="12" cy="14" r="2"/>'},
   {id:"savings", name:"Savings trackers", short:"Savings", period:"none", icon:'<path d="M8 3.5h8v3H8zM6.5 9c0-1.4 1-2.5 2.5-2.5h6c1.5 0 2.5 1.1 2.5 2.5v10c0 1.4-1 2.5-2.5 2.5H9c-1.5 0-2.5-1.1-2.5-2.5z"/><path d="M6.5 14.5h11M6.5 18h11" />'},
@@ -755,6 +764,16 @@ function migrate(s){
       {id:"s3",name:"House deposit",goal:20000,steps:50,shape:"house",color:3,filled:[...Array(14).keys()]},
     ] : []; }
   if(!s.weekly[mondayOf(now)] && s.sample!==false) s.weekly[mondayOf(now)]={focus:[{b:"task",t:"Set up October spreads"},{b:"task",t:"Two early nights"},{b:"note",t:"Pack for the weekend trip"}]};
+  if(!s.meals){ s.meals={}; s.mlists=s.mlists||{};
+    if(smp){ const mon=fromIso(mondayOf(now)), day=i=>{const d=new Date(mon); d.setDate(d.getDate()+i); return iso(d)};
+      s.meals[day(0)]={b:"Overnight oats",l:"Leftover pasta",d:"Sheet-pan chicken and veg"};
+      s.meals[day(1)]={b:"Yogurt and berries",l:"Big salad",d:"Tacos"};
+      s.meals[day(2)]={b:"Toast and eggs",d:"Soup and grilled cheese",s:"Apple + peanut butter"};
+      s.meals[day(4)]={d:"Pizza night"};
+      s.mlists["groc:"+mondayOf(now)]=[{b:"done",t:"Oats"},{b:"task",t:"Berries"},{b:"task",t:"Chicken thighs"},{b:"task",t:"Tortillas"},{b:"task",t:"Bread"}];
+      s.mlists.mfav=[{b:"task",t:"Lemon garlic pasta"},{b:"task",t:"Chickpea curry"},{b:"task",t:"Breakfast burritos"}];
+    }
+  }
   if(!s.dates){ s.dates=[];
     if(smp){ const sat=new Date(now.getFullYear(),now.getMonth(),now.getDate()); sat.setDate(sat.getDate()+((6-sat.getDay()+7)%7||7));
       const past=new Date(now.getFullYear(),now.getMonth(),now.getDate()-12);
@@ -915,12 +934,14 @@ function peekList(mk,day){
   if(mk==="focus"){const w=state.weekly[state.week]; return w&&w.focus&&w.focus.length?w.focus:[{b:"task",t:""}]}
   if(mk.startsWith("fut:")){const a=state.future[mk.slice(4)]; return a&&a.length?a:[{b:"event",t:""}]}
   if(mk.startsWith("mfoc:")){const a=state.mfocus&&state.mfocus[mk.slice(5)]; return a&&a.length?a:[{b:"task",t:""}]}
+  if(mk.startsWith("groc:")||mk==="mfav"){const a=state.mlists&&state.mlists[mk]; return a&&a.length?a:[{b:"task",t:""}]}
   const L=state.log[mk]; return L&&L[day]&&L[day].length?L[day]:[{b:"task",t:""}];
 }
 function getList(mk,day){
   if(mk==="focus"){const w=(state.weekly[state.week]=state.weekly[state.week]||{focus:[]}); if(!w.focus.length) w.focus.push({b:"task",t:""}); return w.focus}
   if(mk.startsWith("fut:")){const k=mk.slice(4); const a=(state.future[k]=state.future[k]||[]); if(!a.length) a.push({b:"event",t:""}); return a}
   if(mk.startsWith("mfoc:")){const k=mk.slice(5); state.mfocus=state.mfocus||{}; const a=(state.mfocus[k]=state.mfocus[k]||[]); if(!a.length) a.push({b:"task",t:""}); return a}
+  if(mk.startsWith("groc:")||mk==="mfav"){ state.mlists=state.mlists||{}; const a=(state.mlists[mk]=state.mlists[mk]||[]); if(!a.length) a.push({b:"task",t:""}); return a}
   const L=(state.log[mk]=state.log[mk]||{}); if(!L[day]||!L[day].length) L[day]=[{b:"task",t:""}]; return L[day];
 }
 function itemRows(mk,day,label,ph=""){
@@ -983,7 +1004,7 @@ function applyFields(){
 function clearLabel(sp){
   const {y,m}=parts();
   if(sp==="log"||sp==="habits"||sp==="mood"||sp==="budget") return MONTHS[m-1]+" "+y;
-  if(sp==="week") return "the week of "+weekLabel();
+  if(sp==="week"||sp==="meals") return "the week of "+weekLabel();
   if(sp==="day") return dayLabel();
   if(sp==="year") return state.yearView==="pixels"?"the "+state.year+" moods":"the "+state.year+" plans";
   return "this page";
@@ -1074,6 +1095,7 @@ function clearPage(sp){
   const wipeDay=k=>{ if(state.log[k.mk]) delete state.log[k.mk][k.d]; const H=state.habitLog[k.mk]; if(H) for(const h in H) H[h]=H[h].filter(x=>x!==k.d); };
   if(sp==="log"){ state.log[state.month]={}; if(state.mfocus) delete state.mfocus[state.month] }
   if(sp==="week"){ dayKeys(state.week,7).forEach(wipeDay); delete state.weekly[state.week] }
+  if(sp==="meals"){ dayKeys(state.week,7).forEach(k=>{ if(state.meals) delete state.meals[k.iso] }); if(state.mlists) delete state.mlists["groc:"+state.week] }
   if(sp==="day"){ const k=dayKeys(state.day,1)[0]; wipeDay(k); delete state.daily[state.day]; if(state.mood[k.mk]) delete state.mood[k.mk][k.d] }
   if(sp==="habits"){ state.habitLog[state.month]={} }
   if(sp==="mood"){ state.mood[state.month]={} }
@@ -1464,6 +1486,24 @@ function renderTravel(){
 }
 
 /* =====================================================================
+   SPREAD: MEAL PLANNER (draft) — a week of meals, a grocery list for the week, and go-to meals
+   ===================================================================== */
+const MEALS=[["b","Breakfast"],["l","Lunch"],["d","Dinner"],["s","Snacks"]];
+function renderMeals(){
+  const start=fromIso(state.week), todayIso=iso(now); let boxes="";
+  for(let i=0;i<7;i++){
+    const dt=new Date(start); dt.setDate(start.getDate()+i); const key=iso(dt), wd=dt.getDay(), M=(state.meals||{})[key]||{};
+    boxes+=blk("meals","d"+i,2,`<header><span class="wdname">${DAYNAMES[wd]}</span><span class="wdnum">${dt.getDate()}</span></header>
+      <div class="mslots">${MEALS.map(([k,l])=>`<label class="mslot"><span>${l}</span><textarea rows="1" class="hand-input" data-in="meal" data-d="${key}" data-k="${k}" placeholder="…" aria-label="${DAYNAMES[wd]} ${l.toLowerCase()}">${esc(M[k]||"")}</textarea></label>`).join("")}</div>`,
+      "wbox"+(wd===0||wd===6?" weekend":"")+(key===todayIso?" today":""));
+  }
+  boxes+=blk("meals","groc",2,`<header><span class="wdname">Grocery list</span><span class="ui-note" style="margin-left:auto">tap • to tick off</span></header><div class="items groc">${itemRows("groc:"+state.week,0,"Grocery item","Add an item")}</div>`,"wbox focus");
+  boxes+=blk("meals","fav",4,`<header><span class="wdname">Go-to meals</span><span class="ui-note" style="margin-left:auto">meals you love to make</span></header><div class="items groc">${itemRows("mfav",0,"Go-to meal","A meal you love to make")}</div>`,"wbox");
+  return head("Meal planner", weekLabel()+", "+start.getFullYear(), "meals") + grid(boxes) +
+    `<p class="ui-note" style="margin-top:12px">Plan the week's meals, then build the grocery list beside them. Press Enter for a new item. Go-to meals stay from week to week.</p>`;
+}
+
+/* =====================================================================
    SPREAD: DATE IDEAS — a jar of ideas, ticket cards, plan it onto the calendar, keep the memories
    ===================================================================== */
 const DCATS={cozy:"Cozy at home", out:"Out & about", food:"Food & drink", adventure:"Adventure", creative:"Make something"};
@@ -1618,15 +1658,18 @@ function renderDates(){
 /* =====================================================================
    RENDER + CHROME
    ===================================================================== */
-const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates};
+const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates, meals:renderMeals};
 function applyTheme(){
   const t=T(), r=document.documentElement.style;
   ["paper","dot","ink","muted","rule","accent","wash","shelf","display","dsize","hand","hsize"].forEach(k=>r.setProperty("--"+k,t[k]));
   $("#themeSw").style.background=`linear-gradient(135deg, ${t.paper} 0 50%, ${t.accent} 50%)`;
   $("#themeName").textContent=t.name;
 }
+/* Draft spreads (draft:true) are new builds still being edited: only Creator mode sees them.
+   To launch one for everyone, remove its draft:true. */
+const spreadOn=s=>!s.draft||!!state.creator;
 function renderRail(){
-  $("#rail").innerHTML=`<div class="lbl">Spreads</div>`+SPREADS.map(s=>`<button class="tab" data-spread="${s.id}" aria-current="${state.spread===s.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${s.icon}</svg><span class="full">${s.name}</span><span class="short">${s.short}</span></button>`).join("");
+  $("#rail").innerHTML=`<div class="lbl">Spreads</div>`+SPREADS.filter(spreadOn).map(s=>`<button class="tab" data-spread="${s.id}" aria-current="${state.spread===s.id}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${s.icon}</svg><span class="full">${s.name}${s.draft?' <i class="dtag">Draft</i>':""}</span><span class="short">${s.short}${s.draft?'<i class="ddot" aria-label="Draft"></i>':""}</span></button>`).join("");
 }
 function renderPager(){
   const sp=SPREADS.find(s=>s.id===state.spread); const p=$("#pager");
@@ -1636,7 +1679,8 @@ function renderPager(){
   if(sp.period==="week") $("#period").textContent=weekLabel();
   if(sp.period==="day") $("#period").textContent=dayLabel();
 }
-function render(anim){ if(PUBLIC&&!IS_CREATOR) state.creator=false; requestAnimationFrame(()=>{const a=document.querySelector('.tab[aria-current="true"]'), rl=$("#rail"); if(a&&rl&&innerWidth<=820) rl.scrollLeft=a.offsetLeft-(rl.clientWidth-a.offsetWidth)/2});
+function render(anim){ if(PUBLIC&&!IS_CREATOR) state.creator=false;
+  { const cur=SPREADS.find(x=>x.id===state.spread); if(!cur||!spreadOn(cur)) state.spread="habits" } requestAnimationFrame(()=>{const a=document.querySelector('.tab[aria-current="true"]'), rl=$("#rail"); if(a&&rl&&innerWidth<=820) rl.scrollLeft=a.offsetLeft-(rl.clientWidth-a.offsetWidth)/2});
   applyTheme(); renderRail(); renderPager();
   const paper=$("#paper");
   paper.innerHTML=`<div class="tape" aria-hidden="true"></div>`+RENDER[state.spread]();
@@ -1785,6 +1829,7 @@ paper.addEventListener("input",e=>{
   if(d.in==="budget"){const b=getBudget(); if(d.i!=null) b[d.f][d.i][d.k]=el.value; else b[d.f]=el.value; refreshBudgetTotals(); saveSoon(); return}
   if(d.in==="goal"){state.books.goal=Math.max(1,parseInt(el.value)||1); saveSoon(); return}
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
+  if(d.in==="meal"){ state.meals=state.meals||{}; (state.meals[d.d]=state.meals[d.d]||{})[d.k]=el.value; saveSoon(); return }
   if(d.in==="dtitle"||d.in==="dmem"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(!x) return;
     if(d.in==="dmem"){ x.note=el.value; saveSoon(); return }
     x.t=el.value; if(x.evKey){ const [mk,day]=x.evKey.split("|"), it=((state.log[mk]||{})[day]||[]).find(v=>v.dref===x.id); if(it) it.t=dateEventText(x) } saveSoon(); return }
@@ -2050,7 +2095,7 @@ async function runExport(kind){
     if(kind==="backup"){ setX("Packing your journal…"); await saveFile("petal-and-page-backup-"+iso(new Date())+".json", JSON.stringify(state,null,1)); return }
     if(kind==="journal"){
       const keep=state.spread, out=[];
-      try{ for(const [i,sp] of SPREADS.entries()){ setX(`Drawing ${sp.name} (${i+1} of ${SPREADS.length})…`); state.spread=sp.id; render(); out.push(await capturePaper(mark)) } }
+      try{ const LIST=SPREADS.filter(spreadOn); for(const [i,sp] of LIST.entries()){ setX(`Drawing ${sp.name} (${i+1} of ${LIST.length})…`); state.spread=sp.id; render(); out.push(await capturePaper(mark)) } }
       finally{ state.spread=keep; render() }
       setX("Building the PDF…"); await saveFile("petal-and-page-journal-"+iso(new Date())+".pdf", await buildPdf(out)); return;
     }
