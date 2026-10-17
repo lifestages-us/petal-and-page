@@ -47,8 +47,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .pager{margin-inline:auto; display:flex; align-items:center; gap:4px; background:var(--chrome); border:1px solid var(--line); border-radius:999px; padding:3px}
 .pager button{width:30px; height:30px; border:0; background:transparent; border-radius:50%; font-size:18px; line-height:1}
 .pager button:hover{background:var(--chip)}
-.pager span{min-width:118px; text-align:center; font-weight:600; font-variant-numeric:tabular-nums}
+.pager #period{min-width:118px; text-align:center; font-weight:600; font-variant-numeric:tabular-nums}
 .pager.off{visibility:hidden}
+.pager .to-today{width:auto; height:28px; border-radius:999px; padding-inline:10px; font-size:12px; font-weight:700; background:var(--chip); color:var(--chrome-ink); border:1px solid var(--line); white-space:nowrap}
+.pager .to-today:hover{border-color:var(--chrome-ink)}
+.pager .to-today{display:inline-flex; align-items:center; gap:5px}
+.pager .to-today svg{width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round}
+.pager .to-today[hidden]{display:none}
+@media (max-width:560px){ .pager .to-today{width:30px; height:30px; padding:0; justify-content:center} .pager .to-today .tt{display:none} .pager #period{min-width:84px; font-size:13px} }
 .theme-btn{display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:var(--chrome); border-radius:999px; padding-block:5px; padding-inline:6px 12px; font-weight:600}
 .theme-btn .sw{width:24px; height:24px; border-radius:50%; border:1px solid var(--line)}
 
@@ -573,7 +579,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
   .brand .word{display:none}
   .theme-btn .tn{display:none}
   .theme-btn{padding-inline:5px}
-  .pager span{min-width:100px}
+  .pager #period{min-width:100px}
   .paper{padding-block:34px 28px; border-radius:4px 10px 10px 4px}
   .head{min-height:0}
   .deco.opt{display:none}
@@ -587,6 +593,7 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
       <button id="prev" aria-label="Previous">‹</button>
       <span id="period"></span>
       <button id="next" aria-label="Next">›</button>
+      <button id="toToday" class="to-today" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/><circle cx="12" cy="15" r="2" fill="currentColor"/></svg><span class="tt">Today</span></button>
     </div>
     <button class="theme-btn" id="exportBtn" aria-haspopup="dialog" aria-label="Export"><svg class="xi" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/></svg><span class="tn">Export</span></button>
     <button class="theme-btn acct" id="acctBtn" aria-haspopup="dialog" aria-label="Your account" hidden><span class="av" id="acctInitial">?</span><span class="dot" id="acctDot"></span></button>
@@ -1678,6 +1685,9 @@ function renderPager(){
   if(sp.period==="year") $("#period").textContent=String(state.year);
   if(sp.period==="week") $("#period").textContent=weekLabel();
   if(sp.period==="day") $("#period").textContent=dayLabel();
+  /* "Today" / "This week" / "This month" / "This year" appears whenever you've moved away from now */
+  const tb=$("#toToday"), atNow = sp.period==="day"?state.day===iso(now) : sp.period==="week"?state.week===mondayOf(now) : sp.period==="month"?state.month===thisMonth : sp.period==="year"?state.year===now.getFullYear() : true;
+  tb.hidden=atNow; const tl={day:"Today",week:"This week",month:"This month",year:"This year"}[sp.period]||"Today"; tb.querySelector(".tt").textContent=tl; tb.setAttribute("aria-label","Back to "+tl.toLowerCase()); tb.title="Back to "+tl.toLowerCase();
 }
 function render(anim){ if(PUBLIC&&!IS_CREATOR) state.creator=false;
   { const cur=SPREADS.find(x=>x.id===state.spread); if(!cur||!spreadOn(cur)) state.spread="habits" } requestAnimationFrame(()=>{const a=document.querySelector('.tab[aria-current="true"]'), rl=$("#rail"); if(a&&rl&&innerWidth<=820) rl.scrollLeft=a.offsetLeft-(rl.clientWidth-a.offsetWidth)/2});
@@ -1728,6 +1738,7 @@ function shift(dir){
   save(); render(true);
 }
 $("#prev").onclick=()=>shift(-1); $("#next").onclick=()=>shift(1);
+$("#toToday").onclick=()=>{ state.day=iso(now); state.week=mondayOf(now); state.month=thisMonth; state.year=now.getFullYear(); save(); render(true) };
 $("#themeBtn").onclick=openSheet; $("#closeSheet").onclick=closeSheet; $("#scrim").addEventListener("click",()=>{ if(!$("#sheet").hidden) closeSheet() });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden) closeSheet()});
 $("#themes").addEventListener("click",e=>{
@@ -1839,6 +1850,16 @@ function saveTitle(el){
   const sp=el.dataset.spread; state.titles=state.titles||{}; const o=(state.titles[sp]=state.titles[sp]||{});
   const v=el.textContent.replace(/\s+/g," ").trim(); o.title = (v && v!==el.dataset.default) ? v : ""; save();
 }
+/* copying a line's words remembers its colour, so pasting them into another line brings the colour along */
+let lineClip=null;
+const clipLine=e=>{ const el=e.target, d=el.dataset||{}; if(d.in!=="log") return; const it=peekList(d.m||state.month,+d.day)[+d.i]; if(!it) return;
+  const txt=el.value.slice(el.selectionStart,el.selectionEnd)||el.value; lineClip={t:txt.trim(), c:it.c, b:it.b} };
+paper.addEventListener("copy",clipLine); paper.addEventListener("cut",clipLine);
+paper.addEventListener("paste",e=>{ const el=e.target, d=el.dataset||{}; if(d.in!=="log"||!lineClip) return;
+  const txt=((e.clipboardData||window.clipboardData).getData("text")||"").trim(); if(!txt||txt!==lineClip.t) return;
+  const arr=getList(d.m||state.month,+d.day), it=arr[+d.i]; if(!it) return; const wasEmpty=!el.value.trim();
+  if(lineClip.c&&!it.c) it.c=lineClip.c; if(wasEmpty&&lineClip.b&&lineClip.b!=="done"&&lineClip.b!=="migrated") it.b=lineClip.b;
+  setTimeout(()=>{ it.t=el.value; save(); rerenderKeepFocus() },0) });
 /* on phones the line buttons show on the line you last tapped into (and stay put while you tap them) */
 paper.addEventListener("focusin",e=>{ const it=e.target.dataset&&e.target.dataset.in==="log"&&e.target.closest(".item"); if(!it) return; paper.querySelectorAll(".item.act").forEach(x=>{ if(x!==it) x.classList.remove("act") }); it.classList.add("act") });
 paper.addEventListener("focusout",e=>{const el=e.target; if(el.dataset&&el.dataset.edit==="title"){saveTitle(el); if(!el.textContent.trim()) el.textContent=el.dataset.default}});
