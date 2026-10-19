@@ -409,6 +409,80 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add{background:transparent; border-style:dashed; display:grid; gap:8px; align-content:center; min-height:200px; box-shadow:none}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
+/* ---------- exercise library ---------- */
+.exweek{display:flex; flex-wrap:wrap; gap:12px 28px; align-items:flex-start}
+.exdays{display:flex; gap:6px}
+.exday{display:grid; justify-items:center; gap:3px; font-family:var(--ui); font-size:11px; color:var(--muted)}
+.exday i{width:18px; height:18px; border-radius:50%; border:1.4px solid var(--ink); background:var(--paper)}
+.exday.on i{background:var(--accent)}
+.exday.today b{color:var(--ink)}
+.exmus{flex:1; min-width:200px; display:flex; flex-wrap:wrap; gap:6px; align-content:flex-start}
+.exmchip{font-family:var(--ui); font-size:12px; border:1.3px solid var(--rule); border-radius:999px; padding:2px 10px; background:var(--paper)}
+.exmchip b{color:var(--accent)}
+.exunit{display:flex; align-items:center; gap:5px}
+.exchips .chipb{display:inline-flex; align-items:center; gap:5px}
+.exdot{width:9px; height:9px; border-radius:50%; background:var(--cc); border:1px solid var(--ink)}
+.exmuscles{margin-top:2px}
+.excard{position:relative; display:grid; gap:4px; align-content:start; height:100%; background:var(--paper); border:1.5px solid var(--ink); border-radius:12px 10px 13px 9px; padding:10px 12px; box-shadow:3px 3px 0 color-mix(in srgb, var(--cc) 50%, transparent)}
+.exstage{background:color-mix(in srgb, var(--cc) 22%, var(--paper)); border-radius:8px; border:1px dashed color-mix(in srgb, var(--ink) 25%, transparent)}
+.exfig{display:block; width:100%; height:auto; max-height:150px}
+.exbody polyline{fill:none; stroke:var(--ink); stroke-width:3.4; stroke-linecap:round; stroke-linejoin:round}
+.exfig circle{stroke:var(--ink); stroke-width:2.6}
+.exground{stroke:var(--rule); stroke-width:1.5; stroke-dasharray:3 3}
+.exbar{stroke:var(--ink); stroke-width:3; stroke-linecap:round}
+.exrope{fill:none; stroke:var(--accent); stroke-width:1.6}
+.excard h3{margin:4px 0 0; font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.5); line-height:1.2}
+.extags{display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center}
+.extype{font-family:var(--ui); font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; background:var(--cc); color:#26241F; border:1px solid var(--ink); border-radius:999px; padding:1px 8px}
+.exlast{margin:2px 0}
+.exlogbtn{justify-self:start; margin-top:2px}
+.exfav{position:absolute; top:12px; right:14px; z-index:1; border:0; background:transparent; font-size:1.15em; color:#C0584C; cursor:pointer; line-height:1}
+.excard.open .exstage{max-width:260px}
+.exform{display:grid; gap:8px; margin-top:6px; border-top:1.5px dashed var(--rule); padding-top:8px}
+.excue{margin:0; font-size:.9em}
+.exgrid{display:grid; grid-template-columns:repeat(auto-fit,minmax(90px,1fr)); gap:8px}
+.exgrid label{display:grid; gap:3px; font-family:var(--ui); font-size:11px; font-weight:600; color:var(--muted)}
+.exgrid .opt{font-weight:400}
+.exgrid input{font:inherit; font-family:var(--ui); font-size:13px; font-weight:400; color:var(--ink); background:var(--paper); border:1.3px solid var(--ink); border-radius:6px; padding:4px 6px; min-width:0}
+.exhist{display:grid; gap:2px; font-family:var(--ui); font-size:12.5px}
+.exhist>div{display:flex; align-items:center; gap:10px; border-bottom:1px dotted var(--rule)}
+.exhist>div span:first-child{color:var(--muted); min-width:84px}
+.exhist .x-btn{margin-left:auto; width:22px; height:22px; font-size:15px}
+.exadd{display:grid; gap:10px; align-content:start; border-style:dashed}
+.exadd .row{display:flex; flex-wrap:wrap; gap:6px}
+.exadd select{font:inherit; font-family:var(--ui); font-size:12px; color:var(--ink); background:var(--paper); border:1.5px solid var(--ink); border-radius:6px; padding:2px 4px}
+@media (max-width:560px){ .blk:has(.excard:not(.open)){grid-column:span 1} .excard h3{font-size:calc(var(--dsize)*.42)} }
+.exporting .exlogbtn, .exporting .exchips, .exporting .exmuscles, .exporting .exunit, .exporting #addMove, .exporting .exfav{display:none!important}
+/* ---------- gifts & holidays ---------- */
+.gsum{display:flex; flex-wrap:wrap; align-items:center; gap:10px 26px}
+.gbud{display:grid; gap:2px; font-family:var(--ui); font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.gbud .money{font-family:var(--hand); font-size:1.6em; color:var(--ink); text-transform:none; letter-spacing:0; display:flex; align-items:baseline}
+.gbud input{width:5.5em; font-size:1em}
+.gstat{display:grid}
+.gstat b{font-size:1.4em; line-height:1.1; font-variant-numeric:tabular-nums}
+.gstat span{color:var(--muted); font-size:.8em}
+.gkey{flex-basis:100%}
+.ghead{display:flex; align-items:center; gap:8px}
+.gname{font-family:var(--display); font-size:calc(var(--dsize)*.45); border-bottom:0; flex:1}
+.gsub.neg, .money.neg{color:#B4443A}
+.glist{display:grid; gap:2px}
+.grow{display:grid; grid-template-columns:auto minmax(0,1fr) auto auto; align-items:center; gap:6px; border-bottom:1px dotted var(--rule)}
+.grow .hand-input{border-bottom:0}
+.gcost{display:flex; align-items:baseline; font-size:.85em; color:var(--muted)}
+.gcost input{width:3.4em; text-align:right; color:var(--ink)}
+.gst{font-family:var(--ui); font-size:10.5px; font-weight:700; letter-spacing:.04em; border:1.3px solid var(--ink); border-radius:999px; padding:2px 8px; background:var(--paper); color:var(--ink); cursor:pointer; min-width:62px}
+.gst.bought{background:color-mix(in srgb, var(--accent) 35%, var(--paper))}
+.gst.wrapped{background:var(--wash)}
+.gst.given{background:var(--ink); color:var(--paper)}
+.gpb{margin-left:auto; display:flex; align-items:baseline; gap:2px}
+.gpb input{width:3.6em; font-family:var(--ui); font-size:12px}
+.gadd{display:grid; gap:10px; align-content:start; border-style:dashed}
+.countdown{display:grid; justify-items:center; text-align:center; gap:4px; padding-block:8px}
+.cnum{font-family:var(--display); font-size:calc(var(--dsize)*1.9); line-height:1; color:var(--accent)}
+.cfields{display:grid; gap:6px; width:100%; margin-top:8px}
+.cfields .hand-input{text-align:center}
+.cdate{font:inherit; font-family:var(--ui); font-size:12px; color:var(--ink); background:var(--paper); border:1.3px solid var(--ink); border-radius:6px; padding:2px 6px; justify-self:center}
+.exporting .gst{cursor:default} .exporting #addPerson, .exporting .grow .x-btn, .exporting .ghead .x-btn, .exporting .gcard .row-actions .pen-btn{display:none!important}
 /* ---------- meal planner ---------- */
 .mslots{display:grid; gap:2px}
 .mslot{display:grid; grid-template-columns:74px minmax(0,1fr); align-items:start; gap:6px; border-bottom:1px dotted var(--rule)}
@@ -693,6 +767,9 @@ const SPREADS = [
   {id:"travel", name:"Travel list", short:"Travel", period:"none", icon:'<rect x="4" y="3" width="16" height="18" rx="1"/><rect x="6.5" y="5.5" width="11" height="10"/><path d="m6.5 13 3.5-3.5 3 3 2-2 2.5 2.5"/>'},
   {id:"dates", name:"Date ideas", short:"Dates", period:"none", icon:'<path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M12 14.6s-3.2-1.9-3.2-3.8a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 1.9-3.2 3.8-3.2 3.8z"/>'},
   {id:"meals", name:"Meal planner", short:"Meals", period:"week", draft:true, icon:'<path d="M3 12h18a9 8 0 0 1-18 0z"/><path d="M8 8c0-1.2 1.2-1.6 1.2-2.8M12 8c0-1.2 1.2-1.6 1.2-2.8M16 8c0-1.2 1.2-1.6 1.2-2.8"/>'},
+  {id:"gifts", name:"Gift list", short:"Gifts", period:"year", draft:true, pack:"Gifts & holidays", icon:'<rect x="3.5" y="9" width="17" height="11.5" rx="1.5"/><path d="M3 9h18v3.5H3zM12 9v11.5M12 9c-1.5-3.5-6-4-6-1.5S10 9 12 9zM12 9c1.5-3.5 6-4 6-1.5S14 9 12 9z"/>'},
+  {id:"holiday", name:"Holiday planner", short:"Holiday", period:"year", draft:true, pack:"Gifts & holidays", icon:'<path d="M12 2.5 6 11h3l-4 6h14l-4-6h3z"/><path d="M12 17v4"/><circle cx="12" cy="2.6" r=".9" fill="currentColor"/>'},
+  {id:"exercise", name:"Exercise library", short:"Exercise", period:"none", draft:true, pack:"Fitness", icon:'<circle cx="12" cy="4.5" r="2"/><path d="M12 7v6l-3 7M12 13l3 7M7 10l5-2 5 2"/>'},
   {id:"mood", name:"Mood tracker", short:"Mood", period:"month", icon:'<circle cx="12" cy="12" r="9"/><path d="M8 14.5c1.2 1.4 2.5 2 4 2s2.8-.6 4-2"/><circle cx="9" cy="10" r=".8" fill="currentColor"/><circle cx="15" cy="10" r=".8" fill="currentColor"/>'},
   {id:"budget", name:"Budget", short:"Budget", period:"month", icon:'<ellipse cx="12" cy="13" rx="8" ry="6.5"/><path d="M8 7.5 7 4l3 2.3M16 7.5l1-3.5-3 2.3M10.5 7h3"/><circle cx="12" cy="14" r="2"/>'},
   {id:"savings", name:"Savings trackers", short:"Savings", period:"none", icon:'<path d="M8 3.5h8v3H8zM6.5 9c0-1.4 1-2.5 2.5-2.5h6c1.5 0 2.5 1.1 2.5 2.5v10c0 1.4-1 2.5-2.5 2.5H9c-1.5 0-2.5-1.1-2.5-2.5z"/><path d="M6.5 14.5h11M6.5 18h11" />'},
@@ -779,6 +856,23 @@ function migrate(s){
       s.meals[day(4)]={d:"Pizza night"};
       s.mlists["groc:"+mondayOf(now)]=[{b:"done",t:"Oats"},{b:"task",t:"Berries"},{b:"task",t:"Chicken thighs"},{b:"task",t:"Tortillas"},{b:"task",t:"Bread"}];
       s.mlists.mfav=[{b:"task",t:"Lemon garlic pasta"},{b:"task",t:"Chickpea curry"},{b:"task",t:"Breakfast burritos"}];
+    }
+  }
+  if(!s.exlog){ s.exlog={}; s.exFav=s.exFav||[]; s.exUnit=s.exUnit||"lb";
+    if(smp){ const mon=fromIso(mondayOf(now)), day=i=>{const d=new Date(mon); d.setDate(d.getDate()+i); return iso(d)};
+      s.exlog={squat:[{d:day(0),s:3,r:10,wt:25,ts:1}], plank:[{d:day(0),min:2,ts:2}], row:[{d:day(1),s:3,r:12,wt:15,ts:3}], jack:[{d:day(1),min:5,ts:4}]};
+      s.exFav=["squat","pushup","plank"]; }
+  }
+  if(!s.gifts){ s.gifts={}; s.holiday=s.holiday||{};
+    if(smp){ const Y=now.getFullYear();
+      s.gifts[Y]={budget:400, people:[
+        {id:"p1",name:"Mum",budget:80,gifts:[{id:"g1",t:"Cosy reading socks",cost:18,st:"bought"},{id:"g2",t:"Candle from the market",cost:30,st:"idea"}]},
+        {id:"p2",name:"Sam",budget:100,gifts:[{id:"g3",t:"Pottery class for two",cost:90,st:"wrapped"}]},
+        {id:"p3",name:"Ava",budget:40,gifts:[{id:"g4",t:"Sticker book",cost:12,st:"given"},{id:"g5",t:"",cost:0,st:"idea"}]}]};
+      s.holiday[Y]={name:"Christmas", date:Y+"-12-25", note:"Cinnamon rolls on Christmas morning. Watch Elf on the 23rd."};
+      s.mlists=s.mlists||{}; s.mlists["hol:"+Y]=[{b:"done",t:"Book flights home"},{b:"task",t:"Order holiday cards"},{b:"task",t:"Plan the menu"}];
+      s.mlists["holev:"+Y]=[{b:"event",t:"Dec 13 · Friendsgiving"},{b:"event",t:"Dec 20 · Work party"}];
+      s.mlists["holcard:"+Y]=[{b:"done",t:"Grandma"},{b:"task",t:"The Lees"},{b:"task",t:"Ms. Patel"}];
     }
   }
   if(!s.dates){ s.dates=[];
@@ -941,14 +1035,14 @@ function peekList(mk,day){
   if(mk==="focus"){const w=state.weekly[state.week]; return w&&w.focus&&w.focus.length?w.focus:[{b:"task",t:""}]}
   if(mk.startsWith("fut:")){const a=state.future[mk.slice(4)]; return a&&a.length?a:[{b:"event",t:""}]}
   if(mk.startsWith("mfoc:")){const a=state.mfocus&&state.mfocus[mk.slice(5)]; return a&&a.length?a:[{b:"task",t:""}]}
-  if(mk.startsWith("groc:")||mk==="mfav"){const a=state.mlists&&state.mlists[mk]; return a&&a.length?a:[{b:"task",t:""}]}
+  if(/^(groc:|mfav|hol:|holev:|holcard:)/.test(mk)){const a=state.mlists&&state.mlists[mk]; return a&&a.length?a:[{b:mk.startsWith("holev:")?"event":"task",t:""}]}
   const L=state.log[mk]; return L&&L[day]&&L[day].length?L[day]:[{b:"task",t:""}];
 }
 function getList(mk,day){
   if(mk==="focus"){const w=(state.weekly[state.week]=state.weekly[state.week]||{focus:[]}); if(!w.focus.length) w.focus.push({b:"task",t:""}); return w.focus}
   if(mk.startsWith("fut:")){const k=mk.slice(4); const a=(state.future[k]=state.future[k]||[]); if(!a.length) a.push({b:"event",t:""}); return a}
   if(mk.startsWith("mfoc:")){const k=mk.slice(5); state.mfocus=state.mfocus||{}; const a=(state.mfocus[k]=state.mfocus[k]||[]); if(!a.length) a.push({b:"task",t:""}); return a}
-  if(mk.startsWith("groc:")||mk==="mfav"){ state.mlists=state.mlists||{}; const a=(state.mlists[mk]=state.mlists[mk]||[]); if(!a.length) a.push({b:"task",t:""}); return a}
+  if(/^(groc:|mfav|hol:|holev:|holcard:)/.test(mk)){ state.mlists=state.mlists||{}; const a=(state.mlists[mk]=state.mlists[mk]||[]); if(!a.length) a.push({b:mk.startsWith("holev:")?"event":"task",t:""}); return a}
   const L=(state.log[mk]=state.log[mk]||{}); if(!L[day]||!L[day].length) L[day]=[{b:"task",t:""}]; return L[day];
 }
 function itemRows(mk,day,label,ph=""){
@@ -1012,6 +1106,9 @@ function clearLabel(sp){
   const {y,m}=parts();
   if(sp==="log"||sp==="habits"||sp==="mood"||sp==="budget") return MONTHS[m-1]+" "+y;
   if(sp==="week"||sp==="meals") return "the week of "+weekLabel();
+  if(sp==="gifts") return "the "+state.year+" gift list";
+  if(sp==="exercise") return "your exercise log and moves";
+  if(sp==="holiday") return "the "+state.year+" holiday plans";
   if(sp==="day") return dayLabel();
   if(sp==="year") return state.yearView==="pixels"?"the "+state.year+" moods":"the "+state.year+" plans";
   return "this page";
@@ -1102,6 +1199,9 @@ function clearPage(sp){
   const wipeDay=k=>{ if(state.log[k.mk]) delete state.log[k.mk][k.d]; const H=state.habitLog[k.mk]; if(H) for(const h in H) H[h]=H[h].filter(x=>x!==k.d); };
   if(sp==="log"){ state.log[state.month]={}; if(state.mfocus) delete state.mfocus[state.month] }
   if(sp==="week"){ dayKeys(state.week,7).forEach(wipeDay); delete state.weekly[state.week] }
+  if(sp==="exercise"){ state.exlog={}; state.exFav=[]; state.exCustom=[] }
+  if(sp==="gifts"){ if(state.gifts) delete state.gifts[state.year] }
+  if(sp==="holiday"){ if(state.holiday) delete state.holiday[state.year]; ["hol:","holev:","holcard:"].forEach(k=>{ if(state.mlists) delete state.mlists[k+state.year] }) }
   if(sp==="meals"){ dayKeys(state.week,7).forEach(k=>{ if(state.meals) delete state.meals[k.iso] }); if(state.mlists) delete state.mlists["groc:"+state.week] }
   if(sp==="day"){ const k=dayKeys(state.day,1)[0]; wipeDay(k); delete state.daily[state.day]; if(state.mood[k.mk]) delete state.mood[k.mk][k.d] }
   if(sp==="habits"){ state.habitLog[state.month]={} }
@@ -1402,7 +1502,7 @@ function schedHTML(mk,d,D){
 }
 /* re-draw the page but keep the cursor in the field the person just moved to */
 function rerenderKeepFocus(){
-  const a=document.activeElement, keys=["in","m","day","i","h","act"];
+  const a=document.activeElement, keys=["in","m","day","i","h","act","id","g"];
   const sel=a&&paper.contains(a)&&a.dataset?(a.tagName.toLowerCase()+keys.filter(k=>a.dataset[k]!=null).map(k=>`[data-${k}="${a.dataset[k]}"]`).join("")):null;
   render(); if(sel){ const n=paper.querySelector(sel); if(n){ n.focus(); if(n.setSelectionRange&&n.value!=null) n.setSelectionRange(n.value.length,n.value.length) } }
 }
@@ -1490,6 +1590,120 @@ function renderTravel(){
       <div class="tools"><button data-act="visit" data-id="${p.id}" aria-pressed="${p.visited}">${p.visited?"Visited ✓":"Mark visited"}</button><button data-act="scene" data-id="${p.id}" aria-label="Change picture" title="Change picture">↻</button><button data-act="delplace" data-id="${p.id}" aria-label="Remove ${esc(p.name)}">×</button></div></figure>`)).join("");
   return head("Places I want to go", seen+" of "+L.length+" visited", "travel") +
    grid(cards + blk("travel","add",1,`<form class="pol add" id="addPlace"><input class="hand-input" id="newPlace" placeholder="New place…" aria-label="New place"><select id="newScene" aria-label="Picture">${SCENES.map(s=>`<option value="${s}">${s[0].toUpperCase()+s.slice(1)}</option>`).join("")}</select><button class="pen-btn solid" type="submit">Pin it</button></form>`));
+}
+
+/* =====================================================================
+   PACK: FITNESS — EXERCISE LIBRARY (draft): animated stick-figure moves, sorted by movement type
+   and the muscles they work, with a simple log (sets × reps, weight or minutes).
+   Poses are joint coordinates in a 120×100 box: head, neck, pelvis, front knee/foot, back knee/foot,
+   front elbow/hand, back elbow/hand. The figure eases between pose A and pose B.
+   ===================================================================== */
+const EXLIB=[{"id":"squat","n":"Squat","t":"squat","m":["quads","glutes"],"k":"reps","cue":"Sit back like there's a chair, chest up, knees over toes.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,73,25,86,25,72,26,85,26],"B":[64,33,60,42,44,64,61,72,60,91,59,73,57,91,74,42,87,42,73,43,86,43]},{"id":"pushup","n":"Push-up","t":"push","m":["chest","triceps","shoulders"],"k":"reps","cue":"Body in one straight line; lower your chest to just above the floor.","A":[87,54,78,58,48,74,33,82,18,90,34,82,20,90,79,72,80,90,77,72,78,90],"B":[86,76,76,78,47,82,32,86,18,90,33,86,20,90,65,83,80,90,64,83,78,90]},{"id":"press","n":"Overhead press","t":"push","m":["shoulders","triceps"],"k":"reps","w":1,"cue":"Press straight up past your face, ribs down, no arching.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,68,38,68,25,66,38,66,25],"B":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,63,12,64,2,61,12,62,2]},{"id":"lateral","n":"Lateral raise","t":"push","m":["shoulders"],"k":"reps","w":1,"cue":"Raise to shoulder height with soft elbows, lead with your elbows.","A":[60,15,60,25,60,54,63,72,64,91,57,72,56,91,66,39,68,52,54,39,52,52],"B":[60,15,60,25,60,54,63,72,64,91,57,72,56,91,73,27,86,27,47,27,34,27]},{"id":"row","n":"Bent-over row","t":"pull","m":["back","biceps"],"k":"reps","w":1,"cue":"Hinge forward with a flat back; pull your elbows back past your ribs.","A":[84,33,76,40,52,56,57,73,55,91,55,73,53,91,76,53,76,66,74,53,74,66],"B":[84,33,76,40,52,56,57,73,55,91,55,73,53,91,65,47,70,59,63,47,68,59]},{"id":"curl","n":"Bicep curl","t":"pull","m":["biceps"],"k":"reps","w":1,"cue":"Elbows pinned to your sides; curl up, lower slowly.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,61,39,63,53,59,39,61,53],"B":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,61,39,69,28,59,39,67,28]},{"id":"pullup","n":"Pull-up","t":"pull","m":["back","biceps"],"k":"reps","bar":1,"cue":"Start from a dead hang; pull until your chin clears the bar.","A":[64,20,60,29,60,58,61,74,61,90,59,74,58,89,62,17,62,6,58,17,58,6],"B":[64,5,60,15,60,44,62,60,62,76,58,60,57,75,69,20,62,6,51,20,58,6]},{"id":"deadlift","n":"Deadlift","t":"hinge","m":["hamstrings","glutes","back"],"k":"reps","w":1,"cue":"Push the floor away, keep the weight close, stand tall at the top.","A":[80,40,72,46,48,58,57,74,56,91,55,74,54,91,73,60,73,73,71,60,71,73],"B":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,61,41,61,55,59,41,59,55]},{"id":"bridge","n":"Glute bridge","t":"hinge","m":["glutes","hamstrings"],"k":"reps","cue":"Feet flat, squeeze your glutes to lift your hips, pause at the top.","A":[14,84,24,86,53,88,68,72,78,90,66,72,76,90,36,89,48,90,35,89,47,90],"B":[14,83,24,84,52,72,68,68,78,90,66,68,76,90,36,88,48,90,35,88,47,90]},{"id":"swing","n":"Kettlebell swing","t":"hinge","m":["glutes","hamstrings","core"],"k":"reps","w":2,"cue":"Snap your hips forward; your arms just guide the bell.","A":[80,40,72,46,48,58,57,74,56,91,55,74,54,91,66,58,58,68,64,58,57,68],"B":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,73,27,86,24,72,28,85,25]},{"id":"lunge","n":"Forward lunge","t":"lunge","m":["quads","glutes"],"k":"reps","cue":"Step forward, lower until both knees bend to about 90\u00b0.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,67,44,61,53,53,44,59,53],"B":[58,25,57,35,56,64,73,70,76,91,46,82,32,90,65,50,58,62,50,50,55,62]},{"id":"plank","n":"Plank","t":"core","m":["core","shoulders"],"k":"time","cue":"Elbows under shoulders, squeeze glutes, don't let your hips sag.","A":[89,69,80,72,50,78,34,84,18,90,35,84,20,90,80,90,95,90,78,90,93,90],"B":[89,68,80,71,50,77,34,84,18,90,35,84,20,90,80,90,95,90,78,90,93,90]},{"id":"crunch","n":"Crunch","t":"core","m":["core"],"k":"reps","cue":"Curl your shoulders off the floor; keep your lower back down.","A":[14,84,24,86,53,88,68,72,78,90,66,72,76,90,20,78,13,80,19,78,12,80],"B":[27,71,34,78,53,88,68,72,78,90,66,72,76,90,31,68,25,72,30,68,24,72]},{"id":"climber","n":"Mountain climber","t":"cardio","m":["core","shoulders","quads"],"k":"time","cue":"Hold a high plank and drive your knees in, one after the other.","A":[87,54,78,58,48,72,66,76,56,86,34,82,20,90,79,72,80,90,78,72,79,90],"B":[87,54,78,58,48,72,34,82,20,90,66,76,56,86,79,72,80,90,78,72,79,90]},{"id":"jack","n":"Jumping jack","t":"cardio","m":["full body"],"k":"time","cue":"Jump your feet wide as your arms sweep overhead, then back.","A":[60,15,60,25,60,54,63,72,64,91,57,72,56,91,67,38,70,52,53,38,50,52],"B":[60,15,60,25,60,54,70,71,78,91,50,71,42,91,70,13,76,2,50,13,44,2]},{"id":"highknees","n":"High knees","t":"cardio","m":["quads","calves","core"],"k":"time","cue":"Run in place, bringing each knee up to hip height.","A":[60,15,60,25,60,54,78,52,76,70,59,72,58,90,52,40,50,52,68,34,73,24],"B":[60,15,60,25,60,54,61,72,62,90,78,52,76,70,68,34,73,24,52,40,50,52]},{"id":"rope","n":"Jump rope","t":"cardio","m":["calves","full body"],"k":"time","rope":1,"cue":"Small hops on the balls of your feet; turn the rope with your wrists.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,66,40,70,50,54,40,50,50],"B":[60,9,60,19,60,48,61,66,62,86,59,66,58,86,66,34,70,44,54,34,50,44]},{"id":"hamstring","n":"Forward fold","t":"mobility","m":["hamstrings","back"],"k":"time","cue":"Hinge at the hips and let your head hang; bend your knees if you need to.","A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,61,39,62,52,59,39,58,52],"B":[76,83,72,74,54,54,58,72,60,91,56,72,58,91,68,86,65,91,67,86,64,91]},{"id":"sidebend","n":"Side bend","t":"mobility","m":["core"],"k":"time","cue":"Reach up and over, keeping both feet grounded.","A":[60,15,60,25,60,54,63,72,64,91,57,72,56,91,67,38,70,52,54,13,52,2],"B":[71,19,66,27,60,54,63,72,64,91,57,72,56,91,70,40,73,54,64,12,74,4]},{"id":"hipflexor","n":"Hip flexor stretch","t":"mobility","m":["hips","quads"],"k":"time","cue":"Kneel in a lunge and gently press your hips forward.","A":[55,30,55,40,53,68,70,72,73,91,43,90,28,90,60,52,56,62,50,52,53,62],"B":[59,31,58,41,58,70,70,72,73,91,43,90,28,90,60,28,62,16,57,28,59,16]}];
+const EXGEN={"A":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,61,39,62,52,59,39,58,52],"B":[60,15,60,25,60,54,61,72,62,91,59,72,58,91,70,32,80,40,52,32,44,40]};
+const EXT={push:{n:"Push",c:"#F0A9A0"}, pull:{n:"Pull",c:"#8DB9DE"}, squat:{n:"Squat",c:"#F2C66E"}, hinge:{n:"Hinge",c:"#BBA6DC"},
+  lunge:{n:"Lunge",c:"#8FC4AA"}, core:{n:"Core",c:"#E9B07C"}, cardio:{n:"Cardio",c:"#F29FBF"}, mobility:{n:"Mobility",c:"#A9C99A"}};
+const MUSCLES=["chest","back","shoulders","biceps","triceps","core","glutes","quads","hamstrings","calves","hips","full body"];
+const exReduce=()=>window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+function exAll(){ return EXLIB.concat((state.exCustom||[]).map(c=>({...c, A:EXGEN.A, B:EXGEN.B, custom:true}))) }
+function exFigure(e){
+  const A=e.A, B=e.B, anim=!exReduce(), dur=e.t==="cardio"?"1.1s":e.t==="core"||e.t==="mobility"?"3s":"2.2s";
+  const pt=(a,i)=>a[i*2]+","+a[i*2+1], pts=(a,ix)=>ix.map(i=>pt(a,i)).join(" ");
+  const ease=`calcMode="spline" keyTimes="0;.5;1" keySplines=".45 0 .55 1;.45 0 .55 1" dur="${dur}" repeatCount="indefinite"`;
+  const line=(ix,op)=>`<polyline points="${pts(A,ix)}"${op?` opacity="${op}"`:""}>${anim?`<animate attributeName="points" values="${pts(A,ix)};${pts(B,ix)};${pts(A,ix)}" ${ease}/>`:""}</polyline>`;
+  const dot=(i,r,fill)=>`<circle cx="${A[i*2]}" cy="${A[i*2+1]}" r="${r}" fill="${fill}">${anim?`<animate attributeName="cx" values="${A[i*2]};${B[i*2]};${A[i*2]}" ${ease}/><animate attributeName="cy" values="${A[i*2+1]};${B[i*2+1]};${A[i*2+1]}" ${ease}/>`:""}</circle>`;
+  const ropeD=(a)=>`M${pt(a,10)} Q60 ${a===A?99:97} ${pt(a,8)}`;
+  return `<svg class="exfig" viewBox="0 0 120 100" role="img" aria-label="${esc(e.n)} movement">
+    <line x1="8" y1="92.5" x2="112" y2="92.5" class="exground"/>
+    ${e.bar?`<line x1="38" y1="5" x2="84" y2="5" class="exbar"/>`:""}
+    ${e.rope?`<path d="${ropeD(A)}" class="exrope">${anim?`<animate attributeName="d" values="${ropeD(A)};${ropeD(B)};${ropeD(A)}" ${ease}/>`:""}</path>`:""}
+    <g class="exbody">${line([2,5,6],.45)}${line([1,9,10],.45)}${line([1,2])}${line([2,3,4])}${line([1,7,8])}</g>
+    ${dot(0,6.5,"var(--paper)")}
+    ${e.w===1?dot(8,3.4,"var(--ink)")+dot(10,3.4,"var(--ink)"):e.w===2?dot(8,4.6,"var(--ink)"):""}
+  </svg>`;
+}
+function exLine(e,x){ const u=state.exUnit||"lb"; return e.k==="time" ? `${x.min||0} min${x.s?` · ${x.s} rounds`:""}` : `${x.s||0}×${x.r||0}${x.wt?` @ ${x.wt} ${u}`:""}` }
+function renderExercise(){
+  const all=exAll(), L=state.exlog||{}, fav=new Set(state.exFav||[]), fT=ui.exT||"all", fM=ui.exM||"", open=ui.exOpen;
+  const mon=mondayOf(now), weekDays=[...Array(7)].map((_,i)=>{const d=fromIso(mon); d.setDate(d.getDate()+i); return iso(d)});
+  const thisWeek=[], musc={}; all.forEach(e=>(L[e.id]||[]).forEach(x=>{ if(weekDays.includes(x.d)){ thisWeek.push({e,x}); e.m.forEach(m=>musc[m]=(musc[m]||0)+1) } }));
+  const daysHtml=weekDays.map((d,i)=>{ const n=thisWeek.filter(w=>w.x.d===d).length; return `<span class="exday${n?" on":""}${d===iso(now)?" today":""}" title="${n} logged"><b>${"MTWTFSS"[i]}</b><i></i></span>` }).join("");
+  const muscHtml=Object.keys(musc).length?Object.entries(musc).sort((a,b)=>b[1]-a[1]).map(([m,n])=>`<span class="exmchip">${esc(m)} <b>×${n}</b></span>`).join(""):`<span class="ui-note">Log a move and the muscles you've worked this week show up here.</span>`;
+  const shown=all.filter(e=>(fT==="all"||(fT==="fav"?fav.has(e.id):e.t===fT))&&(!fM||e.m.includes(fM)));
+  const tChips=[["all","All moves"],["fav","♥ Favourites"],...Object.entries(EXT).map(([k,v])=>[k,v.n])].map(([k,l])=>`<button class="chipb${fT===k?" on":""}" data-act="exT" data-k="${k}" aria-pressed="${fT===k}" ${EXT[k]?`style="--cc:${EXT[k].c}"`:""}>${EXT[k]?`<i class="exdot"></i>`:""}${l}</button>`).join("");
+  const mChips=`<span class="ui-note">Muscle</span>`+MUSCLES.map(m=>`<button class="jchip${fM===m?" on":""}" data-act="exM" data-k="${m}" aria-pressed="${fM===m}">${m}</button>`).join("");
+  const card=e=>{ const logs=(L[e.id]||[]).slice().sort((a,b)=>b.d.localeCompare(a.d)), last=logs[0], isOpen=open===e.id, T=EXT[e.t]||{n:e.t,c:"#ccc"};
+    const form = isOpen ? `<div class="exform">
+        <p class="excue">${esc(e.cue||"")}</p>
+        <div class="exgrid"><label>Date<input type="date" id="exD" value="${iso(now)}"></label>
+        ${e.k==="time"?`<label>Minutes<input id="exMin" inputmode="decimal" placeholder="10"></label><label>Rounds <span class="opt">optional</span><input id="exS" inputmode="numeric" placeholder="—"></label>`
+          :`<label>Sets<input id="exS" inputmode="numeric" placeholder="3"></label><label>Reps<input id="exR" inputmode="numeric" placeholder="10"></label><label>Weight (${state.exUnit||"lb"}) <span class="opt">optional</span><input id="exW" inputmode="decimal" placeholder="—"></label>`}</div>
+        <div class="row-actions"><button class="pen-btn solid" data-act="exsave" data-id="${e.id}">Save</button><button class="pen-btn" data-act="exlog" data-id="${e.id}">Close</button>${e.custom?`<button class="linkish" data-act="exdelc" data-id="${e.id}" style="margin-left:auto">Remove move</button>`:""}</div>
+        ${logs.length?`<div class="exhist"><b>History</b>${logs.slice(0,6).map(x=>`<div><span>${fmtShort(x.d)}</span><span>${esc(exLine(e,x))}</span><button class="x-btn" data-act="exdellog" data-id="${e.id}" data-d="${x.d}" data-ts="${x.ts}" aria-label="Remove entry">×</button></div>`).join("")}</div>`:""}
+      </div>` : "";
+    return blk("exercise",e.id,isOpen?2:1,`<article class="excard${isOpen?" open":""}" style="--cc:${T.c}">
+      <button class="exfav${fav.has(e.id)?" on":""}" data-act="exfav" data-id="${e.id}" aria-pressed="${fav.has(e.id)}" aria-label="Favourite">${fav.has(e.id)?"♥":"♡"}</button>
+      <div class="exstage">${exFigure(e)}</div>
+      <h3>${esc(e.n)}</h3>
+      <div class="extags"><span class="extype">${T.n}</span><span class="ui-note">${e.m.map(esc).join(" · ")}</span></div>
+      <p class="exlast ui-note">${last?"Last: "+fmtShort(last.d)+" · "+esc(exLine(e,last)):"Not logged yet"}</p>
+      ${isOpen?form:`<button class="pen-btn exlogbtn" data-act="exlog" data-id="${e.id}">+ Log</button>`}
+    </article>`) };
+  const add=blk("exercise","add",2,`<form class="wbox exadd" id="addMove"><header><span class="wdname">Add your own move</span></header>
+      <input class="hand-input" id="exNewN" placeholder="Name, e.g. Step-ups" aria-label="Move name" autocomplete="off">
+      <div class="row"><select id="exNewT" aria-label="Movement type">${Object.entries(EXT).map(([k,v])=>`<option value="${k}">${v.n}</option>`).join("")}</select>
+      <select id="exNewM" aria-label="Main muscle">${MUSCLES.map(m=>`<option>${m}</option>`).join("")}</select>
+      <select id="exNewK" aria-label="Track by"><option value="reps">Sets × reps</option><option value="time">Minutes</option></select></div>
+      <button class="pen-btn solid" type="submit">+ Add move</button></form>`);
+  return head("Exercise library", all.length+" moves · "+thisWeek.length+" logged this week", "exercise") + grid(
+    blk("exercise","week",4,`<div class="exweek"><div><h2 class="section-title">This week</h2><div class="exdays">${daysHtml}</div></div><div class="exmus">${muscHtml}</div>
+      <div class="exunit"><span class="ui-note">Weights in</span>${["lb","kg"].map(u=>`<button class="jchip${(state.exUnit||"lb")===u?" on":""}" data-act="exunit" data-k="${u}">${u}</button>`).join("")}</div></div>`,"wbox focus") +
+    blk("exercise","filters",4,`<div class="chips exchips">${tChips}</div><div class="jarpick exmuscles">${mChips}</div>`) +
+    (shown.length?shown.map(card).join(""):blk("exercise","none",4,`<p class="ui-note">No moves match. ${fT==="fav"?"Tap ♡ on a move to add it to your favourites.":"Try another type or muscle."}</p>`)) + add);
+}
+
+/* =====================================================================
+   PACK: GIFTS & HOLIDAYS (draft) — a gift list per person with a budget, and a holiday planner
+   ===================================================================== */
+const GST=[["idea","Idea"],["bought","Bought"],["wrapped","Wrapped"],["given","Given"]];
+function giftsFor(y){ state.gifts=state.gifts||{}; return (state.gifts[y]=state.gifts[y]||{budget:0,people:[]}) }
+function giftTotals(G){ let planned=0, spent=0; G.people.forEach(p=>p.gifts.forEach(g=>{ const c=Number(g.cost)||0; planned+=c; if(g.st!=="idea") spent+=c })); return {planned, spent, left:(Number(G.budget)||0)-spent} }
+function renderGifts(){
+  const G=(state.gifts||{})[state.year]||{budget:0,people:[]}, T=giftTotals(G), B=Number(G.budget)||0, pct=B?Math.min(100,Math.round(T.spent/B*100)):0;
+  const sum=blk("gifts","sum",4,`<div class="gsum">
+      <label class="gbud">Gift budget <span class="money">$<input class="hand-input" inputmode="decimal" data-in="gbudget" value="${B||""}" placeholder="0" aria-label="Total gift budget"></span></label>
+      <div class="gstat"><b class="money" id="gPlanned">${money(T.planned)}</b><span>planned</span></div>
+      <div class="gstat"><b class="money" id="gSpent">${money(T.spent)}</b><span>spent</span></div>
+      <div class="gstat"><b class="money${T.left<0?" neg":""}" id="gLeft">${money(T.left)}</b><span>left</span></div>
+      <div class="goal" style="flex-basis:100%"><div class="bar"><i id="gBar" style="width:${pct}%"></i></div></div>
+      <div class="gkey ui-note">Tap a gift's tag to move it along: ${GST.map(([,l])=>l).join(" → ")}</div></div>`,"dbox");
+  const card=p=>{ const sub=p.gifts.reduce((a,g)=>a+(Number(g.cost)||0),0);
+    return blk("gifts",p.id,2,`<header class="ghead"><textarea rows="1" class="hand-input gname" data-in="gname" data-id="${p.id}" placeholder="Name" aria-label="Person">${esc(p.name)}</textarea>
+        <span class="ui-note gsub${p.budget&&sub>p.budget?" neg":""}">${money(sub)}${p.budget?" of "+money(p.budget):""}</span><button class="x-btn" data-act="gpdel" data-id="${p.id}" aria-label="Remove ${esc(p.name||"person")}">×</button></header>
+      <div class="glist">${p.gifts.map(g=>`<div class="grow"><button class="gst ${g.st}" data-act="gst" data-id="${p.id}" data-g="${g.id}" title="Change status">${GST.find(x=>x[0]===g.st)[1]}</button>
+        <textarea rows="1" class="hand-input" data-in="gtext" data-id="${p.id}" data-g="${g.id}" placeholder="Gift idea" aria-label="Gift">${esc(g.t)}</textarea>
+        <span class="money gcost">$<input class="hand-input" inputmode="decimal" data-in="gcost" data-id="${p.id}" data-g="${g.id}" value="${g.cost||""}" placeholder="0" aria-label="Cost"></span>
+        <button class="x-btn" data-act="gdel" data-id="${p.id}" data-g="${g.id}" aria-label="Remove gift">×</button></div>`).join("")}</div>
+      <div class="row-actions"><button class="pen-btn" data-act="gadd" data-id="${p.id}">+ Add gift</button><label class="ui-note gpb">Budget $<input class="hand-input" inputmode="decimal" data-in="gpb" data-id="${p.id}" value="${p.budget||""}" placeholder="—" aria-label="Budget for ${esc(p.name||"this person")}"></label></div>`,"wbox gcard") };
+  const add=blk("gifts","add",2,`<form class="wbox gadd" id="addPerson"><header><span class="wdname">Add someone</span></header><input class="hand-input" id="newPerson" placeholder="Name" aria-label="Name" autocomplete="off"><button class="pen-btn solid" type="submit">+ Add person</button></form>`);
+  return head("Gift list", G.people.length+(G.people.length===1?" person · ":" people · ")+state.year, "gifts") + grid(sum + G.people.map(card).join("") + add);
+}
+function refreshGiftTotals(){ const G=(state.gifts||{})[state.year]; if(!G) return; const T=giftTotals(G), B=Number(G.budget)||0;
+  const set=(id,v)=>{ const e=$("#"+id); if(e) e.textContent=money(v) }; set("gPlanned",T.planned); set("gSpent",T.spent); set("gLeft",T.left);
+  const l=$("#gLeft"); if(l) l.classList.toggle("neg",T.left<0); const bar=$("#gBar"); if(bar) bar.style.width=(B?Math.min(100,Math.round(T.spent/B*100)):0)+"%" }
+function holidayFor(y){ state.holiday=state.holiday||{}; return (state.holiday[y]=state.holiday[y]||{name:"Christmas", date:y+"-12-25", note:""}) }
+function renderHoliday(){
+  const y=state.year, H=(state.holiday||{})[y]||{name:"Christmas", date:y+"-12-25", note:""};
+  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate()), days=H.date?Math.round((fromIso(H.date)-today)/864e5):null;
+  const big = days==null?"—" : days>0?days : days===0?"Today!" : Math.abs(days);
+  const sub = days==null?"pick a date" : days>1?"sleeps to go" : days===1?"sleep to go" : days===0?"" : "days ago";
+  return head("Holiday planner", (H.name||"Holidays")+" · "+y, "holiday") + grid(
+    blk("holiday","count",2,`<div class="countdown"><div class="cnum">${big}</div><div class="ui-note">${sub}</div>
+      <div class="cfields"><input class="hand-input" data-in="hname" value="${esc(H.name||"")}" placeholder="Which holiday?" aria-label="Holiday"><input type="date" class="cdate" data-in="hdate" value="${H.date||""}" aria-label="Holiday date"></div></div>`,"wbox focus") +
+    blk("holiday","todo",2,`<header><span class="wdname">To do</span></header><div class="items groc">${itemRows("hol:"+y,0,"Holiday to-do","Book travel, order cards…")}</div>`,"wbox") +
+    blk("holiday","plans",2,`<header><span class="wdname">Plans &amp; parties</span></header><div class="items groc">${itemRows("holev:"+y,0,"Plan","Dec 13 · Friendsgiving")}</div>`,"wbox") +
+    blk("holiday","cards",2,`<header><span class="wdname">Cards to send</span><span class="ui-note" style="margin-left:auto">tap • when sent</span></header><div class="items groc">${itemRows("holcard:"+y,0,"Card","Who gets a card?")}</div>`,"wbox") +
+    blk("holiday","notes",4,`<h2 class="section-title">Traditions, menus &amp; wishes</h2><textarea rows="3" class="hand-input dnote" data-in="hnote" placeholder="Recipes to make, traditions to keep, things to remember…" aria-label="Notes">${esc(H.note||"")}</textarea>`)) +
+    `<p class="ui-note" style="margin-top:12px">Your gift list for ${y} is on the Gift list spread. Use the arrows to plan next year.</p>`;
 }
 
 /* =====================================================================
@@ -1665,7 +1879,7 @@ function renderDates(){
 /* =====================================================================
    RENDER + CHROME
    ===================================================================== */
-const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates, meals:renderMeals};
+const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates, meals:renderMeals, gifts:renderGifts, holiday:renderHoliday, exercise:renderExercise};
 function applyTheme(){
   const t=T(), r=document.documentElement.style;
   ["paper","dot","ink","muted","rule","accent","wash","shelf","display","dsize","hand","hsize"].forEach(k=>r.setProperty("--"+k,t[k]));
@@ -1807,6 +2021,23 @@ paper.addEventListener("click",e=>{
   if(act==="scene"&&place){place.scene=SCENES[(SCENES.indexOf(place.scene)+1)%SCENES.length]; save(); render(); return}
   const dx=d.id&&(state.dates||[]).find(x=>x.id===d.id);
   if(act==="dfilter"){ ui.dfilter=d.f; ui.dpick=null; render(); return }
+  if(act==="exT"){ ui.exT=d.k; render(); return }
+  if(act==="exM"){ ui.exM=ui.exM===d.k?"":d.k; render(); return }
+  if(act==="exunit"){ state.exUnit=d.k; save(); render(); return }
+  if(act==="exlog"){ ui.exOpen=ui.exOpen===d.id?null:d.id; render(); if(ui.exOpen) paper.querySelector('#exS, #exMin')?.focus(); return }
+  if(act==="exfav"){ const f=new Set(state.exFav||[]); f.has(d.id)?f.delete(d.id):f.add(d.id); state.exFav=[...f]; save(); render(); return }
+  if(act==="exsave"){ const e=exAll().find(x=>x.id===d.id); if(!e) return; const num=id=>{ const v=$(id); return v&&v.value.trim()?parseFloat(v.value):0 };
+    const x={d:($("#exD")&&$("#exD").value)||iso(now), ts:Date.now()}; if(e.k==="time"){ x.min=num("#exMin"); x.s=num("#exS"); if(!x.min){ toast("Add the minutes first"); return } }
+    else { x.s=num("#exS"); x.r=num("#exR"); x.wt=num("#exW"); if(!x.s||!x.r){ toast("Add sets and reps first"); return } }
+    state.exlog=state.exlog||{}; (state.exlog[e.id]=state.exlog[e.id]||[]).push(x); save(); render(); toast("Logged "+e.n+": "+exLine(e,x)); return }
+  if(act==="exdellog"){ const arr=(state.exlog||{})[d.id]||[]; const i=arr.findIndex(x=>String(x.ts)===d.ts&&x.d===d.d); if(i>-1){ arr.splice(i,1); save(); render() } return }
+  if(act==="exdelc"){ const snap=JSON.stringify(state); state.exCustom=(state.exCustom||[]).filter(c=>c.id!==d.id); ui.exOpen=null; save(); render(); undoToast("Move removed.",snap); return }
+  if(act==="gst"||act==="gdel"||act==="gadd"||act==="gpdel"){ const G=giftsFor(state.year), P=G.people.find(x=>x.id===d.id); if(!P) return;
+    if(act==="gadd"){ const id="g"+Date.now(); P.gifts.push({id,t:"",cost:0,st:"idea"}); save(); render(); paper.querySelector(`[data-in="gtext"][data-g="${id}"]`)?.focus(); return }
+    if(act==="gpdel"){ const snap=JSON.stringify(state); G.people=G.people.filter(x=>x!==P); save(); render(); undoToast("Removed "+esc(P.name||"person")+".", snap); return }
+    const g=P.gifts.find(x=>x.id===d.g); if(!g) return;
+    if(act==="gst"){ const k=GST.map(x=>x[0]); g.st=k[(k.indexOf(g.st)+1)%k.length]; save(); render(); return }
+    if(act==="gdel"){ P.gifts=P.gifts.filter(x=>x!==g); save(); render(); return } }
   if(act==="dshare"){ openShare(); return }
   if(act==="dleave"){ if(a.dataset.armed){ leaveJar() } else { a.dataset.armed="1"; a.textContent="Tap again to leave" } return }
   if(act==="djcat"){ ui.djcat=d.c; ui.dpick=null; render(); return }
@@ -1840,6 +2071,11 @@ paper.addEventListener("input",e=>{
   if(d.in==="budget"){const b=getBudget(); if(d.i!=null) b[d.f][d.i][d.k]=el.value; else b[d.f]=el.value; refreshBudgetTotals(); saveSoon(); return}
   if(d.in==="goal"){state.books.goal=Math.max(1,parseInt(el.value)||1); saveSoon(); return}
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
+  if(d.in==="gbudget"){ giftsFor(state.year).budget=parseFloat(el.value)||0; refreshGiftTotals(); saveSoon(); return }
+  if(d.in==="gname"||d.in==="gpb"||d.in==="gtext"||d.in==="gcost"){ const P=giftsFor(state.year).people.find(x=>x.id===d.id); if(!P) return;
+    if(d.in==="gname") P.name=el.value; else if(d.in==="gpb") P.budget=parseFloat(el.value)||0; else { const g=P.gifts.find(x=>x.id===d.g); if(!g) return; if(d.in==="gtext") g.t=el.value; else g.cost=parseFloat(el.value)||0 }
+    refreshGiftTotals(); saveSoon(); return }
+  if(d.in==="hname"||d.in==="hnote"){ const H=holidayFor(state.year); if(d.in==="hname") H.name=el.value; else H.note=el.value; saveSoon(); return }
   if(d.in==="meal"){ state.meals=state.meals||{}; (state.meals[d.d]=state.meals[d.d]||{})[d.k]=el.value; saveSoon(); return }
   if(d.in==="dtitle"||d.in==="dmem"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(!x) return;
     if(d.in==="dmem"){ x.note=el.value; saveSoon(); return }
@@ -1866,6 +2102,8 @@ paper.addEventListener("focusout",e=>{const el=e.target; if(el.dataset&&el.datas
 paper.addEventListener("paste",e=>{const el=e.target.closest&&e.target.closest("[data-edit]"); if(!el) return; e.preventDefault();
   const txt=(e.clipboardData||window.clipboardData).getData("text").replace(/\s+/g," "); document.execCommand("insertText",false,txt)});
 paper.addEventListener("change",e=>{const d=e.target.dataset;
+  if(d.in==="hdate"){ holidayFor(state.year).date=e.target.value; save(); render(); return }
+  if(d.in==="gpb"||d.in==="gcost"){ save(); setTimeout(()=>rerenderKeepFocus(),0); return }
   if(d.in==="dwhen"){ const x=(state.dates||[]).find(v=>v.id===d.id); if(x&&e.target.value){ x.when=e.target.value; syncDateEvent(x); save(); render(); toast("Moved to "+fmtShort(x.when)) } return }
   if(d.in==="sched"){ const txt=e.target.value.trim(), h=+d.h, dt=fromIso(state.day), mk=ym(dt.getFullYear(),dt.getMonth()+1), day=dt.getDate();
     delete getDaily(state.day).sched[h]; if(!txt){ save(); return }
@@ -1901,6 +2139,11 @@ paper.addEventListener("submit",e=>{
     save(); render(); toast("Started: "+v); return}
   if(e.target.id==="addHabit"){const v=$("#newHabit").value.trim(); if(!v) return; const used=state.habits.map(h=>h.color);
     state.habits.push({id:"h"+Date.now(), name:v, color:[0,1,2,3,4,5].find(c=>!used.includes(c))??state.habits.length%6}); save(); render(); $("#newHabit")?.focus()}
+  if(e.target.id==="addMove"){ const v=$("#exNewN").value.trim(); if(!v){ $("#exNewN").focus(); return } if(!guard()) return;
+    state.exCustom=state.exCustom||[]; const id="cx"+Date.now(); state.exCustom.push({id, n:v, t:$("#exNewT").value, m:[$("#exNewM").value], k:$("#exNewK").value, cue:""});
+    ui.exT="all"; ui.exM=""; ui.exOpen=id; save(); render(); toast("Added "+v); return }
+  if(e.target.id==="addPerson"){ const v=$("#newPerson").value.trim(); if(!v){ $("#newPerson").focus(); return } if(!guard()) return;
+    giftsFor(state.year).people.push({id:"p"+Date.now(), name:v, budget:0, gifts:[{id:"g"+Date.now(),t:"",cost:0,st:"idea"}]}); save(); render(); toast("Added "+v); return }
   if(e.target.id==="addDate"){ const v=$("#newDate").value.trim(); if(!v){ $("#newDate").focus(); return } if(!guard()) return;
     state.dates=state.dates||[]; state.dates.unshift({id:"d"+Date.now(), t:v, cat:$("#newDateCat").value, cost:+$("#newDateCost").value, status:"idea"});
     if(ui.dfilter==="done"||ui.dfilter==="planned") ui.dfilter="all"; save(); render(); $("#newDate")?.focus(); toast("Added to the jar ♥"); return }
@@ -2160,7 +2403,7 @@ let rt; addEventListener("resize",()=>{if(state.spread!=="books") return; clearT
 const CFG = window.PETAL_CONFIG || {};
 const AUTH_ON = PUBLIC && !DEMO && !!(CFG.supabaseUrl && CFG.supabaseAnonKey && window.supabase && window.supabase.createClient);
 const GUEST_LIMIT = 3;
-const VIEW_ACTS = new Set(["dshare","dleave","djcost","djcat","dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
+const VIEW_ACTS = new Set(["exT","exM","exlog","dshare","dleave","djcost","djcat","dplan","dinvite","dfilter","dsurprise","gotodo","gomonth","gospread","gopixels","yview","brush","book","closebook","prolocked","clearpage"]);
 let sb=null, user=null, pushT=null, pushing=false, syncStatus="saved", authMode="save", pendingRemote=null;
 const isGuest=()=>AUTH_ON && !user;
 const touched=()=>(state.guest&&state.guest.touched)||[];
