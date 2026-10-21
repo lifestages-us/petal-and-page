@@ -151,6 +151,9 @@ textarea.hand-input{display:block; resize:none; overflow:hidden; line-height:1.3
 .st-pop .sw button[aria-pressed="true"]{outline:2px solid var(--chrome-ink)}
 .st-pop .pbadge{font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border:1px solid var(--line); border-radius:999px; padding:1px 7px; margin-left:6px; vertical-align:2px; color:var(--chrome-muted)}
 .st-pop .sw.locked button{opacity:.45}
+.lkb{display:inline-block; font-family:var(--ui); font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; border:1px solid currentColor; border-radius:999px; padding:0 6px; margin-left:4px; vertical-align:1px; opacity:.7; white-space:nowrap}
+.lockd{opacity:.75}
+.svcap{border-style:dashed}
 .st-pop .sw .none{background:var(--chip); border:1px dashed var(--chrome-muted); color:var(--chrome-muted); font-size:15px; line-height:1}
 .st-pop .ind{display:flex; gap:6px; flex-wrap:wrap}
 .st-pop .ind button{flex:1; border:1px solid var(--line); background:var(--chip); color:var(--chrome-ink); border-radius:999px; padding:6px 10px; font:inherit; cursor:pointer; white-space:nowrap}
@@ -791,6 +794,9 @@ if(QS.get("join")){ try{ localStorage.setItem("petal-join", QS.get("join")) }cat
 /* on the public site, visitors see paid features as "Coming soon" (never "Premium"); creator accounts get full access */
 const SOON = ()=>PUBLIC&&!IS_CREATOR;
 function applySoonLabels(){ const h=$("#xProHead"), m=$("#markNote"); if(h) h.textContent=SOON()?"Coming soon":"Premium"; if(m) m.textContent=SOON()?"Turning it off is coming soon.":"Premium can turn it off." }
+/* small paid extras inside free spreads: creators (and later subscribers) get them free */
+const FREE_SAVINGS=3;
+const lockBadge = ()=> `<span class="lkb">${SOON()?"Coming soon":"🔒 Premium"}</span>`;
 const premiumMsg = what => PUBLIC ? what+" is coming soon." : what+" is a Premium feature. Turn on Creator mode in Themes to try it.";
 const now = new Date();
 const thisMonth = ym(now.getFullYear(), now.getMonth()+1);
@@ -1281,7 +1287,7 @@ function renderHabits(){
         cells+=`<td><span class="hcell agg${cols.length?" on":""}${td}" style="${bg}" title="${esc(h.name)}, ${MONTHS[m-1]} ${d}: ${cols.length?"done":"not yet"}" role="img" aria-label="${esc(h.name)}, ${MONTHS[m-1]} ${d}${cols.length?", done":""}"></span></td>`; }
       else { const on=done.includes(d); cells+=`<td><button class="hcell${on?" on":""}${td}" style="--c:${c}" data-act="habit" data-h="${h.id}" data-day="${d}" aria-pressed="${on}" aria-label="${esc(parent?parent.name+" · ":"")}${esc(h.name||"Sub-habit")}, ${MONTHS[m-1]} ${d}"></button></td>`; } }
     const name=`<textarea rows="1" class="hand-input" data-in="habitname" data-h="${h.id}" placeholder="${parent?"Sub-habit, e.g. Yoga":"Habit"}" aria-label="${parent?"Sub-habit of "+esc(parent.name):"Habit name"}">${esc(h.name)}</textarea>`;
-    const meta=`<small>${done.length} done · ${streakOf(done,upto)}-day streak${parent?"":` · <button class="addsub" data-act="addsub" data-h="${h.id}">+ sub-habit</button>`}</small>`;
+    const meta=`<small>${done.length} done · ${streakOf(done,upto)}-day streak${parent||(HIDE_PREMIUM&&!state.creator)?"":` · <button class="addsub${state.creator?"":" lockd"}" data-act="addsub" data-h="${h.id}">+ sub-habit${state.creator?"":" "+lockBadge()}</button>`}</small>`;
     return `<tr class="${parent?"sub":"main"}${subs?" has-subs":""}"><td class="hname">${parent?`<span class="sub-arrow" aria-hidden="true">↳</span>`:""}<button class="hswatch" style="background:${c}" data-act="hcolor" data-h="${h.id}" aria-label="Change colour of ${esc(h.name||"sub-habit")}"></button><div class="hmeta">${name}${meta}</div><button class="x-btn hdel" data-act="delhabit" data-h="${h.id}" title="Remove ${esc(h.name||"sub-habit")}" aria-label="Remove ${esc(h.name||"sub-habit")}">×</button></td>${cells}</tr>`;
   };
   const rows=state.habits.map(h=>row(h,null)+(h.subs||[]).map(sb=>row(sb,h)).join("")).join("");
@@ -1572,7 +1578,10 @@ function renderSavings(){
         <button class="hswatch" style="background:${t.spines[sv.color%t.spines.length]};width:20px;height:20px" data-act="svcolor" data-id="${sv.id}" aria-label="Change colour"></button></div>
       </div></div></div>`);
   }).join("");
-  const add=blk("savings","add",2,`<form class="svadd" id="addSaving"><h2 class="section-title" style="margin-top:0">New tracker</h2>
+  const capped=!state.creator&&state.savings.length>=FREE_SAVINGS;
+  const add=capped ? (HIDE_PREMIUM?"":blk("savings","add",2,`<div class="svadd svcap"><h2 class="section-title" style="margin-top:0">New tracker ${lockBadge()}</h2>
+      <p class="ui-note">You can keep ${FREE_SAVINGS} savings trackers for free. ${SOON()?"More trackers are coming soon.":"More trackers are a Premium feature."} Finish or remove one to start another.</p></div>`))
+    : blk("savings","add",2,`<form class="svadd" id="addSaving"><h2 class="section-title" style="margin-top:0">New tracker</h2>
       <input class="hand-input" id="svNewName" placeholder="What are you saving for?" aria-label="Tracker name">
       <div class="svopts"><label class="ui-note">Goal $<input class="hand-input money num" id="svNewGoal" inputmode="decimal" placeholder="1000" style="width:90px" aria-label="Goal amount"></label>
       <label class="ui-note">Shape <select id="svNewShape">${Object.entries(SHAPES).map(([k,l])=>`<option value="${k}">${l}</option>`).join("")}</select></label>
@@ -1768,12 +1777,12 @@ function openPlan(id,step){
       <div class="pl-actions"><button class="go" id="plSave">Save to my journal</button><button class="ghostb" id="plCancel">Cancel</button></div>`;
   } else {
     pop.innerHTML=`<h3>Invite your partner or a friend ♥</h3><p class="what">${esc(x.t)} · ${fmtShort(x.when)}${x.time?" · "+fmtClock(x.time):""}</p>
-      <div class="pl-grid"><label>Their name <span class="opt">optional</span><input id="plName" value="${esc(P.name||"")}" placeholder="Sam" autocomplete="off"></label><label>Their email <span class="opt">for calendar invites</span><input type="email" id="plEmail" value="${esc(P.email||"")}" placeholder="sam@example.com" autocomplete="off"></label></div>
+      <div class="pl-grid"><label>Their name <span class="opt">optional</span><input id="plName" value="${esc(P.name||"")}" placeholder="Sam" autocomplete="off"></label><label>Their email <span class="opt">${state.creator?"for calendar invites":"optional"}</span><input type="email" id="plEmail" value="${esc(P.email||"")}" placeholder="sam@example.com" autocomplete="off"></label></div>
       <div class="inv">
         <button data-inv="msg"><b>Send a message</b><span>Text it, WhatsApp it, or copy it</span></button>
         <button data-inv="email"><b>Email the invite</b><span>Opens your email app</span></button>
-        <button data-inv="gcal"><b>Google Calendar</b><span>Adds it to your calendar and invites them</span></button>
-        <button data-inv="ics"><b>Apple or Outlook calendar</b><span>Downloads a calendar file to add or send</span></button>
+        ${HIDE_PREMIUM&&!state.creator?"":`<button data-inv="gcal"${state.creator?"":` class="lockd"`}><b>Google Calendar${state.creator?"":" "+lockBadge()}</b><span>Adds it to your calendar and invites them</span></button>
+        <button data-inv="ics"${state.creator?"":` class="lockd"`}><b>Apple or Outlook calendar${state.creator?"":" "+lockBadge()}</b><span>Downloads a calendar file to add or send</span></button>`}
       </div>
       <div class="pl-actions"><button class="ghostb" id="plCancel">Done</button></div>`;
   }
@@ -1787,7 +1796,8 @@ function openPlan(id,step){
       const first=x.status!=="planned"; delete x.asked; x.when=d; x.time=$("#plTime").value||""; x.status="planned"; syncDateEvent(x); ui.dpick=null; ui.dfilter="planned"; save(); render();
       toast((first?"Planned for ":"Moved to ")+fmtShort(x.when)+(x.time?" at "+fmtClock(x.time):"")+". It's on your log too."); openPlan(id,"invite"); return }
     const sd=e.target.closest("[data-sd]"); if(sd){ const on=sd.getAttribute("aria-pressed")!=="true"; sd.setAttribute("aria-pressed",String(on)); sd.classList.toggle("on",on); return }
-    const iv=e.target.closest("[data-inv]"); if(iv){ const name=$("#plName").value.trim(), email=$("#plEmail").value.trim();
+    const iv=e.target.closest("[data-inv]"); if(iv&&(iv.dataset.inv==="gcal"||iv.dataset.inv==="ics")&&!state.creator){ toast(premiumMsg("Sending calendar invites")); return }
+    if(iv){ const name=$("#plName").value.trim(), email=$("#plEmail").value.trim();
       state.partner={name,email};
       if(iv.dataset.inv.startsWith("ask")){ const picks=[...pop.querySelectorAll('[data-sd][aria-pressed="true"]')].map(b=>b.dataset.sd); sendAsk(x, iv.dataset.inv, name, email, picks); x.asked=name||"them"; }
       else { sendInvite(x, iv.dataset.inv, name, email); x.invited=true }
@@ -1998,6 +2008,7 @@ paper.addEventListener("click",e=>{
   if(act==="habit"){const mk=d.m||state.month; const L=(state.habitLog[mk]=state.habitLog[mk]||{}); const arr=(L[d.h]=L[d.h]||[]); const day=+d.day;
     const k=arr.indexOf(day); if(k>=0) arr.splice(k,1); else arr.push(day); save(); render(); return}
   if(act==="hcolor"){const f=findHabit(d.h); if(f){f.h.color=(f.h.color+1)%(f.parent?SUB_COLORS.length:6); save(); render()} return}
+  if(act==="addsub"&&!state.creator){ toast(premiumMsg("Adding sub-habits")); return }
   if(act==="addsub"){const f=findHabit(d.h); if(f&&!f.parent){ const h=f.h; h.subs=h.subs||[]; const used=h.subs.map(x=>x.color);
       const id="s"+Date.now(); h.subs.push({id,name:"",color:[1,2,3,4,0,5,6,7].find(c=>!used.includes(c))??h.subs.length%SUB_COLORS.length}); save(); render();
       const el=paper.querySelector(`[data-in="habitname"][data-h="${id}"]`); if(el) el.focus() } return}
@@ -2133,6 +2144,7 @@ paper.addEventListener("submit",e=>{
   e.preventDefault();
   if(e.target.id==="addBook"){const v=$("#newBook").value.trim(); if(!v) return; const status=$("#newBookStatus").value;
     state.books.list.push({id:"b"+Date.now(), title:v, status, color:hash(v)%6}); save(); render(); $("#newBook")?.focus(); toast("Shelved: "+v)}
+  if(e.target.id==="addSaving"&&!state.creator&&state.savings.length>=FREE_SAVINGS){ toast(premiumMsg("Adding more than "+FREE_SAVINGS+" savings trackers")); return }
   if(e.target.id==="addSaving"){const v=$("#svNewName").value.trim(); if(!v){$("#svNewName").focus(); return}
     const used=state.savings.map(x=>x.color);
     state.savings.push({id:"s"+Date.now(), name:v, goal:Math.max(1,parseFloat($("#svNewGoal").value)||1000), steps:+$("#svNewSteps").value, shape:$("#svNewShape").value, color:[0,1,2,3,4,5].find(c=>!used.includes(c))??0, filled:[]});
