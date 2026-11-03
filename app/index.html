@@ -9,7 +9,7 @@
 <title>Petal &amp; Page</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Caveat:wght@400;600;700&family=Caveat+Brush&family=Chewy&family=Figtree:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Homemade+Apple&family=Patrick+Hand&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Architects+Daughter&family=Courier+Prime:wght@400;700&family=DM+Serif+Display&family=Kalam:wght@400;700&family=Space+Mono:wght@400;700&family=Special+Elite&family=Caveat:wght@400;600;700&family=Caveat+Brush&family=Chewy&family=Figtree:wght@400;500;600;700&family=Gaegu:wght@400;700&family=Homemade+Apple&family=Patrick+Hand&display=swap">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}</style>
 <script>window.PETAL_PUBLIC = true; window.PETAL_SHOW_PREMIUM = true;</script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -412,6 +412,36 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .pol.add{background:transparent; border-style:dashed; display:grid; gap:8px; align-content:center; min-height:200px; box-shadow:none}
 .pol.add select{font:inherit; font-size:.8em; background:var(--paper); color:var(--ink); border:1.5px solid var(--ink); border-radius:8px; padding:2px 6px}
 
+/* ---------- year in review ---------- */
+.yrtiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(118px,1fr)); gap:10px}
+.yrtile{display:grid; gap:2px; background:var(--paper); border:1.5px solid var(--ink); border-radius:10px 12px 9px 11px; padding:8px 10px}
+.yrtile b{font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.72); line-height:1.1; font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+.yrtile span{font-family:var(--ui); font-size:11.5px; color:var(--muted)}
+.yrtiles.small .yrtile b{font-size:calc(var(--dsize)*.5)}
+.yrhero .section-title{margin-top:0}
+.yrhi{margin:0 0 8px; line-height:1.35}
+.yrhi b{color:var(--accent)}
+.yrqs{display:grid; gap:10px}
+.yrq{display:grid; gap:2px}
+.yrq span{font-family:var(--ui); font-size:11px; font-weight:600; letter-spacing:.05em; text-transform:uppercase; color:var(--muted)}
+.yrdeep{margin-top:26px; position:relative}
+.yrdeep-h{font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.7); margin:0 0 12px; display:flex; align-items:center; gap:8px; flex-wrap:wrap}
+.yrprem{font-family:var(--ui); font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; background:var(--accent); color:var(--paper); border-radius:999px; padding:1px 8px}
+.yrdeep .lkb{font-size:10px}
+.yrblur{filter:blur(6px); opacity:.6; pointer-events:none; user-select:none; max-height:420px; overflow:hidden; -webkit-mask-image:linear-gradient(#000 55%, transparent); mask-image:linear-gradient(#000 55%, transparent)}
+.yrgate{position:absolute; left:50%; top:110px; transform:translateX(-50%); width:min(380px, calc(100% - 24px)); display:grid; gap:8px; justify-items:center; text-align:center; background:var(--paper); border:1.5px solid var(--ink); border-radius:14px 12px 15px 11px; padding:16px 18px; box-shadow:4px 4px 0 var(--wash)}
+.yrgate b{font-family:var(--display); font-weight:400; font-size:calc(var(--dsize)*.55)}
+.yrgate span{font-family:var(--ui); font-size:12.5px; color:var(--muted); line-height:1.4}
+.yrbars{display:block; width:100%; height:auto; max-height:170px}
+.yrbars text{font-family:var(--ui); fill:var(--muted)}
+.yrheat{border-collapse:separate; border-spacing:3px; font-size:.85em; min-width:420px}
+.yrheat th{font-weight:400; color:var(--muted); font-size:.75em; text-align:center}
+.yrheat tbody th{text-align:left; color:var(--ink); font-size:.9em; white-space:nowrap; max-width:150px; overflow:hidden; text-overflow:ellipsis; padding-right:6px}
+.yrheat td i{display:block; width:20px; height:18px; border:1px solid var(--rule); border-radius:4px}
+.yrheat td.num{font-family:var(--ui); font-size:11px; color:var(--muted); padding-left:6px}
+.yrbig{font-family:var(--display); font-size:calc(var(--dsize)*1.15); color:var(--accent); line-height:1.1; margin-bottom:6px}
+.yrwords{line-height:1.5; display:flex; flex-wrap:wrap; gap:2px 12px; align-items:baseline}
+.exporting .yrdeep.locked, .exporting .yrq textarea:placeholder-shown{display:none!important}
 /* ---------- exercise library ---------- */
 .exweek{display:flex; flex-wrap:wrap; gap:12px 28px; align-items:flex-start}
 .exdays{display:flex; gap:6px}
@@ -625,6 +655,23 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
 .sheet p.lead{margin-block:4px 16px; color:var(--chrome-muted)}
 .sheet-head{display:flex; align-items:start; justify-content:space-between; gap:12px}
 .close{border:1px solid var(--line); background:var(--chip); width:32px; height:32px; border-radius:50%; font-size:18px; line-height:1}
+/* draft themes: paper styles + decoration levels */
+:root[data-pt="grid"] .paper{background-image:linear-gradient(var(--dot) 1px, transparent 1px), linear-gradient(90deg, var(--dot) 1px, transparent 1px); background-size:18px 18px; background-position:-1px -1px}
+:root[data-pt="blueprint"] .paper{background-image:linear-gradient(color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1px), linear-gradient(90deg, color-mix(in srgb, var(--ink) 16%, transparent) 1px, transparent 1px), linear-gradient(var(--dot) 1px, transparent 1px), linear-gradient(90deg, var(--dot) 1px, transparent 1px); background-size:90px 90px, 90px 90px, 18px 18px, 18px 18px; background-position:-1px -1px}
+:root[data-tid="field"] .tape{background:#EADBB2; opacity:.85}
+:root[data-tid="midnight"] .tape{background:color-mix(in srgb, var(--accent) 55%, transparent); opacity:.6}
+:root[data-tid="blueprint"] .tape{background:color-mix(in srgb, #FFFFFF 30%, transparent); opacity:.7}
+:root[data-tid="midnight"] .paper, :root[data-tid="blueprint"] .paper{box-shadow:0 1px 0 rgba(0,0,0,.2), 0 18px 40px -18px rgba(0,0,0,.6)}
+:root[data-tid="blueprint"] .head h1{text-transform:uppercase; letter-spacing:.04em}
+:root[data-tid="field"] .head h1{letter-spacing:.02em}
+:root[data-deco="light"] .paper .deco{display:none}
+:root[data-deco="clean"] .paper .deco, :root[data-deco="clean"] .paper .ornament, :root[data-deco="clean"] .paper .tape{display:none}
+.decorow{display:flex; align-items:center; flex-wrap:wrap; gap:10px 12px; margin-top:18px; padding:12px 14px; border:1px solid var(--line); border-radius:12px}
+.decorow .txt{flex:1; min-width:180px} .decorow .txt b{display:block; font-size:13.5px} .decorow .txt span{font-size:12px; color:var(--chrome-muted)}
+.seg3{display:inline-flex; border:1px solid var(--line); border-radius:999px; overflow:hidden}
+.seg3 button{border:0; background:var(--chrome); padding:6px 14px; font-size:12.5px; font-weight:600}
+.seg3 button[aria-pressed="true"]{background:var(--chrome-ink); color:var(--chrome)}
+.tcard.tlock .pv{filter:saturate(.8)}
 .themes{display:grid; grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:14px}
 .tcard{border:1px solid var(--line); background:var(--chip); border-radius:14px; padding:8px; text-align:left; display:grid; gap:8px; position:relative}
 .tcard[aria-pressed="true"]{outline:2px solid var(--chrome-ink); outline-offset:1px}
@@ -693,6 +740,8 @@ table.ledger tfoot td{border-top:1.5px solid var(--ink); font-weight:700}
     <button class="close" id="closeSheet" aria-label="Close">×</button>
   </div>
   <div class="themes" id="themes"></div>
+  <div class="decorow" id="decoRow" hidden><div class="txt"><b>Decoration <i class="dtag">Draft</i></b><span>Turn stickers and washi tape down on any theme.</span></div>
+    <div class="seg3" role="group" aria-label="Decoration"><button data-deco="full">Full</button><button data-deco="light">Light</button><button data-deco="clean">Clean</button></div></div>
   <div class="creator" id="creatorRow"><div class="txt"><b>Creator mode</b><span>Unlocks Premium tools for you as the app's creator, including resizable boxes and text fields and Premium exports. Other users would see these as paid features.</span></div><button class="switch" id="creatorSw" role="switch" aria-checked="false" aria-label="Creator mode"></button></div>
   <div class="sheet-foot">
     <span class="ui-note pro-only" style="color:var(--chrome-muted)">More themes and your own journal wallpapers are coming soon.</span>
@@ -751,7 +800,23 @@ const THEMES = {
     display:"'Chewy', cursive", dsize:"40px", hand:"'Gaegu', cursive", hsize:"20px",
     paper:"#FCF9F2", dot:"#D4D8DC", ink:"#1F2E3D", muted:"#7C8794", rule:"#D8DEE4", accent:"#5B9FD6", wash:"#DCEBF8", shelf:"#2A3A4A",
     spines:["#9CC8E8","#B9DDB1","#F3D59E","#EAB9B1","#D5DEEA","#C9B8E0"], sky:"#CFE5F6", water:"#7FB6E0", land:"#8DC08A", earth:"#EAD3A2"},
+  /* draft themes (Creator mode only until launched). premium:true = paid once launched; free themes have no flag. */
+  field:{name:"Field Notes", blurb:"Kraft paper, typewriter type and rubber stamps", motif:"stamp", draft:true, paperStyle:"grid",
+    display:"'Special Elite', monospace", dsize:"34px", hand:"'Courier Prime', monospace", hsize:"16px",
+    paper:"#E9DDC4", dot:"#D3C3A2", ink:"#2A241D", muted:"#7A6C58", rule:"#CDBB97", accent:"#B4532A", wash:"#DCCBA6", shelf:"#3B3026",
+    spines:["#B4532A","#5E6B45","#D9C59A","#3B4A5A","#A68A5B","#E3D6B8"], sky:"#D9D3C0", water:"#8C9C93", land:"#6F7B4E", earth:"#C9A86F"},
+  midnight:{name:"Midnight", blurb:"Dark charcoal pages with warm amber ink", motif:"moon", draft:true, premium:true, paperStyle:"dots",
+    display:"'DM Serif Display', serif", dsize:"38px", hand:"'Kalam', cursive", hsize:"18px",
+    paper:"#1F2124", dot:"#3A3D42", ink:"#ECE7DC", muted:"#9C978C", rule:"#3D4046", accent:"#E3A857", wash:"#2D3035", shelf:"#ECE7DC",
+    spines:["#E3A857","#5E8C8A","#A89F91","#C46A4F","#7D8BA3","#D9CFBF"], sky:"#2A2E36", water:"#4F6D7A", land:"#5E7A5A", earth:"#8A7356"},
+  blueprint:{name:"Blueprint", blurb:"Drafting-grid navy with white line work", motif:"drafting", draft:true, premium:true, paperStyle:"blueprint",
+    display:"'Space Mono', monospace", dsize:"30px", hand:"'Architects Daughter', cursive", hsize:"18px",
+    paper:"#1D3A5E", dot:"#3A5A82", ink:"#F1F5FA", muted:"#A6BBD2", rule:"#46668D", accent:"#F4C04B", wash:"#284B74", shelf:"#F1F5FA",
+    spines:["#F4C04B","#8FB8DE","#F1F5FA","#E07A5F","#9ED0B9","#B9C7D8"], sky:"#284B74", water:"#5C88B5", land:"#7FA88E", earth:"#C9A86F"},
 };
+/* a theme you can use right now: drafts need Creator mode; Premium themes need Creator mode (later: a subscription or purchase) */
+const themeOn=t=>!!t&&(!t.draft||!!state.creator);
+const themeOwned=t=>!!t&&themeOn(t)&&(!t.premium||!!state.creator);
 const LOCKED = [
   {id:"dusk", name:"Lavender Dusk", blurb:"Night paper with silver ink", badge:"Premium", paper:"#2B2638", ink:"#E9E3F5", spines:["#B8A6DA","#8E7CB8","#D9CFEF"], shelf:"#E9E3F5", font:"'Caveat', cursive"},
   {id:"ai", name:"Your own wallpaper", blurb:"Create your own journal wallpapers", badge:"Coming soon", paper:"#F5EFE6", ink:"#3A3530", spines:["#E7B7A3","#A7C4B5","#E9D59A"], shelf:"#3A3530", font:"'Homemade Apple', cursive", ai:true},
@@ -766,6 +831,7 @@ const SPREADS = [
   {id:"week", name:"Weekly spread", short:"Week", period:"week", icon:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18M9 9v12M15 9v12M8 2v4M16 2v4"/>'},
   {id:"log", name:"Monthly log", short:"Month", period:"month", icon:'<path d="M8 6h12M8 12h12M8 18h12"/><circle cx="4" cy="6" r="1.2" fill="currentColor"/><circle cx="4" cy="12" r="1.6"/><path d="M3 18h2"/>'},
   {id:"year", name:"Year at a glance", short:"Year", period:"year", icon:'<rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9.5h18M3 15h18M9 4v17M15 4v17"/>'},
+  {id:"review", name:"Year in review", short:"Review", period:"year", draft:true, icon:'<path d="M12 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4-4.5 2.4.9-5L4.8 8.3l5-.7z"/><path d="M5 21h14"/>'},
   {id:"books", name:"Bookshelf", short:"Books", period:"year", icon:'<path d="M4 20V6h3v14M7 20V4h3v16M11 20l2.5-13 3 .6-2.5 13"/><path d="M3 20h18"/>'},
   {id:"travel", name:"Travel list", short:"Travel", period:"none", icon:'<rect x="4" y="3" width="16" height="18" rx="1"/><rect x="6.5" y="5.5" width="11" height="10"/><path d="m6.5 13 3.5-3.5 3 3 2-2 2.5 2.5"/>'},
   {id:"dates", name:"Date ideas", short:"Dates", period:"none", icon:'<path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M12 14.6s-3.2-1.9-3.2-3.8a1.7 1.7 0 0 1 3.2-.8 1.7 1.7 0 0 1 3.2.8c0 1.9-3.2 3.8-3.2 3.8z"/>'},
@@ -973,7 +1039,7 @@ function seed(){
 /* ---------- helpers ---------- */
 const $ = s=>document.querySelector(s);
 const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const T = ()=>THEMES[state.theme]||THEMES.marigold;
+const T = ()=>{ const t=THEMES[state.theme]; return themeOwned(t)?t:THEMES.marigold };
 const MONTHS=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function parts(){const [y,m]=state.month.split("-").map(Number); return {y,m,days:new Date(y,m,0).getDate()}}
 function money(n){const v=Number(n)||0; return (v<0?"−$":"$")+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:2})}
@@ -1007,6 +1073,19 @@ const S = {
       <ellipse cx="9" cy="22" rx="7" ry="3.5" transform="rotate(35 9 22)" fill="${t.land}" stroke="${t.ink}" stroke-width="1"/><ellipse cx="22" cy="10" rx="3.5" ry="8" fill="${t.land}" stroke="${t.ink}" stroke-width="1"/>
       <ellipse cx="38" cy="23" rx="7" ry="3.5" transform="rotate(-35 38 23)" fill="${t.land}" stroke="${t.ink}" stroke-width="1"/><path d="M10 44h26l-4 24H14z" fill="${t.earth}" stroke="${t.ink}" stroke-width="1.5"/></svg>`},
   candle(t,w=30){return `<svg class="ornament" width="${w}" viewBox="0 0 30 80" aria-hidden="true"><path d="M15 6 Q20 14 15 20 Q10 14 15 6Z" fill="${t.accent}" stroke="${t.ink}" stroke-width="1"/><rect x="10" y="22" width="10" height="44" fill="${t.paper}" stroke="${t.ink}" stroke-width="1.5"/><path d="M3 70h24l-3 8H6z" fill="${t.earth}" stroke="${t.ink}" stroke-width="1.5"/></svg>`},
+  stamp(t,w=96){ const mo=MONTHS[now.getMonth()].slice(0,3).toUpperCase();
+    return `<svg class="deco" width="${w}" viewBox="0 0 100 100" aria-hidden="true"><g transform="rotate(-12 50 50)" fill="none" stroke="${t.accent}" opacity=".85">
+      <circle cx="50" cy="50" r="40" stroke-width="2.6"/><circle cx="50" cy="50" r="33" stroke-width="1.2"/>
+      <text x="50" y="44" text-anchor="middle" font-family="Special Elite, monospace" font-size="12" fill="${t.accent}" stroke="none" letter-spacing="2">FIELD</text>
+      <text x="50" y="58" text-anchor="middle" font-family="Special Elite, monospace" font-size="12" fill="${t.accent}" stroke="none" letter-spacing="2">NOTES</text>
+      <text x="50" y="74" text-anchor="middle" font-family="Special Elite, monospace" font-size="8" fill="${t.accent}" stroke="none" letter-spacing="1.5">${mo} · ${now.getFullYear()}</text></g></svg>` },
+  moon(t,w=86){ return `<svg class="deco" width="${w}" viewBox="0 0 90 60" aria-hidden="true"><path d="M52 8a22 22 0 1 0 20 32A18 18 0 0 1 52 8z" fill="none" stroke="${t.accent}" stroke-width="1.8"/>
+      <path d="M16 14v6M13 17h6M80 10v4M78 12h4M84 44v5M81.5 46.5h5" stroke="${t.ink}" stroke-width="1.3" stroke-linecap="round" opacity=".8"/><circle cx="24" cy="44" r="1.4" fill="${t.ink}"/><circle cx="8" cy="34" r="1" fill="${t.ink}"/></svg>` },
+  drafting(t,w=110){ return `<svg class="deco" width="${w}" viewBox="0 0 120 64" aria-hidden="true" fill="none" stroke="${t.ink}" stroke-width="1.4" stroke-linecap="round">
+      <path d="M10 56 L58 56 L10 12 Z"/><path d="M18 48 L36 48 L18 31 Z" opacity=".7"/>
+      <path d="M70 56 L112 56M70 52v8M112 52v8M74 56l-4-2.5v5zM108 56l4-2.5v5z" stroke="${t.accent}"/>
+      <text x="91" y="50" text-anchor="middle" font-family="Space Mono, monospace" font-size="8" fill="${t.accent}" stroke="none">42 mm</text>
+      <circle cx="92" cy="20" r="12" stroke-dasharray="3 3" opacity=".8"/><path d="M92 20 L102 13" /><circle cx="92" cy="20" r="1.6" fill="${t.ink}"/></svg>` },
   face(x,y,r,v,ink){const k=(v-3)*r*.28, mx=r*.42, my=y+r*.3;
     return `<g stroke="${ink}" fill="none" stroke-width="1.3" stroke-linecap="round"><circle cx="${x}" cy="${y}" r="${r}"/><path d="M${x-r*.35} ${y-r*.2}v.1M${x+r*.35} ${y-r*.2}v.1" stroke-width="2.2"/><path d="M${x-mx} ${my} Q${x} ${my+k} ${x+mx} ${my}"/></g>`},
 };
@@ -1018,9 +1097,13 @@ function titleDeco(t, spread){
   if(m==="floral"){left=S.bouquet(t,96)}
   if(m==="doodle"){right=S.stars(t.ink,74)}
   if(m==="sky"){right=S.cloud(t,82)}
-  if(spread==="budget") right=S.piggy(t,112);
+  if(m==="stamp"){right=S.stamp(t,92)}
+  if(m==="moon"){right=S.moon(t,84)}
+  if(m==="drafting"){right=S.drafting(t,108)}
+  const plain=["stamp","moon","drafting"].includes(m);
+  if(spread==="budget"&&!plain) right=S.piggy(t,112);
   if(spread==="travel") right=S.plane(t,120);
-  if(spread==="savings") right=S.piggy(t,104);
+  if(spread==="savings"&&!plain) right=S.piggy(t,104);
   return {left, right};
 }
 /* title + note are the user's own words per spread; `sub` is the automatic date/status line */
@@ -1113,6 +1196,7 @@ function clearLabel(sp){
   if(sp==="log"||sp==="habits"||sp==="mood"||sp==="budget") return MONTHS[m-1]+" "+y;
   if(sp==="week"||sp==="meals") return "the week of "+weekLabel();
   if(sp==="gifts") return "the "+state.year+" gift list";
+  if(sp==="review") return "your "+state.year+" reflections";
   if(sp==="exercise") return "your exercise log and moves";
   if(sp==="holiday") return "the "+state.year+" holiday plans";
   if(sp==="day") return dayLabel();
@@ -1205,6 +1289,7 @@ function clearPage(sp){
   const wipeDay=k=>{ if(state.log[k.mk]) delete state.log[k.mk][k.d]; const H=state.habitLog[k.mk]; if(H) for(const h in H) H[h]=H[h].filter(x=>x!==k.d); };
   if(sp==="log"){ state.log[state.month]={}; if(state.mfocus) delete state.mfocus[state.month] }
   if(sp==="week"){ dayKeys(state.week,7).forEach(wipeDay); delete state.weekly[state.week] }
+  if(sp==="review"&&state.review){ delete state.review[state.year] }
   if(sp==="exercise"){ state.exlog={}; state.exFav=[]; state.exCustom=[] }
   if(sp==="gifts"){ if(state.gifts) delete state.gifts[state.year] }
   if(sp==="holiday"){ if(state.holiday) delete state.holiday[state.year]; ["hol:","holev:","holcard:"].forEach(k=>{ if(state.mlists) delete state.mlists[k+state.year] }) }
@@ -1602,6 +1687,75 @@ function renderTravel(){
 }
 
 /* =====================================================================
+   YEAR IN REVIEW (draft): highlights pulled from every spread for the year in the pager.
+   Free: the at-a-glance numbers, top habit, most common mood and three reflection prompts.
+   Premium: the deeper recap (mood by month, habit consistency, best month, year in words, money).
+   ===================================================================== */
+const STOP=new Set("this that with from have were will your just into about than then them they what when where which while would could should their there these those been being over after before again some more most very also only much many such like back make made take each other really want need ready today tomorrow".split(" "));
+function yearStats(Y){
+  const mks=[...Array(12)].map((_,i)=>ym(Y,i+1)), dim=m=>new Date(Y,m,0).getDate();
+  const days=new Set(), words={}; let tasks=0, items=0;
+  const addWords=txt=>String(txt||"").toLowerCase().replace(/[^a-z' ]/g," ").split(/\s+/).forEach(w=>{ w=w.replace(/^'+|'+$/g,""); if(w.length>=4&&!STOP.has(w)) words[w]=(words[w]||0)+1 });
+  mks.forEach(mk=>{ const L=state.log[mk]||{}; for(const d in L){ const it=(L[d]||[]).filter(x=>x.t&&x.t.trim()); if(it.length) days.add(mk+"-"+d); it.forEach(x=>{ items++; if(x.b==="done") tasks++; addWords(x.t) }) }
+    (state.mfocus&&state.mfocus[mk]||[]).forEach(x=>addWords(x.t)); });
+  for(const k in (state.daily||{})){ if(!k.startsWith(Y+"-")) continue; const D=state.daily[k]; const has=Object.values(D.sched||{}).some(v=>v&&String(v).trim())||(D.grat||[]).some(g=>g&&g.trim())||(D.note||"").trim();
+    if(has){ const [yy,mm,dd]=k.split("-"); days.add(yy+"-"+mm+"-"+Number(dd)) } (D.grat||[]).forEach(addWords); addWords(D.note); Object.values(D.sched||{}).forEach(addWords) }
+  const moodCounts=[0,0,0,0,0,0], moodByMonth=mks.map(mk=>{ const M=state.mood[mk]||{}; const v=Object.values(M).filter(Boolean); v.forEach(x=>moodCounts[x]++); return v.length?v.reduce((a,b)=>a+b,0)/v.length:0 });
+  mks.forEach(mk=>{ for(const d in (state.mood[mk]||{})) if(state.mood[mk][d]) days.add(mk+"-"+Number(d)) });
+  const moodsLogged=moodCounts.reduce((a,b)=>a+b,0), topMood=moodsLogged?moodCounts.indexOf(Math.max(...moodCounts)):0;
+  const allHabits=[]; (state.habits||[]).forEach(h=>{ allHabits.push({h,parent:null}); (h.subs||[]).forEach(sb=>allHabits.push({h:sb,parent:h})) });
+  const habitRows=allHabits.filter(x=>x.h.name&&x.h.name.trim()).map(({h,parent})=>{ const per=mks.map((mk,i)=>((state.habitLog[mk]||{})[h.id]||[]).length/dim(i+1));
+    const dates=[]; mks.forEach((mk,i)=>((state.habitLog[mk]||{})[h.id]||[]).forEach(d=>dates.push(new Date(Y,i,d).getTime())));
+    dates.sort((a,b)=>a-b); let best=0,run=0,prev=0; dates.forEach(t=>{ run=(prev&&Math.round((t-prev)/864e5)===1)?run+1:1; best=Math.max(best,run); prev=t });
+    return {name:h.name, color:h.color, sub:!!parent, total:dates.length, per, best} });
+  const habitTotal=habitRows.reduce((a,r)=>a+r.total,0), topHabit=habitRows.slice().sort((a,b)=>b.total-a.total)[0];
+  const ticksByMonth=mks.map(mk=>{ const L=state.habitLog[mk]||{}; return Object.values(L).reduce((a,v)=>a+(v||[]).length,0) });
+  let money=null; mks.forEach(mk=>{ const b=state.budget[mk]; if(!b) return; const t=budgetTotals(b); money=money||{income:0,bills:0,saved:0,months:0}; money.income+=Number(b.income)||0; money.bills+=t.billsA; money.saved+=t.goalsA; money.months++ });
+  const books=(state.books&&state.books.list||[]).filter(b=>b.status==="read").length;
+  const places=(state.travel||[]).filter(t=>t.visited).length;
+  const dates=(state.dates||[]).filter(x=>x.status==="done"&&String(x.when||"").startsWith(Y+"")).length;
+  const saved=(state.savings||[]).reduce((a,sv)=>a+(sv.filled||[]).length*(Number(sv.goal)||0)/(sv.steps||1),0);
+  let workouts=0; for(const id in (state.exlog||{})) workouts+=(state.exlog[id]||[]).filter(x=>String(x.d).startsWith(Y+"-")).length;
+  const scoreM=mks.map((_,i)=>moodByMonth[i]*10+ticksByMonth[i]/10), bestMonth=scoreM.some(v=>v>0)?scoreM.indexOf(Math.max(...scoreM)):-1;
+  const topWords=Object.entries(words).sort((a,b)=>b[1]-a[1]).slice(0,14);
+  return {days:days.size, tasks, items, moodsLogged, topMood, moodCounts, moodByMonth, habitRows, habitTotal, topHabit, ticksByMonth, money, books, places, dates, saved, workouts, bestMonth, topWords};
+}
+function renderReview(){
+  const Y=state.year, st=yearStats(Y), t=T(), R=((state.review||{})[Y])||{}, own=!!state.creator;
+  const tile=(n,l,show=true)=>show?`<div class="yrtile"><b>${n}</b><span>${l}</span></div>`:"";
+  const tiles=[tile(st.days,"days journaled"), tile(st.tasks,"tasks done"), tile(st.habitTotal,"habit check-ins"), tile(st.moodsLogged,"moods logged"),
+    tile(st.books,"books read"), tile(st.places,"places visited", st.places>0), tile(st.dates,"dates you went on", st.dates>0), tile(money(Math.round(st.saved)),"saved in trackers", st.saved>0),
+    tile(st.workouts,"workouts logged", st.workouts>0)].join("");
+  const hi=[]; if(st.topHabit&&st.topHabit.total) hi.push(`Your most-kept habit was <b>${esc(st.topHabit.name)}</b>: ${st.topHabit.total} days, with a best streak of ${st.topHabit.best} day${st.topHabit.best===1?"":"s"} in a row.`);
+  if(st.moodsLogged) hi.push(`Most days felt <b>${FACE_LABELS[st.topMood].toLowerCase()}</b> (${st.moodCounts[st.topMood]} of ${st.moodsLogged} days logged).`);
+  if(st.books) hi.push(`You finished <b>${st.books}</b> book${st.books===1?"":"s"}.`);
+  if(!hi.length) hi.push("Your highlights fill in as you journal: habits, moods, books, trips and more.");
+  const prompts=[["words","Three words for "+Y],["proud","What I'm proudest of"],["next","Next year, I want to…"]].map(([k,l])=>`<label class="yrq"><span>${l}</span><textarea rows="1" class="hand-input" data-in="yr" data-k="${k}" placeholder="Write here" aria-label="${esc(l)}">${esc(R[k]||"")}</textarea></label>`).join("");
+  const free = blk("review","glance",4,`<div class="yrhero"><h2 class="section-title">${Y} at a glance</h2><div class="yrtiles">${tiles}</div></div>`,"wbox focus")
+    + blk("review","hi",2,`<h2 class="section-title">Highlights</h2>${hi.map(x=>`<p class="yrhi">${x}</p>`).join("")}`)
+    + blk("review","reflect",2,`<h2 class="section-title">Looking back</h2><div class="yrqs">${prompts}</div>`);
+  /* ---- the deeper recap ---- */
+  const mx=Math.max(1,...st.moodByMonth);
+  const bars=st.moodByMonth.map((v,i)=>{ const h=v?Math.max(8,v/5*86):3; return `<g><rect x="${i*26+4}" y="${96-h}" width="18" height="${h}" rx="3" fill="${v?`color-mix(in srgb, var(--accent) ${Math.round(20+v/5*80)}%, var(--paper))`:"var(--rule)"}" stroke="var(--ink)" stroke-width="${v?1.2:0}"/><text x="${i*26+13}" y="112" text-anchor="middle" font-size="11">${MONTHS[i][0]}</text></g>` }).join("");
+  const moodChart=`<svg class="yrbars" viewBox="0 0 316 118" role="img" aria-label="Average mood by month">${bars}</svg><p class="ui-note">Taller and darker bars mean better months. Months without moods stay flat.</p>`;
+  const rows=st.habitRows.slice().sort((a,b)=>b.total-a.total).slice(0,6);
+  const heat=rows.length?`<table class="yrheat"><thead><tr><th></th>${MONTHS.map(m=>`<th>${m[0]}</th>`).join("")}<th>Best</th></tr></thead><tbody>${rows.map(r=>`<tr><th>${esc(r.name)}</th>${r.per.map(v=>`<td><i style="background:${v?`color-mix(in srgb, var(--accent) ${Math.round(15+v*85)}%, var(--paper))`:"transparent"}" title="${Math.round(v*100)}%"></i></td>`).join("")}<td class="num">${r.best}d</td></tr>`).join("")}</tbody></table><p class="ui-note">Each square is how many days of that month you kept the habit. Best = longest streak.</p>`:`<p class="ui-note">Add habits to see how steady you were month by month.</p>`;
+  const bm=st.bestMonth>-1?`<div class="yrbig">${MONTHS[st.bestMonth]}</div><p class="ui-note">Your best month: ${st.moodByMonth[st.bestMonth]?`average mood ${st.moodByMonth[st.bestMonth].toFixed(1)} of 5, `:""}${st.ticksByMonth[st.bestMonth]} habit check-ins.</p>`:`<p class="ui-note">Log moods and habits to find your best month.</p>`;
+  const wmax=st.topWords.length?st.topWords[0][1]:1;
+  const words=st.topWords.length?`<div class="yrwords">${st.topWords.map(([w,n],i)=>`<span style="font-size:${(0.85+n/wmax*1.2).toFixed(2)}em;${i%3===0?"color:var(--accent)":""}">${esc(w)}</span>`).join(" ")}</div><p class="ui-note">The words that came up most in your logs and notes.</p>`:`<p class="ui-note">Words from your logs and notes show up here.</p>`;
+  const M=st.money, moneyHtml=M?`<div class="yrtiles small">${tile(money(M.income),"income logged")}${tile(money(M.bills),"spent on bills")}${tile(money(M.saved),"put toward goals")}</div><p class="ui-note">From ${M.months} month${M.months===1?"":"s"} of budgets.</p>`:`<p class="ui-note">Fill in the Budget spread to see your money year.</p>`;
+  const deepInner = blk("review","moodm",2,`<h2 class="section-title">Mood by month</h2>${moodChart}`)
+    + blk("review","best",2,`<h2 class="section-title">Best month</h2>${bm}`)
+    + blk("review","heat",4,`<h2 class="section-title">Habit consistency</h2><div class="tbl-wrap">${heat}</div>`)
+    + blk("review","words",2,`<h2 class="section-title">Your year in words</h2>${words}`)
+    + blk("review","money",2,`<h2 class="section-title">Money</h2>${moneyHtml}`);
+  const badge=own?`<span class="yrprem">Premium</span>`:lockBadge();
+  const deep = (!own&&HIDE_PREMIUM) ? "" : `<section class="yrdeep${own?"":" locked"}"><h2 class="yrdeep-h">The deeper recap ${badge}</h2>
+      ${own?grid(deepInner):`<div class="yrblur" aria-hidden="true" inert>${grid(deepInner)}</div><div class="yrgate"><b>See your whole year in detail</b><span>Mood by month, habit streaks, your best month, your year in words and money totals${SOON()?" are coming soon.":", plus a story-size image to share."}</span><button class="pen-btn solid" data-act="yrunlock">${SOON()?"Coming soon":"Unlock with Premium"}</button></div>`}</section>`;
+  return head("Year in review", Y+" highlights", "review") + grid(free) + deep;
+}
+
+/* =====================================================================
    PACK: FITNESS — EXERCISE LIBRARY (draft): animated stick-figure moves, sorted by movement type
    and the muscles they work, with a simple log (sets × reps, weight or minutes).
    Poses are joint coordinates in a 120×100 box: head, neck, pelvis, front knee/foot, back knee/foot,
@@ -1889,12 +2043,14 @@ function renderDates(){
 /* =====================================================================
    RENDER + CHROME
    ===================================================================== */
-const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates, meals:renderMeals, gifts:renderGifts, holiday:renderHoliday, exercise:renderExercise};
+const RENDER={year:renderYear, day:renderDay, savings:renderSavings, log:renderLog, week:renderWeek, habits:renderHabits, mood:renderMood, budget:renderBudget, books:renderBooks, travel:renderTravel, dates:renderDates, review:renderReview, meals:renderMeals, gifts:renderGifts, holiday:renderHoliday, exercise:renderExercise};
 function applyTheme(){
   const t=T(), r=document.documentElement.style;
   ["paper","dot","ink","muted","rule","accent","wash","shelf","display","dsize","hand","hsize"].forEach(k=>r.setProperty("--"+k,t[k]));
   $("#themeSw").style.background=`linear-gradient(135deg, ${t.paper} 0 50%, ${t.accent} 50%)`;
   $("#themeName").textContent=t.name;
+  const de=document.documentElement; de.dataset.pt=t.paperStyle||"dots"; de.dataset.tid=Object.keys(THEMES).find(k=>THEMES[k]===t)||"";
+  de.dataset.deco=state.creator?(state.deco||"full"):"full";
 }
 /* Draft spreads (draft:true) are new builds still being edited: only Creator mode sees them.
    To launch one for everyone, remove its draft:true. */
@@ -1925,17 +2081,18 @@ function render(anim){ if(PUBLIC&&!IS_CREATOR) state.creator=false;
   if(anim){paper.classList.remove("enter"); void paper.offsetWidth; paper.classList.add("enter")}
 }
 function renderThemes(){
-  const cards=Object.entries(THEMES).map(([id,t])=>`<button class="tcard" data-theme-id="${id}" aria-pressed="${state.theme===id}">
+  const cards=Object.entries(THEMES).filter(([id,t])=>themeOn(t)).map(([id,t])=>`<button class="tcard${t.premium&&!themeOwned(t)?" tlock":""}" data-theme-id="${id}" aria-pressed="${state.theme===id&&themeOwned(t)}">
       <div class="pv" style="background:${t.paper} radial-gradient(${t.dot} 1px, transparent 1.3px) 0 0/10px 10px;color:${t.ink}">
         <div class="t" style="font-family:${t.display};font-size:${t.motif==="botanical"?"14px":"22px"}">${t.motif==="doodle"?"MAY":"May"}</div>
         <div><div class="spines">${t.spines.slice(0,6).map((c,i)=>`<i style="height:${26+(i*7)%18}px;background:${c};border-color:${t.ink}"></i>`).join("")}<span style="margin-left:auto;width:14px;height:14px;border-radius:50%;background:${t.accent}"></span></div><div class="sh" style="background:${t.shelf}"></div></div>
-      </div><div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
+      </div>${t.draft||t.premium?`<span class="badge">${[t.draft?"Draft":"",t.premium?(themeOwned(t)?"Premium":SOON()?"Coming soon":"🔒 Premium"):""].filter(Boolean).join(" · ")}</span>`:""}<div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
   const locked=HIDE_PREMIUM?"":LOCKED.map(t=>`<button class="tcard" data-locked="${t.id}">
       <div class="pv" style="background:${t.ai?`linear-gradient(135deg,#F5E6DA,#DDE9E1 55%,#E9E1F2)`:t.paper};color:${t.ink}">
         <div class="t" style="font-family:${t.font};font-size:${t.ai?"13px":"22px"}">${t.ai?"your idea here":"May"}</div>
         <div><div class="spines">${t.spines.map((c,i)=>`<i style="height:${24+i*8}px;background:${c};border-color:${t.ink}"></i>`).join("")}</div><div class="sh" style="background:${t.shelf}"></div></div>
       </div><span class="badge">${SOON()?"Coming soon":t.badge}</span><div class="nm">${t.name}</div><div class="bl">${t.blurb}</div></button>`).join("");
   $("#themes").innerHTML=cards+locked;
+  const dr=$("#decoRow"); if(dr){ dr.hidden=!state.creator; dr.querySelectorAll("[data-deco]").forEach(b=>b.setAttribute("aria-pressed",String((state.deco||"full")===b.dataset.deco))) }
   const rb=$("#resetBtn"); rb.textContent=ui.confirmReset?"Tap again to erase everything":"Clear all entries"; rb.classList.toggle("warn",ui.confirmReset);
 }
 function setCreatorAccount(on){
@@ -1947,7 +2104,7 @@ function setCreatorAccount(on){
   if(on) toast(state.creator?"Creator account: Premium tools unlocked":"Creator account: turn on Creator mode in Themes");
 }
 function syncCreator(){$("#creatorSw").setAttribute("aria-checked", String(!!state.creator))}
-$("#creatorSw").onclick=()=>{state.creator=!state.creator; try{localStorage.setItem("petal-creator",state.creator?"1":"0")}catch(e){} save(); syncCreator(); render(); toast(state.creator?"Creator mode on: Premium tools unlocked":"Creator mode off")};
+$("#creatorSw").onclick=()=>{state.creator=!state.creator; try{localStorage.setItem("petal-creator",state.creator?"1":"0")}catch(e){} save(); syncCreator(); render(); renderThemes(); toast(state.creator?"Creator mode on: Premium tools unlocked":"Creator mode off")};
 function openSheet(){syncCreator(); renderThemes(); $("#sheet").hidden=false; $("#scrim").hidden=false; $("#closeSheet").focus()}
 function closeSheet(){$("#sheet").hidden=true; $("#scrim").hidden=true; ui.confirmReset=false; $("#themeBtn").focus()}
 
@@ -1965,7 +2122,10 @@ $("#prev").onclick=()=>shift(-1); $("#next").onclick=()=>shift(1);
 $("#toToday").onclick=()=>{ state.day=iso(now); state.week=mondayOf(now); state.month=thisMonth; state.year=now.getFullYear(); save(); render(true) };
 $("#themeBtn").onclick=openSheet; $("#closeSheet").onclick=closeSheet; $("#scrim").addEventListener("click",()=>{ if(!$("#sheet").hidden) closeSheet() });
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#sheet").hidden) closeSheet()});
+$("#decoRow").addEventListener("click",e=>{
+  const dk=e.target.closest("[data-deco]"); if(dk){ state.deco=dk.dataset.deco; save(); render(); renderThemes(); toast({full:"Full decoration",light:"Light decoration: no stickers",clean:"Clean pages: no stickers or tape"}[state.deco]) } });
 $("#themes").addEventListener("click",e=>{
+  const c0=e.target.closest("[data-theme-id]"); if(c0&&!themeOwned(THEMES[c0.dataset.themeId])){ toast(premiumMsg(THEMES[c0.dataset.themeId].name)); return }
   const c=e.target.closest("[data-theme-id]"); if(c){state.theme=c.dataset.themeId; save(); render(true); renderThemes(); toast(THEMES[state.theme].name+" applied"); return}
   const l=e.target.closest("[data-locked]"); if(l) toast(l.dataset.locked==="ai"?"Creating your own journal wallpapers is coming soon.":"Lavender Dusk is coming soon.");
 });
@@ -2032,6 +2192,7 @@ paper.addEventListener("click",e=>{
   if(act==="scene"&&place){place.scene=SCENES[(SCENES.indexOf(place.scene)+1)%SCENES.length]; save(); render(); return}
   const dx=d.id&&(state.dates||[]).find(x=>x.id===d.id);
   if(act==="dfilter"){ ui.dfilter=d.f; ui.dpick=null; render(); return }
+  if(act==="yrunlock"){ toast(premiumMsg("The deeper recap")); return }
   if(act==="exT"){ ui.exT=d.k; render(); return }
   if(act==="exM"){ ui.exM=ui.exM===d.k?"":d.k; render(); return }
   if(act==="exunit"){ state.exUnit=d.k; save(); render(); return }
@@ -2080,6 +2241,7 @@ paper.addEventListener("input",e=>{
   if(d.in==="svgoal"){const x=state.savings.find(v=>v.id===d.id); if(x) x.goal=Math.max(0,parseFloat(el.value)||0); saveSoon(); return}
   if(d.in==="habitname"){const f=findHabit(d.h); if(f) f.h.name=el.value; saveSoon(); return}
   if(d.in==="budget"){const b=getBudget(); if(d.i!=null) b[d.f][d.i][d.k]=el.value; else b[d.f]=el.value; refreshBudgetTotals(); saveSoon(); return}
+  if(d.in==="yr"){ const RV=(state.review=state.review||{}); (RV[state.year]=RV[state.year]||{})[d.k]=el.value; saveSoon(); return }
   if(d.in==="goal"){state.books.goal=Math.max(1,parseInt(el.value)||1); saveSoon(); return}
   if(d.in==="booktitle"){const b=state.books.list.find(x=>x.id===d.id); if(b){b.title=el.value; const sp=paper.querySelector(`.spine[data-id="${d.id}"]`); if(sp) sp.textContent=el.value} saveSoon(); return}
   if(d.in==="gbudget"){ giftsFor(state.year).budget=parseFloat(el.value)||0; refreshGiftTotals(); saveSoon(); return }
